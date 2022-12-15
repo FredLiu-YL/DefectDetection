@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliCore;
+using YuanliCore.CameraLib;
 
 namespace AutoFocusMachine.ViewModel
 {
@@ -24,10 +25,16 @@ namespace AutoFocusMachine.ViewModel
         private WriteableBitmap image ;
         private BitmapImage bitmapImage;
         private BitmapSource mainImage;
-
+        private UeyeCamera ueyeCamera;
         private Task taskRefresh = Task.CompletedTask;
         private Brush aFBackColor;
         private IDisposable subscribeState;
+        private IDisposable camlive;
+        private bool isBtnEnable = true;
+
+
+
+
         public int PatternZ { get => patternZ; set => SetValue(ref patternZ, value); }
         public int DistancePatternZ { get => distancePatternZ; set => SetValue(ref distancePatternZ, value); }
 
@@ -46,6 +53,9 @@ namespace AutoFocusMachine.ViewModel
 
         public double LSPPos { get => lSPPos; set => SetValue(ref lSPPos, value); }
         public double NSPPos { get => nSPPos; set => SetValue(ref nSPPos, value); }
+
+        public bool IsBtnEnable { get => isBtnEnable; set => SetValue(ref isBtnEnable, value); }
+
         public Brush AFBackColor { get => aFBackColor; set => SetValue(ref aFBackColor, value); }
 
         public WriteableBitmap Image { get => image; set => SetValue(ref image, value); }
@@ -55,21 +65,13 @@ namespace AutoFocusMachine.ViewModel
             if (focusSystem == null)
             {
                 focusSystem = new AutoFocusSystem("COM1", 19200);
-                subscribeState = focusSystem.AfStates.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
-                        .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
-                        .Subscribe(t => {
-                            if (t)
-                                AFBackColor = Brushes.Green;
-                            else
-                                AFBackColor = Brushes.Red;
 
-                        });
             }
-                
-          
+
+
             isRefresh = true;
             focusSystem.Open();
-   
+
             taskRefresh = Task.Run(RefreshState);
         });
         public ICommand CloseCommand => new RelayCommand(async () =>
@@ -79,11 +81,41 @@ namespace AutoFocusMachine.ViewModel
             focusSystem.Close();
 
         });
+        public ICommand CamOpenCommand => new RelayCommand(() =>
+        {
+            if (ueyeCamera == null)
+            {
+                ueyeCamera = new UeyeCamera();
+
+            }
+            ueyeCamera.Open();
+            ueyeCamera.Load("C:\\Users\\User\\Documents\\IDSsetting.ini");
+
+            CameraLive();
+        });
+        public ICommand CamCloseCommand => new RelayCommand(async () =>
+        {
+            ueyeCamera.Close();
+        });
+        public ICommand TEST1Command => new RelayCommand(() =>
+        {
+            ueyeCamera.Grab();
+
+
+
+        });
+        public ICommand TEST2Command => new RelayCommand(() =>
+        {
+            ueyeCamera.Stop(); ;
+
+
+        });
+
 
         public ICommand AFONCommand => new RelayCommand(() =>
         {
-            
-             focusSystem.Run();
+
+            focusSystem.Run();
 
         });
         public ICommand AFOFFCommand => new RelayCommand(() =>
@@ -95,22 +127,36 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand MoveCommand => new RelayCommand<string>(async key =>
         {
-
-            switch (key)
+            if (!IsBtnEnable) return;
+            IsBtnEnable = false;
+            try
             {
-                case "+":
-                    var tempPos = PositionZ + DistanceZ;
-                    focusSystem.Move(DistanceZ);
-                    focusSystem.FSP = tempPos - 1500;
-                    focusSystem.NSP = tempPos + 1500;
-                    break;
+                switch (key)
+                {
+                    case "+":
+                        var tempPos = PositionZ + DistanceZ;
+                        focusSystem.Move(DistanceZ);
+                        focusSystem.FSP = tempPos - 1500;
+                        focusSystem.NSP = tempPos + 1500;
+                        break;
 
-                case "-":
-                    var tempPos1 = PositionZ - DistanceZ;
-                    focusSystem.Move(-DistanceZ);
-                    focusSystem.FSP = tempPos1 - 1500;
-                    focusSystem.NSP = tempPos1 + 1500;
-                    break;
+                    case "-":
+                        var tempPos1 = PositionZ - DistanceZ;
+                        focusSystem.Move(-DistanceZ);
+                        focusSystem.FSP = tempPos1 - 1500;
+                        focusSystem.NSP = tempPos1 + 1500;
+                        break;
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+            finally
+            {
+                IsBtnEnable = true;
 
             }
 
@@ -159,25 +205,56 @@ namespace AutoFocusMachine.ViewModel
                         AFSignalA = focusSystem.AFSignalA;
                         AFSignalB = focusSystem.AFSignalB;
 
-                       
+
                         PatternZ = (int)focusSystem.Pattern;
                         FSP = focusSystem.FSP;
                         NSP = focusSystem.NSP;
                     }
                     PositionZ = (int)focusSystem.AxisZPosition;
-                    await Task.Delay(400);
+                    await Task.Delay(300);
                 }
 
             }
             catch (Exception ex)
             {
 
-               // throw ex;
+                // throw ex;
             }
-           
-            
+
+
 
 
         }
+
+        private void AFRunningSubscribe()
+        {
+
+            subscribeState = focusSystem.AfStates
+                        .ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行                                            
+                        .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
+                         .Subscribe(t =>
+                         {
+                             if (t)
+                                 AFBackColor = Brushes.Green;
+                             else
+                                 AFBackColor = Brushes.Red;
+
+                         });
+        }
+
+        private void CameraLive()
+        {
+            Image = new WriteableBitmap(ueyeCamera.Width, ueyeCamera.Height, 96, 96, ueyeCamera.PixelFormat, null);
+            camlive = ueyeCamera.Frames.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
+                         .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
+                         .Subscribe(frame =>
+                         {
+                            
+                             var a = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                             if (frame != null) Image.WritePixels(frame);
+                           //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
+                         });
+        }
+
     }
 }

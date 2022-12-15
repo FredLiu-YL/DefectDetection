@@ -21,12 +21,12 @@ using uEye;
 
 namespace YuanliCore.CameraLib
 {
-    public class uyeCamera
+    public class UeyeCamera
     {
         private readonly Camera cam = new uEye.Camera();
         private readonly int bufferCount = 3;
         private byte[] buffer;
-        private IObservable<BitmapSource> frames;
+        private IObservable<Frame<byte[]>> frames  ;
 
         private readonly Dictionary<ColorMode, System.Windows.Media.PixelFormat> formatMap = new Dictionary<ColorMode, System.Windows.Media.PixelFormat>
         {
@@ -42,7 +42,7 @@ namespace YuanliCore.CameraLib
         /// 建構 uEyeAreaCamera 相機，當有多支相機時 cameraId 並非每次啟動都是固定的，需使用 iDS 的官方軟體設定才可固定其 Id。
         /// </summary>
         /// <param name="cameraId">若將 cameraId 指定為 0 則自動抓取第一支可用相機，CameraId 可於 IDS Vision Cockpit 中修改。</param>
-        public uyeCamera(int cameraId = 0)
+        public UeyeCamera(int cameraId = 0)
         {
             uEye.Info.Camera.GetCameraList(out CameraInformation[] camInfoList);
             if (camInfoList.Length == 0) throw new Exception("");
@@ -62,9 +62,11 @@ namespace YuanliCore.CameraLib
         }
 
 
-        public IObservable<BitmapSource> Frames => frames;
+        public IObservable<Frame<byte[]>> Frames => frames;
+        public System.Windows.Size Resolution { get; set; } = new System.Windows.Size(1.0, 1.0);
 
-        public bool IsGrabbing { get; }
+
+        public bool IsGrabbing { get; set; }
 
         #region Device Property
 
@@ -79,7 +81,7 @@ namespace YuanliCore.CameraLib
 
         #endregion
 
-        //  public Size Resolution { get; set; }
+
 
         #region Device Infomation
 
@@ -105,6 +107,83 @@ namespace YuanliCore.CameraLib
 
                 ReallocateMemory(bufferCount);
             }
+        }
+
+        public virtual int Width
+        {
+           
+            get => GetWidth();
+            //set
+            //{
+            //    // 為了調整 Width 後畫面仍維持中心點不變動，所以必須改動 Offset 來移動畫面的位置，
+            //    // 而 Offset 變化量 (offsetΔ) 必須是 Width 變化量 (widthΔ) 的一半。
+            //    // 例如 Width 少 4 則 Offset 要加 2，offsetΔ 必須是 widthΔ 的 1/2 倍，才能維持畫面中心點不變動。
+
+            //    // 另外因 Width 的變動必須增加量 (Increment) 倍數，所以必須使用數學捨入至最接近 Increment 的倍數值，
+            //    // 例如 Width 變化量是 17 而增加量是 8，RoundDown 後變化量變成 16；以此類推變化量是 27，捨入後變成 24 (8 的 3 倍)，
+            //    // 因為 offsetΔ 必須是 widthΔ 的 1/2 倍，所以用來做捨入的增加量會 x2，以上述例子就是增加量由 8 變成 16。
+
+            //    // 以下情況是預設在 Width 與 Offset 的增加量是相同的情況下發生，一般而言是要相同的，
+            //    // 如果不同則需要算出兩者的最小公倍數，當成 Width 改變量的捨入目標值。
+
+            //    if (WidthRange.IsEmpty())
+            //    {
+            //        SetWidth(value); return;
+            //    }
+
+            //    if (!WidthRange.Contains(value))
+            //        throw new ArgumentOutOfRangeException($"{nameof(Width)} range is {WidthRange}.");
+
+            //    value = value.RoundDown(WidthRange.Inc * 2);
+            //    if (!WidthRange.Contains(value)) return;
+
+            //    var offset = (WidthRange.Max - value) / 2;
+
+            //    // 寬變大要先調整 Offset 在調整寬才不會跑出最大範圍；寬變小則先調整寬再調整 Offset。
+            //    if (value > Width)
+            //    { OffsetX = offset; SetWidth(value); }
+            //    else
+            //    { SetWidth(value); OffsetX = offset; }
+            //}
+        }
+
+       
+
+        public virtual int Height
+        {
+            get => GetHeight();
+            //set
+            //{
+            //    if (HeightRange.IsEmpty())
+            //    {
+            //        SetHeight(value); return;
+            //    }
+
+            //    if (!HeightRange.Contains(value))
+            //        throw new ArgumentOutOfRangeException($"{nameof(Height)} range is {HeightRange}.");
+
+            //    value = value.RoundDown(HeightRange.Inc * 2);
+            //    if (!HeightRange.Contains(value)) return;
+
+            //    var offset = (HeightRange.Max - value) / 2;
+
+            //    // 高變大要先調整 Offset 在調整高才不會跑出最大範圍；反之高變小則先調整高再調整 Offset。
+            //    if (value > Height)
+            //    { OffsetY = offset; SetHeight(value); }
+            //    else
+            //    { SetHeight(value); OffsetY = offset; }
+            //}
+        }
+
+        private int GetHeight()
+        {
+            cam.Size.AOI.Get(out int s32PosX, out int s32PosY, out int s32Width, out int s32Height);
+            return s32Height;
+        }
+        private int GetWidth()
+        {
+            cam.Size.AOI.Get(out int s32PosX, out int s32PosY, out int s32Width, out int s32Height);
+            return s32Width;
         }
         public string Model { get; }
 
@@ -177,7 +256,8 @@ namespace YuanliCore.CameraLib
         {
             get
             {
-                cam.Timing.Exposure.GetRange(out Range<double> range);
+               
+                 cam.Timing.Exposure.GetRange(out Range<double> range);
                 return new ValueRange<double>(range.Maximum, range.Minimum, range.Increment);
             }
         }
@@ -274,6 +354,8 @@ namespace YuanliCore.CameraLib
                 .Select(OnFrameReceived)
                 .Where(frame => frame != null)
                 .ObserveOn(TaskPoolScheduler.Default);
+                 
+
 
             // 載入儲存於相機內的設定。
             Load();
@@ -324,14 +406,17 @@ namespace YuanliCore.CameraLib
 
         protected  void AcquisitionStart()
         {
+        
             // 開始取像前重新配置 Buffer，避免寬與高有被變動過。
             //AllocateMemoryAndBuffer();
             cam.Acquisition.Capture();
+            IsGrabbing = true;
         }
 
         protected  void AcquisitionStop()
         {
             cam.Acquisition.Stop();
+            IsGrabbing = false;
         }
 
         [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
@@ -349,7 +434,7 @@ namespace YuanliCore.CameraLib
 
             try
             {
-              
+          
                 AcquisitionStart();
                 return Disposable.Create(Stop);
             }
@@ -362,8 +447,9 @@ namespace YuanliCore.CameraLib
 
         public async Task<BitmapSource> GrabAsync()
         {
-            using (var grab = IsGrabbing ? Disposable.Empty : Grab())
-                return await Frames.Take(1).Timeout(TimeSpan.FromSeconds(3));
+            //  using (var grab = IsGrabbing ? Disposable.Empty : Grab())
+            //      return await Frames.Take(1).Timeout(TimeSpan.FromSeconds(3));
+            return null;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -375,13 +461,13 @@ namespace YuanliCore.CameraLib
             }
         }
 
-       
 
-        #endregion       
+
+        #endregion
 
 
         // 相機擷取 Frame 後的 callback 處理方法。
-        private BitmapSource OnFrameReceived(EventPattern<object> ev)
+        private Frame<byte[]> OnFrameReceived(EventPattern<object> ev)
         {
             try
             {
@@ -403,8 +489,10 @@ namespace YuanliCore.CameraLib
                 cam.Memory.ToIntPtr(out IntPtr source);
                 Marshal.Copy(source, buffer, 0, buffer.Length);
                 cam.Memory.Unlock(memId);
-                return buffer.ToBitmapSource(width, height, PixelFormat);
-               // return new Frame<byte[]>(buffer, width, height, PixelFormat, Resolution);
+            //    var bmp = buffer.ToBitmapSource(width, height, PixelFormat);
+                
+               
+                return new Frame<byte[]>(buffer, width, height, PixelFormat, Resolution);
             }
             catch (Exception ex)
             {

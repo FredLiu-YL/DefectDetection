@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoFocusMachine.Model", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uEye_DotNet_SimpleLive", "uEye_DotNet_C#_SimpleLive\uEye_DotNet_SimpleLive.csproj", "{36546A52-5158-43C4-ABCE-BCDCE0B4FCF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore", "YuanliCore\YuanliCore.csproj", "{AFC5BB52-03A9-4833-8415-B52DB3B34639}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{36546A52-5158-43C4-ABCE-BCDCE0B4FCF8}.Release|x64.Build.0 = Release|x64
 		{36546A52-5158-43C4-ABCE-BCDCE0B4FCF8}.Release|x86.ActiveCfg = Release|x86
 		{36546A52-5158-43C4-ABCE-BCDCE0B4FCF8}.Release|x86.Build.0 = Release|x86
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Debug|x64.Build.0 = Debug|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Debug|x86.Build.0 = Debug|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Release|x64.ActiveCfg = Release|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Release|x64.Build.0 = Release|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFC5BB52-03A9-4833-8415-B52DB3B34639}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

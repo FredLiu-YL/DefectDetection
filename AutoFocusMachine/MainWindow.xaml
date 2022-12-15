@@ -9,7 +9,7 @@
         mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="AFWindow" Height="800" Width="1600">
+        Title="AFWindow" Height="900" Width="1600">
 
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}" x:Key="HorizontalExpanderContentTextBlock">
@@ -50,7 +50,7 @@
             <TabItem Header="Main" Width="200"  Height="30">
 
             </TabItem>
-            <TabItem  Header=" AutoFocus"  Width="200"  Height="30"  >
+            <TabItem  Header=" AutoFocus"  Width="200"  Height="30"   >
                 <Grid  >
 
                     <Grid.RowDefinitions>
@@ -88,11 +88,11 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal" >
-                            <Button  Command="{Binding MoveCommand}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
+                            <Button  Command="{Binding MoveCommand}" IsEnabled="{Binding IsBtnEnable}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
 
                             <TextBox Text="{Binding DistanceZ}" Width="80"  FontSize="20"/>
 
-                            <Button  Command="{Binding MoveCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
+                            <Button  Command="{Binding MoveCommand}" IsEnabled="{Binding IsBtnEnable}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
 
                             <Button Margin="30,0,0,0"  Command="{Binding MoveToCommand}"  Content="Move To"  FontSize="20" Width="100"   />
                             <TextBox Text="{Binding MovePosZ}" Width="80"  FontSize="20"/>
@@ -134,7 +134,7 @@
                             <Label  Content=" FAR"  FontSize="20" Width="80"/>
 
 
-                            <Slider Margin="10,0,0,0" Value="{Binding PatternZ}" Minimum="512" Maximum="2000" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Slider Margin="10,0,0,0" Value="{Binding PatternZ}" Minimum="512" Maximum="2000" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False"  />
                             <Label  Content=" NEAR"  FontSize="20" Width="80"/>
                         </StackPanel>
                         <StackPanel  Grid.Column="2" Orientation="Horizontal">
@@ -163,7 +163,7 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0" Source="{Binding Image}"  />
+                        <Image  Width="737" Height="617" Grid.Column="0" Source="{Binding Image}" Stretch="Uniform"  />
 
                         <Grid Grid.Column="1">
                             <Grid.ColumnDefinitions>
@@ -174,7 +174,19 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="0" Grid.Column="0" Header="功能操作 " FontSize="40"  >
+                            <GroupBox Grid.Row="1" Grid.Column="0" Header="相機功能操作 " FontSize="40"  >
+                                <StackPanel>
+
+                                    <Button  Command="{Binding CamOpenCommand}"  Content="Open" FontSize="20"  Height="50" />
+                                    <Button  Command="{Binding CamCloseCommand}"  Content="Close" FontSize="20"  Height="50" />
+                                    <Button  Command="{Binding TEST1Command}" Content="LIVE on" FontSize="20"  Height="50" />
+                                    <Button  Command="{Binding TEST2Command}" Content="LIVE  Off" FontSize="20"  Height="50" />
+
+                                </StackPanel>
+
+
+                            </GroupBox>
+                            <GroupBox Grid.Row="0" Grid.Column="0" Header="AF功能操作 " FontSize="40"  >
                                 <StackPanel>
 
                                     <Button  Command="{Binding OpenCommand}"  Content="Open" FontSize="20"  Height="50" />
@@ -186,6 +198,7 @@
 
 
                             </GroupBox>
+
                             <GroupBox BorderThickness="3" BorderBrush="Black" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Header="狀態顯示 " FontSize="40"  >
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">

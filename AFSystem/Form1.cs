@@ -62,23 +62,7 @@ namespace WindowsFormsApp1
 
         private async Task RefreshState()
         {
-            var test = Thread.CurrentThread.ManagedThreadId;
-            while (isRefreshState)
-            {
-
-                textBox_IR_A.Text = focusSystem.SensorA.ToString("0.000");
-                textBox_IR_B.Text = focusSystem.SensorB.ToString("0.000");
-                textBox_AF_A.Text = focusSystem.AFSignalA.ToString("0.000");
-                textBox_AF_B.Text = focusSystem.AFSignalB.ToString("0.000");
-                textBox_PosZ.Text =  focusSystem.AxisZPosition.ToString("0.000");
-                textBox_Pattern.Text = focusSystem.Pattern.ToString("0.000");
-
-                await Task.Delay(200);
-            }
-            //  textBox_IR_A.Text
-            //  textBox_IR_B.Text
-            //  textBox_AF_A.Text
-            //  textBox_AF_B.Text
+          
         }
 
         private void btn_PulsZ_Click(object sender, EventArgs e)
