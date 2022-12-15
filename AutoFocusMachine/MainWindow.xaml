@@ -9,7 +9,7 @@
         mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="AFWindow" Height="700" Width="1600">
+        Title="AFWindow" Height="800" Width="1600">
 
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}" x:Key="HorizontalExpanderContentTextBlock">
@@ -63,26 +63,36 @@
                     <Grid  Grid.Column="0" Grid.Row="0">
                         <Grid.ColumnDefinitions >
                             <ColumnDefinition Width="0.6*"/>
-                            <ColumnDefinition Width="1.5*" />
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="1.6*" />
+                            <ColumnDefinition  Width="0.9*" />
 
 
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Background="Aqua" BorderBrush="Black"  BorderThickness="2" FontSize="20" Content=" Step 1. 對焦位置調整"  />
                         <StackPanel Grid.Column="1" Orientation="Horizontal"   >
-                            <Label  Content=" FAR"  FontSize="20" Width="80"/>
-                            <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
 
-                            <TextBlock  Text="{Binding PositionZ}"   FontSize="20" Width="80" HorizontalAlignment="Center" VerticalAlignment="Center"   />
+                            <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock  Text="{Binding PositionZ}"   FontSize="20" Width="75" HorizontalAlignment="Center" VerticalAlignment="Center"   />
+                            <Label  Content=" FAR"  FontSize="20" Width="60"/>
+
+
                             <Slider Margin="10,0,0,0" Value="{Binding PositionZ}" Minimum="0" Maximum="26000" Width="200" HorizontalAlignment="Center" 
                                     VerticalAlignment="Center" IsEnabled="False" />
                             <Label  Content=" NEAR"  FontSize="20" Width="80"/>
+
+
+                            <Label  Content=" Search:"  FontSize="20" Width="80"/>
+                            <TextBlock  Text="{Binding FSP}"  FontSize="20" Width="60" VerticalAlignment="Center" />
+                            <Label  Content=" ~"  FontSize="20" Width="40"/>
+                            <TextBlock  Text="{Binding NSP}"  FontSize="20" Width="60" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal" >
-                            <Button  Command="{Binding MoveCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
-                            <TextBox Text="{Binding DistanceZ}" Width="80"  FontSize="20"/>
                             <Button  Command="{Binding MoveCommand}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
+
+                            <TextBox Text="{Binding DistanceZ}" Width="80"  FontSize="20"/>
+
+                            <Button  Command="{Binding MoveCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
 
                             <Button Margin="30,0,0,0"  Command="{Binding MoveToCommand}"  Content="Move To"  FontSize="20" Width="100"   />
                             <TextBox Text="{Binding MovePosZ}" Width="80"  FontSize="20"/>
@@ -117,10 +127,13 @@
                         </Grid.ColumnDefinitions>
                         <Label  Background="Aqua"  BorderBrush="Black"    BorderThickness="2" Grid.Column="0" Grid.Row="2" FontSize="20" Content=" Step 3. Pattern強度調整"  />
                         <StackPanel Grid.Column="1" Orientation="Horizontal" >
-                            <Label  Content=" FAR"  FontSize="20" Width="80"/>
-                            <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
 
+                            <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <TextBlock  Text="{Binding PatternZ}"  Width="80" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
+
+                            <Label  Content=" FAR"  FontSize="20" Width="80"/>
+
+
                             <Slider Margin="10,0,0,0" Value="{Binding PatternZ}" Minimum="512" Maximum="2000" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <Label  Content=" NEAR"  FontSize="20" Width="80"/>
                         </StackPanel>
@@ -134,9 +147,10 @@
                             <Label   Margin="10,0,0,0"  Content="V"  FontSize="20" VerticalAlignment="Center" />
 
                             <StackPanel  Margin="20,0,0,0"   Orientation="Horizontal" >
-                                <Button  Command="{Binding MovePTCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
-                                <TextBox Text="{Binding DistancePatternZ}" Width="80"  FontSize="20"/>
                                 <Button  Command="{Binding MovePTCommand}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
+                                <TextBox Text="{Binding DistancePatternZ}" Width="80"  FontSize="20"/>
+
+                                <Button  Command="{Binding MovePTCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -160,11 +174,49 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Grid.Column="0" Header="功能操作 " FontSize="40"  >
+                                <StackPanel>
+
+                                    <Button  Command="{Binding OpenCommand}"  Content="Open" FontSize="20"  Height="50" />
+                                    <Button  Command="{Binding CloseCommand}"  Content="Close" FontSize="20"  Height="50" />
+                                    <Button  Command="{Binding AFONCommand}" Content="自動對焦 On" FontSize="20"  Height="50" />
+                                    <Button  Command="{Binding AFOFFCommand}" Content="自動對焦 Off" FontSize="20"  Height="50" />
+
+                                </StackPanel>
+
+
+                            </GroupBox>
+                            <GroupBox BorderThickness="3" BorderBrush="Black" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Header="狀態顯示 " FontSize="40"  >
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="SensorA:" FontSize="30" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="20" Text="{Binding SignalA}" FontSize="30" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="SensorB:" FontSize="30" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="20" Text="{Binding SignalB}" FontSize="30" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="SensorA:" FontSize="30" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="20" Text="{Binding AFSignalA}" FontSize="30" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="SensorB:" FontSize="30" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="20" Text="{Binding AFSignalB}" FontSize="30" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <Label Content="Just Focus"  Background="{Binding AFBackColor}" />
+                                </StackPanel>
+
+
+                            </GroupBox>
+
                         </Grid>
+
+
                     </Grid>
-                 
-                      
-                    
+
+
+
                 </Grid>
             </TabItem>
 
