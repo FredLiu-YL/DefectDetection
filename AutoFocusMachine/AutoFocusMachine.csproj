@@ -177,7 +177,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\YuanliCore\YuanliCore.csproj">
+    <ProjectReference Include="..\..\YuanliCore\YuanliCore\YuanliCore.csproj">
       <Project>{afc5bb52-03a9-4833-8415-b52db3b34639}</Project>
       <Name>YuanliCore</Name>
     </ProjectReference>

@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoFocusMachine.Model", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uEye_DotNet_SimpleLive", "uEye_DotNet_C#_SimpleLive\uEye_DotNet_SimpleLive.csproj", "{36546A52-5158-43C4-ABCE-BCDCE0B4FCF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore", "YuanliCore\YuanliCore.csproj", "{AFC5BB52-03A9-4833-8415-B52DB3B34639}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore", "..\YuanliCore\YuanliCore\YuanliCore.csproj", "{AFC5BB52-03A9-4833-8415-B52DB3B34639}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

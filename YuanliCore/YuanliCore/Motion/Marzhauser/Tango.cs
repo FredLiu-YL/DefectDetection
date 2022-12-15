@@ -81,10 +81,10 @@ namespace YuanliCore.Motion
             try
             {
                 LS_GetPos(out xx, out yy, out zz, out aa);
-                AxisXPos = Math.Round(xx,4); 
-                AxisYPos = Math.Round(yy,4);
-                AxisZPos = Math.Round(zz,4);
-                AxisRPos = Math.Round(aa,4);
+                AxisXPos = Math.Round(xx, 4);
+                AxisYPos = Math.Round(yy, 4);
+                AxisZPos = Math.Round(zz, 4);
+                AxisRPos = Math.Round(aa, 4);
             }
             catch
             {
