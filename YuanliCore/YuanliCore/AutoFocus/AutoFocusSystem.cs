@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using YuanliCore.Interface;
+using YuanliCore.Motion.Marzhauser;
 
 namespace YuanliCore
 {
@@ -106,12 +108,12 @@ namespace YuanliCore
                 if(message!="")
                 {
                     serialPort.DiscardOutBuffer();
-                    Task.Delay(20).Wait();
+                    Task.Delay(30).Wait();
                    // var strtest = serialPort.ReadExisting();
 
                     serialPort.Write(message + "\r\n");
                 }
-              
+
                 Task.Delay(200).Wait();
                 var str = serialPort.ReadExisting();
                 return str;

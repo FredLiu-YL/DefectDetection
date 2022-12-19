@@ -43,10 +43,15 @@
   <ItemGroup>
     <Compile Include="AutoFocus\AutoFocusSystem.cs" />
     <Compile Include="Camera\CamerEX.cs" />
+    <Compile Include="Interface\Motion\Axis.cs" />
     <Compile Include="Interface\ICamera.cs" />
     <Compile Include="CommonExtension\RxLinq.cs" />
     <Compile Include="Camera\IDS\ueyeCamera.cs" />
-    <Compile Include="Motion\Marzhauser\Tango.cs" />
+    <Compile Include="Interface\IMotioncontroller.cs" />
+    <Compile Include="Interface\Motion\SignalDI.cs" />
+    <Compile Include="Interface\Motion\SignalDO.cs" />
+    <Compile Include="Motion\Marzhauser\TangoEX.cs" />
+    <Compile Include="Motion\Marzhauser\TangoController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -112,7 +117,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Motion\Marzhauser\Tango_DLL.dll">
+    <Content Include="Motion\Marzhauser\Tango_DLL_x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

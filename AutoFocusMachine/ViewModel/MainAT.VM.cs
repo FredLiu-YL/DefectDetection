@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliCore;
 using YuanliCore.CameraLib;
+using YuanliCore.Interface;
+using YuanliCore.Motion.Marzhauser;
 
 namespace AutoFocusMachine.ViewModel
 {
@@ -31,9 +33,11 @@ namespace AutoFocusMachine.ViewModel
         private IDisposable subscribeState;
         private IDisposable camlive;
         private bool isBtnEnable = true;
+        private string tableDistance;
 
 
-
+        private Axis[] Axestest;
+        IMotionController motionController;
 
         public int PatternZ { get => patternZ; set => SetValue(ref patternZ, value); }
         public int DistancePatternZ { get => distancePatternZ; set => SetValue(ref distancePatternZ, value); }
@@ -59,6 +63,7 @@ namespace AutoFocusMachine.ViewModel
         public Brush AFBackColor { get => aFBackColor; set => SetValue(ref aFBackColor, value); }
 
         public WriteableBitmap Image { get => image; set => SetValue(ref image, value); }
+        public string TableDistance { get => tableDistance; set => SetValue(ref tableDistance, value); }
 
         public ICommand OpenCommand => new RelayCommand(() =>
         {
@@ -92,26 +97,54 @@ namespace AutoFocusMachine.ViewModel
             ueyeCamera.Load("C:\\Users\\User\\Documents\\IDSsetting.ini");
 
             CameraLive();
+            ueyeCamera.Grab();
         });
         public ICommand CamCloseCommand => new RelayCommand(async () =>
         {
+            ueyeCamera.Stop(); ;
             ueyeCamera.Close();
         });
         public ICommand TEST1Command => new RelayCommand(() =>
         {
-            ueyeCamera.Grab();
+          
 
 
 
         });
         public ICommand TEST2Command => new RelayCommand(() =>
         {
-            ueyeCamera.Stop(); ;
+           
 
 
         });
+        public ICommand TEST3Command => new RelayCommand(() =>
+        {
+            if(motionController ==null)
+            {
+
+                motionController = new TangoController("COM4");
+                motionController.InitializeCommand();
+            }
+           
+
+            Axestest = motionController.Axes.ToArray();
+
+        });
+        public ICommand TEST4Command => new RelayCommand(async () =>
+        {
+            var dis = Convert.ToDouble(TableDistance);
+
+           await Axestest[0].MoveAsync(dis);
 
 
+
+        });
+        public ICommand TableMoveCommand => new RelayCommand(() =>
+        {
+
+
+
+        });
         public ICommand AFONCommand => new RelayCommand(() =>
         {
 
