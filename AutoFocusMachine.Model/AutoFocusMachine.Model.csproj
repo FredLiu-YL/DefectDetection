@@ -95,6 +95,7 @@
   <ItemGroup>
     <Compile Include="Machine.cs" />
     <Compile Include="Machine.Initialize.cs" />
+    <Compile Include="MachineSetting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

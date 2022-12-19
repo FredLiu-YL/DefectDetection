@@ -8,12 +8,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using YuanliCore.CameraLib;
 
-
-namespace YuanliCore.CameraLib
+namespace YuanliCore.Interface
 {
-   public interface ICamera
+    public interface ICamera
     {
+        int Width { get; }
+        int Height { get; }
+        IObservable<Frame<byte[]>> Frames { get; }
+        System.Windows.Media.PixelFormat PixelFormat { get; set; }
+
+        void Open();
+        void Close();
+        Task<BitmapSource> GrabAsync();
+        IDisposable Grab();
+
+        void Stop();
+
+      
+
     }
 
     public class Frame : Frame<byte[]>

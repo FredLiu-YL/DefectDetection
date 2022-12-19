@@ -8,7 +8,7 @@
         mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="AFWindow" Height="900" Width="1600">
+        Title="AFWindow" Height="1050" Width="1920" ResizeMode="NoResize"  WindowStartupLocation="CenterScreen"  >
 
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}" x:Key="HorizontalExpanderContentTextBlock">
@@ -45,62 +45,82 @@
                 <command:EventToCommand Command="{Binding ClosedCommand}" PassEventArgsToCommand="True"/>
             </ITrigger:EventTrigger>
         </ITrigger:Interaction.Triggers>
-        <TabControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.35*" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.75*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Image  Width="737" Height="617" Grid.Column="0"  Grid.Row="1" Source="{Binding Image}" Stretch="Uniform"  />
+        <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  SelectedIndex="{Binding TabControlIndex}" >
+            <ITrigger:Interaction.Triggers>
+                <ITrigger:EventTrigger EventName="SelectionChanged">
+                    <command:EventToCommand Command="{Binding TabControlChangedCommand}"/>
+                </ITrigger:EventTrigger>
+
+            </ITrigger:Interaction.Triggers>
             <TabItem Header="Main" Width="200"  Height="30">
 
             </TabItem>
-            <TabItem  Header=" AutoFocus"  Width="200"  Height="30"   >
+            <TabItem  Header=" AutoFocus"  Width="200"  Height="30" Margin="5,0,-5,0"   >
                 <Grid  >
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="10*"  />
-                        <RowDefinition Height="10*" />
-                        <RowDefinition Height="10*" />
+                        <RowDefinition Height="15*"  />
+                        <RowDefinition Height="15*" />
+                        <RowDefinition Height="15*" />
                         <RowDefinition Height="120*"  />
                     </Grid.RowDefinitions>
 
+                    <Border Grid.Row="0" BorderThickness="2" BorderBrush="Black" Grid.RowSpan="3"  Grid.ColumnSpan="2" />
+                    <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black"  />
                     <Grid  Grid.Column="0" Grid.Row="0">
                         <Grid.ColumnDefinitions >
-                            <ColumnDefinition Width="0.6*"/>
+                            <ColumnDefinition Width="0.7*"/>
                             <ColumnDefinition Width="1.6*" />
                             <ColumnDefinition  Width="0.9*" />
 
-
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Background="Aqua" BorderBrush="Black"  BorderThickness="2" FontSize="20" Content=" Step 1. 對焦位置調整"  />
-                        <StackPanel Grid.Column="1" Orientation="Horizontal"   >
+                        <Label Grid.Column="0"  BorderBrush="Black"  BorderThickness="2" FontSize="20" Content=" Step 1. 對焦位置調整"  />
+                        <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Height="45"  >
 
-                            <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            <TextBlock  Text="{Binding PositionZ}"   FontSize="20" Width="75" HorizontalAlignment="Center" VerticalAlignment="Center"   />
-                            <Label  Content=" FAR"  FontSize="20" Width="60"/>
+                                <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock  Text="{Binding PositionZ}"   FontSize="20" Width="75" HorizontalAlignment="Center" VerticalAlignment="Center"   />
+                                <Label  Content=" FAR"  FontSize="20" Width="60"/>
 
 
-                            <Slider Margin="10,0,0,0" Value="{Binding PositionZ}" Minimum="0" Maximum="26000" Width="200" HorizontalAlignment="Center" 
+                                <Slider Margin="10,0,0,0" Value="{Binding PositionZ}" Minimum="0" Maximum="26000" Width="200" HorizontalAlignment="Center" 
                                     VerticalAlignment="Center" IsEnabled="False" />
-                            <Label  Content=" NEAR"  FontSize="20" Width="80"/>
+                                <Label  Content=" NEAR"  FontSize="20" Width="80"/>
 
 
-                            <Label  Content=" Search:"  FontSize="20" Width="80"/>
-                            <TextBlock  Text="{Binding FSP}"  FontSize="20" Width="60" VerticalAlignment="Center" />
-                            <Label  Content=" ~"  FontSize="20" Width="40"/>
-                            <TextBlock  Text="{Binding NSP}"  FontSize="20" Width="60" VerticalAlignment="Center"/>
+                                <Label  Content=" Search:"  FontSize="20" Width="80"/>
+                                <TextBlock  Text="{Binding FSP}"  FontSize="20" Width="60" VerticalAlignment="Center" />
+                                <Label  Content=" ~"  FontSize="20" Width="40"/>
+                                <TextBlock  Text="{Binding NSP}"  FontSize="20" Width="60" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Height="45"  >
+                                <Button  Command="{Binding MoveCommand}" IsEnabled="{Binding IsBtnEnable}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
+
+                                <TextBox Text="{Binding DistanceZ}" Width="80"  FontSize="20"/>
+
+                                <Button  Command="{Binding MoveCommand}" IsEnabled="{Binding IsBtnEnable}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
+
+                                <Button Margin="30,0,0,0"  Command="{Binding MoveToCommand}"  Content="Move To"  FontSize="20" Width="100"   />
+                                <TextBox Text="{Binding MovePosZ}" Width="80"  FontSize="20"/>
+                            </StackPanel>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" >
-                            <Button  Command="{Binding MoveCommand}" IsEnabled="{Binding IsBtnEnable}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
-
-                            <TextBox Text="{Binding DistanceZ}" Width="80"  FontSize="20"/>
-
-                            <Button  Command="{Binding MoveCommand}" IsEnabled="{Binding IsBtnEnable}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
-
-                            <Button Margin="30,0,0,0"  Command="{Binding MoveToCommand}"  Content="Move To"  FontSize="20" Width="100"   />
-                            <TextBox Text="{Binding MovePosZ}" Width="80"  FontSize="20"/>
-                        </StackPanel>
 
                     </Grid>
                     <Grid  Grid.Column="0" Grid.Row="1">
                         <Grid.ColumnDefinitions >
-                            <ColumnDefinition Width="0.6*"/>
+                            <ColumnDefinition Width="0.7*"/>
                             <ColumnDefinition Width="1.5*" />
                             <ColumnDefinition/>
 
@@ -119,39 +139,42 @@
                     </Grid>
                     <Grid  Grid.Column="0" Grid.Row="2">
                         <Grid.ColumnDefinitions >
-                            <ColumnDefinition Width="0.6*"/>
+                            <ColumnDefinition Width="0.7*"/>
                             <ColumnDefinition Width="1.1*" />
                             <ColumnDefinition Width="1.4*"/>
 
                         </Grid.ColumnDefinitions>
                         <Label  Background="Aqua"  BorderBrush="Black"    BorderThickness="2" Grid.Column="0" Grid.Row="2" FontSize="20" Content=" Step 3. Pattern強度調整"  />
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" >
+                        <StackPanel  Grid.Column="1" Grid.ColumnSpan="2" >
+                            <StackPanel Grid.Column="1" Height="45"  Orientation="Horizontal" >
 
-                            <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            <TextBlock  Text="{Binding PatternZ}"  Width="80" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                <Label  Content=" Position:"  FontSize="20" Width="110"  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock  Text="{Binding PatternZ}"  Width="80" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
 
-                            <Label  Content=" FAR"  FontSize="20" Width="80"/>
+                                <Label  Content=" FAR"  FontSize="20" Width="80"/>
 
 
-                            <Slider Margin="10,0,0,0" Value="{Binding PatternZ}" Minimum="512" Maximum="2000" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False"  />
-                            <Label  Content=" NEAR"  FontSize="20" Width="80"/>
-                        </StackPanel>
-                        <StackPanel  Grid.Column="2" Orientation="Horizontal">
-                            <Label  Content="A:" FontSize="20" VerticalAlignment="Center" />
-                            <TextBlock  Margin="10,0,0,0"  Text="{Binding AFSignalA}"   FontSize="20" VerticalAlignment="Center" Width="60" />
-                            <Label   Margin="10,0,0,0"  Content="V"  FontSize="20" VerticalAlignment="Center"/>
+                                <Slider Margin="10,0,0,0" Value="{Binding PatternZ}" Minimum="512" Maximum="2000" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False"  />
+                                <Label  Content=" NEAR"  FontSize="20" Width="80"/>
+                            </StackPanel>
+                            <StackPanel  Grid.Column="2" Orientation="Horizontal"  Height="45"  >
+                                <Label  Content="A:" FontSize="20" VerticalAlignment="Center" />
+                                <TextBlock  Margin="10,0,0,0"  Text="{Binding AFSignalA}"   FontSize="20" VerticalAlignment="Center" Width="60" />
+                                <Label   Margin="10,0,0,0"  Content="V"  FontSize="20" VerticalAlignment="Center"/>
 
-                            <Label  Margin="30,0,0,0"  Content="B:" FontSize="20" VerticalAlignment="Center" />
-                            <TextBlock   Margin="10,0,0,0"  Text="{Binding AFSignalB}"  FontSize="20" VerticalAlignment="Center" Width="60" />
-                            <Label   Margin="10,0,0,0"  Content="V"  FontSize="20" VerticalAlignment="Center" />
+                                <Label  Margin="30,0,0,0"  Content="B:" FontSize="20" VerticalAlignment="Center" />
+                                <TextBlock   Margin="10,0,0,0"  Text="{Binding AFSignalB}"  FontSize="20" VerticalAlignment="Center" Width="60" />
+                                <Label   Margin="10,0,0,0"  Content="V"  FontSize="20" VerticalAlignment="Center" />
 
-                            <StackPanel  Margin="20,0,0,0"   Orientation="Horizontal" >
-                                <Button  Command="{Binding MovePTCommand}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
-                                <TextBox Text="{Binding DistancePatternZ}" Width="80"  FontSize="20"/>
+                                <StackPanel  Margin="20,0,0,0"   Orientation="Horizontal" >
+                                    <Button  Command="{Binding MovePTCommand}"  Content="Move -"  FontSize="20" Width="80"  CommandParameter="-" />
+                                    <TextBox Text="{Binding DistancePatternZ}" Width="80"  FontSize="20"/>
 
-                                <Button  Command="{Binding MovePTCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
+                                    <Button  Command="{Binding MovePTCommand}"  Content="Move +"  FontSize="20" Width="80"  CommandParameter="+"/>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
+                        
 
                     </Grid>
 
@@ -159,10 +182,10 @@
                     <Grid Grid.Row="3" >
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="0.3*" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Image  Width="737" Height="617" Grid.Column="0" Source="{Binding Image}" Stretch="Uniform"  />
+
 
                         <Grid Grid.Column="1">
                             <Grid.ColumnDefinitions>
@@ -182,7 +205,7 @@
                                     <Button  Command="{Binding TEST2Command}" Content="TEST2" FontSize="20"  Height="40" />
                                     <Button  Command="{Binding TEST3Command}" Content="Test3" FontSize="20"  Height="40" />
                                     <Button  Command="{Binding TEST4Command}" Content="Test4" FontSize="20"  Height="40" />
-                                    
+
                                 </StackPanel>
 
 
@@ -247,7 +270,7 @@
                                         <Label Content="50" />
                                     </ComboBox>
                                 </Grid>
-                                
+
                             </GroupBox>
                         </Grid>
 

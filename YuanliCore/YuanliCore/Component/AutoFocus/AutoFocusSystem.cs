@@ -9,7 +9,7 @@ using YuanliCore.Interface;
 using YuanliCore.Motion.Marzhauser;
 
 namespace YuanliCore
-{
+{ 
     public class AutoFocusSystem
     {
         private SerialPort serialPort;
@@ -17,34 +17,60 @@ namespace YuanliCore
         private Task task = Task.CompletedTask;
         private bool isRefresh = false;
         private Subject<bool> afStates = new Subject<bool>();
-        private int tempPattern, tempPositionZ , tempFSP, tempNSP;
+        private int tempPattern, tempPositionZ, tempFSP, tempNSP;
 
-        public AutoFocusSystem(string comPort, int baudrate)
+        public AutoFocusSystem(string comPort, int baudrate =19200)
         {
             serialPort = new SerialPort(comPort, baudrate, Parity.None, 8, StopBits.Two);
             serialPort.WriteTimeout = 2000;
             serialPort.ReadTimeout = 2000;
-           // serialPort.ReadBufferSize = 40960;
-           
+            // serialPort.ReadBufferSize = 40960;
+
         }
 
         public bool IsOpen { get => isRefresh; }
         public bool IsRunning { get; private set; }
 
-        public IObservable<bool> AfStates => afStates;
+        /// <summary>
+        /// 對焦Z軸位置
+        /// </summary>
         public double AxisZPosition { get => ReadZPosition(); }
-
-        public double Pattern { get; private set; }
+        /// <summary>
+        /// 對焦Z軸搜尋範圍 負極限
+        /// </summary>
         public int FSP { get => tempFSP; set => WriteFSP(value); }
+        /// <summary>
+        ///  對焦Z軸搜尋範圍  正極限
+        /// </summary>
         public int NSP { get => tempNSP; set => WriteNSP(value); }
 
-        public double SensorA { get; private set; }
-        public double SensorB { get; private set; }
-        public double AFSignalA { get; private set; }
-        public double AFSignalB { get; private set; }
-     
+        /// <summary>
+        ///  調整 AF訊號 的能量數值
+        /// </summary>
+        public double Pattern { get; private set; }
+        public AFSSignal Signals { get =>  ReadSensor(); }
+
+        /// <summary>
+        /// AF訊號 增益值
+        /// </summary>
         public int BPF { get; private set; }
+        /// <summary>
+        /// AF訊號 單邊增益值(可能只調整AFSignalA)
+        /// </summary>
         public int Balance { get; private set; }
+
+        /// <summary>
+        /// 判斷對焦結果 是否正確的依據(0-7) 
+        /// INT 與AGC需以8進制合起來看    (1,0) 附近為適當  所以可行範圍應該為 (0,5) ~(1,2)
+        /// </summary>
+        public int INT { get; }
+        /// <summary>
+        ///  判斷對焦結果 是否正確的依據(0-7) 
+        /// </summary>
+        public int AGC { get; }
+
+        public event Action<bool> JustFocus;
+
         public void Open()
         {
             isRefresh = true;
@@ -59,14 +85,17 @@ namespace YuanliCore
             task.Wait();
             serialPort.Close();
         }
-
+        /// <summary>
+        ///  開始自動對焦
+        /// </summary>
         public void Run()
         {
             try
             {
+                if (!IsOpen) throw new Exception("System is not Open");
                 IsRunning = true;
                 string response = SendMessage("SC0");
-
+                Task.Run(FocusState);
             }
             catch (Exception ex)
             {
@@ -105,11 +134,11 @@ namespace YuanliCore
         {
             lock (lockObj)
             {
-                if(message!="")
+                if (message != "")
                 {
                     serialPort.DiscardOutBuffer();
                     Task.Delay(30).Wait();
-                   // var strtest = serialPort.ReadExisting();
+                    // var strtest = serialPort.ReadExisting();
 
                     serialPort.Write(message + "\r\n");
                 }
@@ -134,7 +163,7 @@ namespace YuanliCore
                 else if (distance > 0)
                     response = SendMessage($"N:{distance}");
 
-                
+
             }
             catch (Exception ex)
             {
@@ -155,14 +184,14 @@ namespace YuanliCore
                     SendMessage($"SF:{-distance}");
                     Pattern += distance;
 
-                }                   
+                }
                 else if (distance > 0)
                 {
                     SendMessage($"SN:{distance}");
                     Pattern += distance;
                 }
-                  
-               
+
+
             }
             catch (Exception ex)
             {
@@ -177,7 +206,7 @@ namespace YuanliCore
             string response = SendMessage($"FL");
             response = SendMessage("RST");
 
-           
+
         }
         private void WriteFSP(int value)
         {
@@ -208,38 +237,9 @@ namespace YuanliCore
         }
 
 
-        /// <summary>
-        /// 搜尋範圍下限
-        /// </summary>
-        /// <returns></returns>
-        //public int ReadZFSP()
-        //{
-        //    string[] strSplit;
-        //    try
-        //    {
 
-        //        string response = SendMessage("ASPD");
-        //        strSplit = response.Split(new char[] { ',', 'K', 'S', 'P', 'A', 'B', 'J', '\r', '\n' }); 
-        //        string[] data = strSplit.Where(s => s.Length > 0).ToArray();
-        //        if (data.Length < 3)
-        //            return tempFSP;
-        //        if (int.TryParse(data[0], out int output))//判斷能不能轉換
-        //        {
-        //            tempFSP = output;
-        //            return output;
-        //        }                                                       
-        //        else
-        //            return tempFSP;
-               
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        throw ex;
-        //    }
-        //}
         /// <summary>
-        /// 搜尋範圍上限
+        /// 搜尋範圍
         /// </summary>
         /// <returns></returns>
         public void ReadNSPandFSP()
@@ -255,19 +255,19 @@ namespace YuanliCore
                     data = strSplit.Where(s => s.Length > 0).ToArray();
 
                 }
-                while (data.Length <3);
-                              
-               
+                while (data.Length < 3);
+
+
                 if (int.TryParse(data[2], out int nsp))//判斷能不能轉換
                 {
                     tempNSP = nsp;
-              
+
                 }
                 if (int.TryParse(data[0], out int fsp))//判斷能不能轉換
                 {
                     tempFSP = fsp;
-                   
-                }    
+
+                }
 
             }
             catch (Exception ex)
@@ -293,7 +293,7 @@ namespace YuanliCore
         private double ReadZPosition()
         {
             string response = "";
-          //  tempPositionZ
+            //  tempPositionZ
             try
             {
 
@@ -324,7 +324,7 @@ namespace YuanliCore
             {
                 if (IsRunning) return;
                 response = SendMessage("SDP");
-            
+
                 if (double.TryParse(response, out double output))//判斷能不能轉換
                     Pattern = output;
             }
@@ -334,21 +334,21 @@ namespace YuanliCore
                 throw ex;
             }
         }
-        private async Task ReadSensor()
+        private AFSSignal ReadSensor()
         {
-            if (IsRunning)
-                return;
             string response = SendMessage("SIGD");
             var strSplit = response.Split(new char[] { ',', '\r' });
-           
+
             if (double.TryParse(strSplit[2], out double output))//判斷能不能轉換
             {
-                SensorA = Convert.ToDouble(strSplit[2].Insert(1, "."));
-                SensorB = Convert.ToDouble(strSplit[3].Insert(1, "."));
-                AFSignalA = Convert.ToDouble(strSplit[0].Insert(1, "."));
-                AFSignalB = Convert.ToDouble(strSplit[1].Insert(1, "."));
+                var sensorA = Convert.ToDouble(strSplit[2].Insert(1, "."));
+                var sensorB = Convert.ToDouble(strSplit[3].Insert(1, "."));
+                var aFSignalA = Convert.ToDouble(strSplit[0].Insert(1, "."));
+                var aFSignalB = Convert.ToDouble(strSplit[1].Insert(1, "."));
+
+               return new AFSSignal( sensorA, sensorB, aFSignalA, aFSignalB );
             }
-        
+            return new AFSSignal();
         }
 
 
@@ -385,36 +385,36 @@ namespace YuanliCore
                     if (IsRunning)
                     {
                         // string str = serialPort.ReadExisting();
-                        string str = SendMessage("");
-                        string[] strSplit = str.Split(new char[] { ',', '\r', '\n' });
-                        var datas = strSplit.Where(s => s.Length > 0);
-                        int ct = datas.Count();
-                        if (ct < 5) continue;
-                        List<string> lastDatas = datas.ToList().GetRange(ct - 5, 5);
-                        foreach (var data in lastDatas)
-                        {
-                            switch (data)
-                            {
-                                case "J":
-                                    afStates.OnNext(true);
-                                    break;
-                                case "K":
-                                    afStates.OnNext(false);
-                                    break;
-                                case "B":
-                                    afStates.OnNext(false);
-                                    break;
+                        /*   string str = SendMessage("");
+                           string[] strSplit = str.Split(new char[] { ',', '\r', '\n' });
+                           var datas = strSplit.Where(s => s.Length > 0);
+                           int ct = datas.Count();
+                           if (ct < 5) continue;
+                           List<string> lastDatas = datas.ToList().GetRange(ct - 5, 5);
+                           foreach (var data in lastDatas)
+                           {
+                               switch (data)
+                               {
+                                   case "J":
+                                       afStates.OnNext(true);
+                                       break;
+                                   case "K":
+                                       afStates.OnNext(false);
+                                       break;
+                                   case "B":
+                                       afStates.OnNext(false);
+                                       break;
 
-                            }
+                               }
 
 
-                        }
-
+                           }
+                        */
                     }
                     else
                     {
-                       // await ReadPattern();
-                        await ReadSensor();
+                        // await ReadPattern();
+                    //    await ReadSensor();
                     }
 
                     await Task.Delay(200);
@@ -431,7 +431,75 @@ namespace YuanliCore
 
         }
 
+        private async Task FocusState()
+        {
+            try
+            {
+
+                while (IsRunning)
+                {
+                    // string str = serialPort.ReadExisting();
+                    string str = SendMessage("");
+                    string[] strSplit = str.Split(new char[] { ',', '\r', '\n' });
+                    var datas = strSplit.Where(s => s.Length > 0);
+                    int ct = datas.Count();
+                    if (ct < 5) continue;
+                    List<string> lastDatas = datas.ToList().GetRange(ct - 5, 5);
+                    foreach (var data in lastDatas)
+                    {
+                        switch (data)
+                        {
+                            case "J":
+                                afStates.OnNext(true);
+                                break;
+                            case "K":
+                                afStates.OnNext(false);
+                                break;
+                            case "B":
+                                afStates.OnNext(false);
+                                break;
+
+                        }
+
+
+                    }
+                    await Task.Delay(200);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+         
+            
+        }
+
     }
 
+
+    public struct AFSSignal
+    {
+
+        public AFSSignal(double sensorA , double sensorB , double afSignalA, double afSignalB)
+        {
+            SensorA = sensorA;
+            SensorB = sensorB;
+            AFSignalA = afSignalA;
+            AFSignalB = afSignalB;
+        }
+
+        /// <summary>
+        /// IR訊號能量值
+        /// </summary>
+        public double SensorA { get;set; }
+        /// <summary>
+        ///  IR訊號能量值
+        /// </summary>
+        public double SensorB { get; set; }
+        public double AFSignalA { get; set; }
+        public double AFSignalB { get; set; }
+    }
 
 }

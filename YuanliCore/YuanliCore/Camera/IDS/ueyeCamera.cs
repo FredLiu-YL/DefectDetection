@@ -18,12 +18,14 @@ using System.Windows.Media.Imaging;
 using uEye.Defines;
 using uEye.Types;
 using uEye;
+using YuanliCore.Interface;
 
-namespace YuanliCore.CameraLib
+
+namespace YuanliCore.CameraLib.IDS
 {
-    public class UeyeCamera
+    public class UeyeCamera: ICamera
     {
-        private readonly Camera cam = new uEye.Camera();
+        private readonly uEye.Camera cam = new uEye.Camera();
         private readonly int bufferCount = 3;
         private byte[] buffer;
         private IObservable<Frame<byte[]>> frames  ;
@@ -109,7 +111,7 @@ namespace YuanliCore.CameraLib
             }
         }
 
-        public virtual int Width
+        public  int Width
         {
            
             get => GetWidth();
@@ -149,7 +151,7 @@ namespace YuanliCore.CameraLib
 
        
 
-        public virtual int Height
+        public  int Height
         {
             get => GetHeight();
             //set
@@ -590,7 +592,7 @@ namespace YuanliCore.CameraLib
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名樣式", Justification = "<暫止>")]
     static class uEyeEx
     {
-        public static Status AllocImageMems(this Camera Camera, int nCount)
+        public static Status AllocImageMems(this uEye.Camera Camera, int nCount)
         {
             Status statusRet = Status.SUCCESS;
 
@@ -606,7 +608,7 @@ namespace YuanliCore.CameraLib
             return statusRet;
         }
 
-        public static Status FreeImageMems(this Camera Camera)
+        public static Status FreeImageMems(this uEye.Camera Camera)
         {
             Status statusRet = Camera.Memory.GetList(out int[] idList);
 
@@ -632,7 +634,7 @@ namespace YuanliCore.CameraLib
             return statusRet;
         }
 
-        public static Status InitSequence(this Camera Camera)
+        public static Status InitSequence(this uEye.Camera Camera)
         {
             Status statusRet = Camera.Memory.GetList(out int[] idList);
 
@@ -648,13 +650,13 @@ namespace YuanliCore.CameraLib
             return statusRet;
         }
 
-        public static Status ClearSequence(this Camera Camera)
+        public static Status ClearSequence(this uEye.Camera Camera)
         {
             return Camera.Memory.Sequence.Clear();
         }
 
         [Conditional("L201")]
-        public static void ThrowIfNoAuthorization(this Camera cam)
+        public static void ThrowIfNoAuthorization(this uEye.Camera cam)
         {
             cam.Information.GetCameraInfo(out CameraInfo camInfo);
             if (camInfo.ID != "StrokePae") throw new UnauthorizedAccessException("Unauthorized Access. Code:201");
