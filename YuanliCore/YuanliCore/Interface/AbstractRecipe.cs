@@ -148,7 +148,7 @@ namespace YuanliCore.Interface
             }
         }
 
-        public static AbstractRecipe Load(string filename)
+      /*  public static AbstractRecipe Load(string filename)
         {
             string extension = Path.GetExtension(filename);
             if (!File.Exists(filename)) throw new FileNotFoundException($"Not found recipe file", filename);
@@ -181,7 +181,7 @@ namespace YuanliCore.Interface
                 throw;
             }
         }
-
+      */
         public void Save(string fileName, IList<JsonConverter> converters)
         {
             try

@@ -10,7 +10,7 @@ namespace AutoFocusMachine.Model
 {
     public class TableModule
     {
-        public TableModule(Axis[] axes , ICamera camera)
+        public TableModule(Axis[] axes, ICamera camera)
         {
             TableX = axes[0];
             TableY = axes[1];
@@ -27,16 +27,20 @@ namespace AutoFocusMachine.Model
 
         public async Task TableMoveTo(Point Pos)
         {
-
+            await Task.WhenAll(TableX.MoveToAsync(Pos.X), TableY.MoveToAsync(Pos.Y));
 
         }
         public async Task TableMove(Vector Distance)
         {
 
-
+            await Task.WhenAll(TableX.MoveAsync(Distance.X), TableY.MoveAsync(Distance.Y));
         }
 
+        public async Task<Point> GetPostion()
+        {
+           return new Point(TableX.Position, TableY.Position);
 
+        }
 
     }
 

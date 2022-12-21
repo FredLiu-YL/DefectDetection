@@ -38,11 +38,11 @@ namespace YuanliCore
         /// <summary>
         /// 對焦Z軸搜尋範圍 負極限
         /// </summary>
-        public int FSP { get => tempFSP; set => WriteFSP(value); }
+        public int FSP { get => ReadFSP(); set => WriteFSP(value); }
         /// <summary>
         ///  對焦Z軸搜尋範圍  正極限
         /// </summary>
-        public int NSP { get => tempNSP; set => WriteNSP(value); }
+        public int NSP { get => ReadNSP(); set => WriteNSP(value); }
 
         /// <summary>
         ///  調整 AF訊號 的能量數值
@@ -77,7 +77,7 @@ namespace YuanliCore
             serialPort.Open();
             Stop();
 
-            task = Task.Run(Refresh);
+            //task = Task.Run(Refresh);
         }
         public void Close()
         {
@@ -242,7 +242,38 @@ namespace YuanliCore
         /// 搜尋範圍
         /// </summary>
         /// <returns></returns>
-        public void ReadNSPandFSP()
+        public int ReadFSP()
+        {
+            string[] strSplit;
+            string[] data = new string[] { };
+            try
+            {
+                do
+                {
+                    string response = SendMessage("ASPD");
+                    strSplit = response.Split(new char[] { ',', 'K', 'S', 'P', 'A', 'B', 'J', '\r', '\n' });
+                    data = strSplit.Where(s => s.Length > 0).ToArray();
+
+                }
+                while (data.Length < 3);
+
+
+                //    if (int.TryParse(data[2], out int nsp))//判斷能不能轉換
+                //        tempNSP = nsp;
+
+                if (int.TryParse(data[0], out int fsp))//判斷能不能轉換
+                    return fsp;
+                else
+                    throw new Exception("FSP get fail");
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public int ReadNSP()
         {
             string[] strSplit;
             string[] data = new string[] { };
@@ -260,14 +291,14 @@ namespace YuanliCore
 
                 if (int.TryParse(data[2], out int nsp))//判斷能不能轉換
                 {
-                    tempNSP = nsp;
+                    return nsp;
 
                 }
-                if (int.TryParse(data[0], out int fsp))//判斷能不能轉換
-                {
-                    tempFSP = fsp;
+                else
+                    throw new Exception("NSP get fail");
+                //   if (int.TryParse(data[0], out int fsp))//判斷能不能轉換
+                //        tempFSP = fsp;
 
-                }
 
             }
             catch (Exception ex)
@@ -276,7 +307,6 @@ namespace YuanliCore
                 throw ex;
             }
         }
-
 
 
         /// <summary>
@@ -317,16 +347,18 @@ namespace YuanliCore
                 throw ex;
             }
         }
-        private void ReadPattern()
+        private int ReadPattern()
         {
             string response = "";
             try
             {
-                if (IsRunning) return;
+                if (IsRunning) return 0;
                 response = SendMessage("SDP");
 
-                if (double.TryParse(response, out double output))//判斷能不能轉換
-                    Pattern = output;
+                if (int.TryParse(response, out int output))//判斷能不能轉換
+                    return output;
+                else
+                    throw new Exception("Get Pattern is fail");
             }
             catch (Exception ex)
             {
@@ -378,7 +410,7 @@ namespace YuanliCore
                 await Task.Delay(300);
                 //先更新1次 獲取數值  未來用相加減的方式節省詢問次數
                 ReadPattern();
-                ReadNSPandFSP();
+             //   ReadNSPandFSP();
 
                 while (isRefresh)
                 {

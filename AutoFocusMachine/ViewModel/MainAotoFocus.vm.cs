@@ -13,14 +13,15 @@ namespace AutoFocusMachine.ViewModel
         private bool isRefresh;
         private int positionZ = 13000, movePosZ, distanceZ = 500;
         private double lSPPos, nSPPos;
-      //  private AutoFocusSystem focusSystem;
+        //  private AutoFocusSystem focusSystem;
         private double signalA = 2.012, signalB = 0.012, aFsignalA = 1.234, aFsignalB = 3.111;
         private int patternZ = 600, distancePatternZ = 20, nSP, fSP;
 
         private BitmapImage bitmapImage;
         private BitmapSource mainImage;
-    //    private UeyeCamera ueyeCamera;
-        private Task taskRefresh = Task.CompletedTask;
+        //    private UeyeCamera ueyeCamera;
+        private Task taskRefresh1 = Task.CompletedTask;
+        private Task taskRefresh2 = Task.CompletedTask;
         private Brush aFBackColor;
 
         private IDisposable camlive;
@@ -57,42 +58,41 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand OpenCommand => new RelayCommand(() =>
         {
-          /*  if (focusSystem == null)
-            {
-                focusSystem = new AutoFocusSystem("COM1", 19200);
+            /*  if (focusSystem == null)
+              {
+                  focusSystem = new AutoFocusSystem("COM1", 19200);
 
-            }
+              }
 
 
-            isRefresh = true;
-            focusSystem.Open();
-            focusSystem.JustFocus += AFRunningStates;
-            taskRefresh = Task.Run(RefreshState);*/
+              isRefresh = true;
+              focusSystem.Open();
+              focusSystem.JustFocus += AFRunningStates;
+              taskRefresh = Task.Run(RefreshState);*/
         });
         public ICommand CloseCommand => new RelayCommand(async () =>
         {
-            isRefresh = false;
-            await taskRefresh;
-           // focusSystem.Close();
+          
+            // focusSystem.Close();
 
         });
         public ICommand CamOpenCommand => new RelayCommand(() =>
         {
-          /* if (ueyeCamera == null)
-            {
-                ueyeCamera = new UeyeCamera();
+            /* if (ueyeCamera == null)
+              {
+                  ueyeCamera = new UeyeCamera();
 
-            }
-            ueyeCamera.Open();
-            ueyeCamera.Load("C:\\Users\\User\\Documents\\IDSsetting.ini");
+              }
+              ueyeCamera.Open();
+              ueyeCamera.Load("C:\\Users\\User\\Documents\\IDSsetting.ini");
 
-            CameraLive();
-            ueyeCamera.Grab();*/
+              CameraLive();
+              ueyeCamera.Grab();*/
         });
         public ICommand CamCloseCommand => new RelayCommand(async () =>
         {
-           // ueyeCamera.Stop(); ;
-           // ueyeCamera.Close();
+            // ueyeCamera.Stop(); ;
+            // ueyeCamera.Close();
         });
         public ICommand TEST1Command => new RelayCommand(() =>
         {
@@ -115,19 +115,10 @@ namespace AutoFocusMachine.ViewModel
             {
                 for (int y = 0; y < 70; y++)
                 {
-                    AddShapeAction.Execute(new ROIRotatedRect { X = 10 + x * 15, Y = 10 + y * 15, LengthX=5  , LengthY =5 ,IsInteractived =false ,IsMoveEnabled=false , CenterCrossLength =2}  );
-                    
+                    AddShapeAction.Execute(new ROIRotatedRect { X = 10 + x * 15, Y = 10 + y * 15, LengthX = 5, LengthY = 5, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
+
                 }
             }
-                
-             
-
-          
-
-           
-
-         
-
 
 
 
@@ -147,18 +138,18 @@ namespace AutoFocusMachine.ViewModel
             switch (key)
             {
                 case "X+":
-                    await atfMachine.Table_Module.TableX.MoveAsync(dis);
+                    await atfMachine.Table_Module.TableX.MoveAsync(-dis);
                     break;
                 case "X-":
                     await atfMachine.Table_Module.TableX.MoveAsync(dis);
                     break;
                 case "Y+":
-                    await atfMachine.Table_Module.TableY.MoveAsync(dis);
+                    await atfMachine.Table_Module.TableY.MoveAsync(-dis);
                     break;
                 case "Y-":
                     await atfMachine.Table_Module.TableY.MoveAsync(dis);
                     break;
-             
+
             }
 
 
@@ -167,7 +158,7 @@ namespace AutoFocusMachine.ViewModel
         public ICommand AFONCommand => new RelayCommand(() =>
         {
 
-          atfMachine.AFModule.AFSystem.Run();
+            atfMachine.AFModule.AFSystem.Run();
 
         });
         public ICommand AFOFFCommand => new RelayCommand(() =>
@@ -243,13 +234,14 @@ namespace AutoFocusMachine.ViewModel
         });
 
 
-        private async Task RefreshState()
+        private async Task RefreshAFState()
         {
             try
             {
+
                 while (isRefresh)
                 {
-                    if (atfMachine.AFModule.AFSystem.IsRunning != true)
+                    if (!atfMachine.AFModule.AFSystem.IsRunning)
                     {
                         var sign = atfMachine.AFModule.AFSystem.Signals;
                         SignalA = sign.SensorA;
@@ -257,11 +249,11 @@ namespace AutoFocusMachine.ViewModel
                         AFSignalA = sign.AFSignalA;
                         AFSignalB = sign.AFSignalB;
 
-
                         PatternZ = (int)atfMachine.AFModule.AFSystem.Pattern;
                         FSP = atfMachine.AFModule.AFSystem.FSP;
                         NSP = atfMachine.AFModule.AFSystem.NSP;
                     }
+
                     PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
                     await Task.Delay(300);
                 }
@@ -273,7 +265,7 @@ namespace AutoFocusMachine.ViewModel
                 // throw ex;
             }
 
-           
+
 
 
         }
@@ -290,7 +282,7 @@ namespace AutoFocusMachine.ViewModel
 
         }
 
-       
+
 
     }
 }

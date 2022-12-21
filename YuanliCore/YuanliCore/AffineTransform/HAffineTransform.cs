@@ -12,23 +12,31 @@ namespace YuanliCore.AffineTransform
     {
         HHomMat2D homMat2D = new HHomMat2D();
 
-
-        public void CreateTransform(IEnumerable<Point> source, IEnumerable<Point> target)
+        public HAffineTransform(IEnumerable<Point> source, IEnumerable<Point> target)
         {
-            HTuple sX = new HTuple(source.Select(p => p.X));
-            HTuple sY = new HTuple(source.Select(p => p.Y));
-            HTuple tX = new HTuple(target.Select(p => p.X));
-            HTuple tY = new HTuple(target.Select(p => p.Y));
-
-            homMat2D.VectorToSimilarity(sY, sX, tY, tX);
-
+            homMat2D = CreateTransform( source,  target);
         }
+
+       
 
         public Point TransPoint(Point point)
         {
 
             var tX = homMat2D.AffineTransPoint2d(point.Y, point.X, out double tY);
             return new  Point(tX, tY) ;
+        }
+
+
+        private HHomMat2D CreateTransform(IEnumerable<Point> source, IEnumerable<Point> target)
+        {
+            HHomMat2D hom2D = new HHomMat2D();
+            HTuple sX = new HTuple(source.Select(p => p.X).ToArray());
+            HTuple sY = new HTuple(source.Select(p => p.Y).ToArray());
+            HTuple tX = new HTuple(target.Select(p => p.X).ToArray());
+            HTuple tY = new HTuple(target.Select(p => p.Y).ToArray());
+
+            hom2D.VectorToSimilarity(sY, sX, tY, tX);
+            return hom2D;
         }
 
     }

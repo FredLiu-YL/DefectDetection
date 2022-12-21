@@ -28,6 +28,6 @@ namespace AutoFocusMachine
             InitializeComponent();
         }
 
-
+      
     }
 }

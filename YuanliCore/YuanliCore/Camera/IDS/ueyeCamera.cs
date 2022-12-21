@@ -341,7 +341,7 @@ namespace YuanliCore.CameraLib.IDS
             if (result != Status.Success) throw new InvalidOperationException($"Failed to initilize camera. message = '{result}'.");
 
             cam.Exit(); // 初始化後再次關閉是為了防止前一次相機不正常關閉導致產生修改相機的屬性卻無法取得已修改的屬性值，如 Width 或 Height 等...
-
+           
             result = cam.Init(ID);
             if (result != Status.Success) throw new InvalidOperationException($"Failed to initilize camera. message = '{result}'.");
 

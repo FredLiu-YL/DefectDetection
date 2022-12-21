@@ -5,11 +5,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:command="http://www.galasoft.ch/mvvmlight" xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore"
+        xmlns:command="http://www.galasoft.ch/mvvmlight" 
+        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore"
         mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="AFWindow" Height="1050" Width="1920" ResizeMode="NoResize"  WindowStartupLocation="CenterScreen"  >
+        Title="AFWindow" Height="1050" Width="1920" ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen"  >
 
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}" x:Key="HorizontalExpanderContentTextBlock">
@@ -55,33 +57,82 @@
             <ColumnDefinition Width="0.75*"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <GroupBox Grid.Row="1" Grid.Column="0" Width="300" Height="250"  Header="平台功能操作 " FontSize="40"  >
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Button Grid.Column="0" Grid.Row="1"  Content="←"  Command="{Binding TableMoveCommand}"  CommandParameter="X+" />
-                <Button Grid.Column="1" Grid.Row="0"  Content="↑" Command="{Binding TableMoveCommand}"  CommandParameter="Y-" />
-                <Button Grid.Column="2" Grid.Row="1"  Content="→" Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
-                <Button Grid.Column="1" Grid.Row="2"  Content="↓" Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
-                <ComboBox SelectedIndex="0" Text="{Binding TableDistance}"  >
-                    <Label Content="1" />
-                    <Label Content="5" />
-                    <Label Content="10" />
-                    <Label Content="50" />
-                </ComboBox>
-            </Grid>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+            <GroupBox Grid.Row="1" Grid.Column="0" Width="300" Height="250"  Header="平台功能操作 " FontSize="40"  >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Column="0" Grid.Row="1"  Content="←"   >
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseUp">
+                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
 
-        </GroupBox>
-        <!--<Image  Width="737" Height="617" Grid.Column="0"  Grid.Row="1" Source="{Binding Image}" Stretch="Uniform"  />-->
+                    <Button Grid.Column="1" Grid.Row="0"  Content="↑"  >
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseUp">
+                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                    <Button Grid.Column="2" Grid.Row="1"  Content="→">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseUp">
+                                <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                    <Button Grid.Column="1" Grid.Row="2"  Content="↓" Command="{Binding TableMoveCommand}"  CommandParameter="Y+">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseUp">
+                                <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                    <ComboBox SelectedIndex="0" Text="{Binding TableDistance}"  >
+                        <Label Content="1" />
+                        <Label Content="5" />
+                        <Label Content="10" />
+                        <Label Content="50" />
+                        <Label Content="0" />
+                    </ComboBox>
+                </Grid>
+
+            </GroupBox>
+
+            <GroupBox  Width="400" Height="250"  Header="平台座標: " FontSize="40" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.0*" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" Content="平台X:" />
+                    <TextBlock  Grid.Column="1" Grid.Row="0"  Text="{Binding TablePosX}"  Width="160"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="平台Y:" />
+                    <TextBlock  Grid.Column="1" Grid.Row="1"  Text="{Binding TablePosY}"  Width="160"/>
+                </Grid>
+             
+            </GroupBox>
+
+        </StackPanel>
+        
+            <!--<Image  Width="737" Height="617" Grid.Column="0"  Grid.Row="1" Source="{Binding Image}" Stretch="Uniform"  />-->
         <views:VirtualCanvas Grid.Column="0" Grid.Row="0" Margin="3" ImageSource="{Binding Image}" ItemsSource="{Binding Drawings}" ControlCenterX="{Binding ControlCenterX}" 
                              ControlCenterY="{Binding ControlCenterY}" MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" ClearShapeAction="{Binding ClearShapeAction}">
             <i:Interaction.Triggers>
@@ -312,9 +363,9 @@
                                 <ColumnDefinition Width="0.5*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="1">
-                                <Label Content="座標X:" />
+                                <Label Content="設計座標X:" />
                                 <TextBox  Text="{Binding SeachPosX1}"   />
-                                <Label Content="座標Y:" />
+                                <Label Content="設計座標Y:" />
                                 <TextBox  Text="{Binding SeachPosY1}"  />
                                 <Button  Content="Get Position" Command="{Binding TableGetPosCommand}" CommandParameter="1" />
                             </StackPanel>
@@ -328,9 +379,9 @@
                                 <ColumnDefinition Width="0.5*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="1">
-                                <Label Content="座標X:" />
+                                <Label Content="設計座標X:" />
                                 <TextBox  Text="{Binding SeachPosX2}"   />
-                                <Label Content="座標Y:" />
+                                <Label Content="設計座標Y:" />
                                 <TextBox  Text="{Binding SeachPosY2}"  />
                                 <Button  Content="Get Position" Command="{Binding TableGetPosCommand}"  CommandParameter="2" />
                             </StackPanel>
@@ -344,9 +395,9 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="1">
-                                <Label Content="座標X:" />
+                                <Label Content="設計座標X:" />
                                 <TextBox  Text="{Binding SeachPosX3}"   />
-                                <Label Content="座標Y:" />
+                                <Label Content="設計座標Y:" />
                                 <TextBox  Text="{Binding SeachPosY3}"  />
                                 <Button  Content="Get Position" Command="{Binding TableGetPosCommand}" CommandParameter="3" />
                             </StackPanel>
@@ -362,7 +413,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0"  Content="檢查座標 列表"  FontSize="20" />
+                            <Label Grid.Row="0"  Content="wafer設計座標 列表"  FontSize="20" />
                             <ListView Grid.Row="1" Grid.RowSpan="4" ItemsSource="{Binding SourceDieList}" BorderThickness="1" BorderBrush="Aquamarine" SelectedIndex="{Binding SourceDieIndex}"  />
                             <StackPanel  Grid.Row="5" Orientation="Horizontal" >
                                 <Button  Content="新增"  Command="{Binding AddDielistCommand}"  Width="100"/>
@@ -374,6 +425,10 @@
                     </GroupBox>
                     <GroupBox Grid.Row="2" Grid.Column="0" Header="轉換後座標" FontSize="20" BorderBrush="Black"  BorderThickness="2">
                         <Grid>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width=" 1.25*"/>
+                                <ColumnDefinition /> 
+                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />
@@ -382,10 +437,31 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0"  Content="檢查座標 列表"  FontSize="20" />
-                            <ListView Grid.Row="1" Grid.RowSpan="4" ItemsSource="{Binding TargetDieList}" BorderThickness="1" BorderBrush="Aquamarine" SelectedIndex="{Binding TargetDieIndex}"  />
-                            <StackPanel  Grid.Row="5" Orientation="Horizontal" >
+                            <Label Grid.Row="0" Grid.Column="0"  Content="實際座標 列表"  FontSize="20" />
+                            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" >
+                                <Label  Content="樣本1" />
+                                <TextBox  Width="120"  Text="{Binding TargetPosX1}"  />
+                                <TextBox  Width="120"  Text="{Binding TargetPosY1}"   />
+                            </StackPanel>
+                            <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" >
+                                <Label  Content="樣本2" />
+                                <TextBox  Width="120" Text="{Binding TargetPosX2}" />
+                                <TextBox  Width="120" Text="{Binding TargetPosY2}"  />
+                            </StackPanel>
+                            <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" >
+                                <Label  Content="樣本3" />
+                                <TextBox  Width="120" Text="{Binding TargetPosX3}" />
+                                <TextBox  Width="120" Text="{Binding TargetPosY3}"  />
+                            </StackPanel>
+                            <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal" >
                                 <Button  Content="轉換"  Command="{Binding LocateTransCommand}"  Width="100"/>
+                               
+
+                            </StackPanel>
+                            <Label Grid.Row="0" Grid.Column="1"  Content="檢查座標 列表"  FontSize="20" />
+                            <ListView Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" ItemsSource="{Binding TargetDieList}" BorderThickness="1" BorderBrush="Aquamarine" SelectedIndex="{Binding TargetDieIndex}"  />
+                            <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" >
+                               
                                 <Button  Content="移動"  Command="{Binding MoveToDieCommand}" Width="100" />
                                 <Button  Content="下一個"  Command="{Binding NextDieCommand}" Width="100" />
 
@@ -404,8 +480,8 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Button  Grid.Row="0"   Content="自動對位" />
-                            <Button Grid.Row="3"  Content="存檔" Command="{Binding ClearDielistCommand}" />
-                            <Button  Grid.Row="4"  Content="讀檔" Command="{Binding ClearDielistCommand}"  />
+                            <Button Grid.Row="3"  Content="存檔" Command="{Binding SaveLocateDataCommand}" />
+                            <Button  Grid.Row="4"  Content="讀檔" Command="{Binding LoadLocateDataCommand}"  />
                             
                         </Grid>
                     </GroupBox>

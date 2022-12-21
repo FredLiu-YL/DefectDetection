@@ -1,4 +1,5 @@
 using AutoFocusMachine.Model;
+using AutoFocusMachine.Model.Recipe;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
@@ -38,21 +39,22 @@ namespace AutoFocusMachine.ViewModel
     public partial class MainViewModel : ViewModelBase, INotifyPropertyChanged
     {
         private Machine atfMachine;
-        private int tabControlIndex ;
+        private int tabControlIndex;
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private WriteableBitmap image;
-        private double seachPosX1, seachPosY1, seachPosX2, seachPosY2, seachPosX3, seachPosY3;
+        private double tablePosX, tablePosY;
 
+        private AFMachineRecipe mainRecipe = new AFMachineRecipe();
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel()
         {
 
-            atfMachine =   new Machine();
-           
+            atfMachine = new Machine();
 
-          
+
+
         }
         public WriteableBitmap Image { get => image; set => SetValue(ref image, value); }
         /// <summary>
@@ -60,14 +62,6 @@ namespace AutoFocusMachine.ViewModel
         /// </summary>
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
 
-        public double SeachPosX1 { get => seachPosX1; set => SetValue(ref seachPosX1, value); }
-        public double SeachPosY1 { get => seachPosY1; set => SetValue(ref seachPosY1, value); }
-
-        public double SeachPosX2 { get => seachPosX2; set => SetValue(ref seachPosX2, value); }
-        public double SeachPosY2 { get => seachPosY2; set => SetValue(ref seachPosY2, value); }
-
-        public double SeachPosX3 { get => seachPosX3; set => SetValue(ref seachPosX3, value); }
-        public double SeachPosY3 { get => seachPosY3; set => SetValue(ref seachPosY3, value); }
 
 
         /// <summary>
@@ -85,7 +79,8 @@ namespace AutoFocusMachine.ViewModel
         /// </summary>
         public double ControlCenterY { get; set; }
 
-
+        public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
+        public double TablePosY { get => tablePosY; set => SetValue(ref tablePosY, value); }
         /// <summary>
         /// ·s¼W Shape
         /// </summary>
@@ -96,7 +91,7 @@ namespace AutoFocusMachine.ViewModel
         public ICommand ClearShapeAction { get; set; }
 
 
-        public int  TabControlIndex { get => tabControlIndex; set => SetValue(ref tabControlIndex, value); }
+        public int TabControlIndex { get => tabControlIndex; set => SetValue(ref tabControlIndex, value); }
 
 
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
@@ -104,18 +99,24 @@ namespace AutoFocusMachine.ViewModel
 
             CameraLive();
 
+            isRefresh = true;
+            taskRefresh1 = Task.Run(RefreshAFState);
+            taskRefresh2 = Task.Run(RefreshPos);
+
         });
         public ICommand ClosedCommand => new RelayCommand<string>(async key =>
         {
-
-
+            isRefresh = false;
+            await taskRefresh1;
+            await taskRefresh2;
+            atfMachine.Dispose();
 
         });
         public ICommand TabControlChangedCommand => new RelayCommand<string>(async key =>
         {
 
-            int i=0;
-            var c =  i++;
+            int i = 0;
+            var c = i++;
 
         });
 
@@ -136,6 +137,30 @@ namespace AutoFocusMachine.ViewModel
                              if (frame != null) Image.WritePixels(frame);
                              //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
                          });
+        }
+
+
+        private async Task RefreshPos()
+        {
+
+            try
+            {
+
+                while (isRefresh)
+                {
+                    var pos = await atfMachine.Table_Module.GetPostion();
+                    TablePosX = pos.X;
+                    TablePosY = pos.Y;
+                    await Task.Delay(300);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                // throw ex;
+            }
+
         }
 
 

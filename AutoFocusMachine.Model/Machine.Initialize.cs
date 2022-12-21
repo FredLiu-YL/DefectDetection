@@ -70,7 +70,7 @@ namespace AutoFocusMachine.Model
         {
             ICamera camera;
             if (isSimulate)
-                camera = new SimulateCamera("C:\\Users\\fred_liu\\Documents\\03.bmp");
+                camera = new SimulateCamera("C:\\Users\\User\\Documents\\03.bmp");
             else
             {
                 var ueyeCamera = new UeyeCamera();

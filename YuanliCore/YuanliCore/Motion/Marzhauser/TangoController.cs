@@ -265,10 +265,10 @@ namespace YuanliCore.Motion.Marzhauser
             TangoLib.LS_GetStopAccel(out double motionDecVelX, out double motionDecVelY, out double motionDecVelZ, out double motionDecVelA);
 
             return new AxisInfo[] {
-                    new AxisInfo(){AxisName="AxisX" , AxisID=0, AxisVelocity= motionVelX, AxisAccVelocity=motionAccVelX , AxisDecVelocity = motionDecVelX},
-                    new AxisInfo(){AxisName="AxisY" , AxisID=0, AxisVelocity= motionVelY, AxisAccVelocity=motionAccVelY , AxisDecVelocity = motionDecVelY},
-                    new AxisInfo(){AxisName="AxisZ" , AxisID=0, AxisVelocity= motionVelZ, AxisAccVelocity=motionAccVelZ , AxisDecVelocity = motionDecVelZ},
-                    new AxisInfo(){AxisName="AxisA" , AxisID=0, AxisVelocity= motionVelA, AxisAccVelocity=motionAccVelA , AxisDecVelocity = motionDecVelA},
+                    new AxisInfo(){AxisName="AxisX" , AxisID=1, AxisVelocity= motionVelX, AxisAccVelocity=motionAccVelX , AxisDecVelocity = motionDecVelX},
+                    new AxisInfo(){AxisName="AxisY" , AxisID=2, AxisVelocity= motionVelY, AxisAccVelocity=motionAccVelY , AxisDecVelocity = motionDecVelY},
+                    new AxisInfo(){AxisName="AxisZ" , AxisID=3, AxisVelocity= motionVelZ, AxisAccVelocity=motionAccVelZ , AxisDecVelocity = motionDecVelZ},
+                    new AxisInfo(){AxisName="AxisA" , AxisID=4, AxisVelocity= motionVelA, AxisAccVelocity=motionAccVelA , AxisDecVelocity = motionDecVelA},
             };
 
         }

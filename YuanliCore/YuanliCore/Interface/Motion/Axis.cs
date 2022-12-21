@@ -28,7 +28,7 @@ namespace YuanliCore.Interface
         /// <summary>
         /// 當前位置
         /// </summary>
-        public double Position { get; }
+        public double Position { get => GetPositon(); }
 
         /// <summary>
         /// 軟體正極限
