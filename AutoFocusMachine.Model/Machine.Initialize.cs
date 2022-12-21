@@ -7,6 +7,7 @@ using YuanliCore;
 using YuanliCore.CameraLib;
 using YuanliCore.CameraLib.IDS;
 using YuanliCore.Interface;
+using YuanliCore.Interface.Motion;
 using YuanliCore.Motion;
 using YuanliCore.Motion.Marzhauser;
 
@@ -20,22 +21,35 @@ namespace AutoFocusMachine.Model
         public void Initialize()
         {
 
-            InitialMotionController(isSimulate);
-            InitialCamera(isSimulate);
-            InitialAFsystem(isSimulate);
+            axes = InitialMotionController(isSimulate);
+            camera = InitialCamera(isSimulate);
+            focusSystem = InitialAFsystem(isSimulate);
 
 
 
         }
 
+        public void AssisnModule()
+        {
+            AFModule = new AutoFocusModule(focusSystem);
+
+            Table_Module=  new TableModule(axes , camera);
+        }
 
 
-
-        private void InitialMotionController(bool isSimulate)
+        private Axis[] InitialMotionController(bool isSimulate)
         {
 
             if (isSimulate)
-                motionController = new SimulateMotionControllor();
+            {
+                AxisInfo[] axesInfo = new AxisInfo[]
+                {   new AxisInfo{AxisID= 0 } ,
+                    new AxisInfo{AxisID= 1 },
+                    new AxisInfo{AxisID= 2 },
+                    new AxisInfo{AxisID= 3 }
+                };
+                motionController = new SimulateMotionControllor(axesInfo);
+            }
             else
                 motionController = new TangoController(machineSetting.TangoComPort);
 
@@ -44,7 +58,7 @@ namespace AutoFocusMachine.Model
 
             motionController.InitializeCommand();
 
-            Axes = motionController.Axes.ToArray();
+            return motionController.Axes.ToArray();
 
 
         }
@@ -52,32 +66,32 @@ namespace AutoFocusMachine.Model
 
 
 
-        private void InitialCamera(bool isSimulate)
+        private ICamera InitialCamera(bool isSimulate)
         {
+            ICamera camera;
             if (isSimulate)
-                Camera = new SimulateCamera();
+                camera = new SimulateCamera("C:\\Users\\fred_liu\\Documents\\03.bmp");
             else
             {
-                var    ueyeCamera = new UeyeCamera();
+                var ueyeCamera = new UeyeCamera();
 
                 ueyeCamera.Open();
                 ueyeCamera.Load(machineSetting.CameraFilePath);
-                Camera = ueyeCamera;
+                camera = ueyeCamera;
             }
-                
+            return camera;
         }
 
 
 
 
-        private void InitialAFsystem(bool isSimulate)
+        private AutoFocusSystem InitialAFsystem(bool isSimulate)
         {
+            if (isSimulate) return null;
+            AutoFocusSystem focusSystem = new AutoFocusSystem(machineSetting.AutoFocusComPort);
 
-            FocusSystem = new AutoFocusSystem(machineSetting.AutoFocusComPort);
-
-
-            FocusSystem.Open();
-
+            focusSystem.Open();
+            return focusSystem;
         }
 
     }

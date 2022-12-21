@@ -1,20 +1,10 @@
-﻿using AutoFocusMachine.Model;
-using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight.Command;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using YuanliCore;
-using YuanliCore.CameraLib;
-using YuanliCore.CameraLib.IDS;
-using YuanliCore.Interface;
-using YuanliCore.Motion.Marzhauser;
+using YuanliCore.Views.CanvasShapes;
 
 namespace AutoFocusMachine.ViewModel
 {
@@ -119,6 +109,26 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand TEST3Command => new RelayCommand(() =>
         {
+            //  Drawings.Add( new ROICross { X=200 , Y=200 ,Size=100 });
+
+            for (int x = 0; x < 70; x++)
+            {
+                for (int y = 0; y < 70; y++)
+                {
+                    AddShapeAction.Execute(new ROIRotatedRect { X = 10 + x * 15, Y = 10 + y * 15, LengthX=5  , LengthY =5 ,IsInteractived =false ,IsMoveEnabled=false , CenterCrossLength =2}  );
+                    
+                }
+            }
+                
+             
+
+          
+
+           
+
+         
+
+
 
 
         });
@@ -126,27 +136,44 @@ namespace AutoFocusMachine.ViewModel
         {
             var dis = Convert.ToDouble(TableDistance);
 
-            await atfMachine.Axes[0].MoveAsync(dis);
+            await atfMachine.Table_Module.TableX.MoveAsync(dis);
 
 
 
         });
-        public ICommand TableMoveCommand => new RelayCommand(() =>
+        public ICommand TableMoveCommand => new RelayCommand<string>(async key =>
         {
-
+            var dis = Convert.ToDouble(TableDistance);
+            switch (key)
+            {
+                case "X+":
+                    await atfMachine.Table_Module.TableX.MoveAsync(dis);
+                    break;
+                case "X-":
+                    await atfMachine.Table_Module.TableX.MoveAsync(dis);
+                    break;
+                case "Y+":
+                    await atfMachine.Table_Module.TableY.MoveAsync(dis);
+                    break;
+                case "Y-":
+                    await atfMachine.Table_Module.TableY.MoveAsync(dis);
+                    break;
+             
+            }
 
 
         });
+
         public ICommand AFONCommand => new RelayCommand(() =>
         {
 
-          atfMachine.FocusSystem.Run();
+          atfMachine.AFModule.AFSystem.Run();
 
         });
         public ICommand AFOFFCommand => new RelayCommand(() =>
         {
 
-            atfMachine.FocusSystem.Stop();
+            atfMachine.AFModule.AFSystem.Stop();
 
         });
 
@@ -160,16 +187,16 @@ namespace AutoFocusMachine.ViewModel
                 {
                     case "+":
                         var tempPos = PositionZ + DistanceZ;
-                        atfMachine.FocusSystem.Move(DistanceZ);
-                        atfMachine.FocusSystem.FSP = tempPos - 1500;
-                        atfMachine.FocusSystem.NSP = tempPos + 1500;
+                        atfMachine.AFModule.AFSystem.Move(DistanceZ);
+                        atfMachine.AFModule.AFSystem.FSP = tempPos - 1500;
+                        atfMachine.AFModule.AFSystem.NSP = tempPos + 1500;
                         break;
 
                     case "-":
                         var tempPos1 = PositionZ - DistanceZ;
-                        atfMachine.FocusSystem.Move(-DistanceZ);
-                        atfMachine.FocusSystem.FSP = tempPos1 - 1500;
-                        atfMachine.FocusSystem.NSP = tempPos1 + 1500;
+                        atfMachine.AFModule.AFSystem.Move(-DistanceZ);
+                        atfMachine.AFModule.AFSystem.FSP = tempPos1 - 1500;
+                        atfMachine.AFModule.AFSystem.NSP = tempPos1 + 1500;
                         break;
 
                 }
@@ -190,7 +217,7 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand MoveToCommand => new RelayCommand(() =>
        {
-           atfMachine.FocusSystem.MoveTo(MovePosZ);
+           atfMachine.AFModule.AFSystem.MoveTo(MovePosZ);
 
 
        });
@@ -204,11 +231,11 @@ namespace AutoFocusMachine.ViewModel
             {
                 case "+":
 
-                    atfMachine.FocusSystem.PatternMove(DistancePatternZ);
+                    atfMachine.AFModule.AFSystem.PatternMove(DistancePatternZ);
                     break;
 
                 case "-":
-                    atfMachine.FocusSystem.PatternMove(-DistancePatternZ);
+                    atfMachine.AFModule.AFSystem.PatternMove(-DistancePatternZ);
                     break;
 
             }
@@ -222,20 +249,20 @@ namespace AutoFocusMachine.ViewModel
             {
                 while (isRefresh)
                 {
-                    if (atfMachine.FocusSystem.IsRunning != true)
+                    if (atfMachine.AFModule.AFSystem.IsRunning != true)
                     {
-                        var sign = atfMachine.FocusSystem.Signals;
+                        var sign = atfMachine.AFModule.AFSystem.Signals;
                         SignalA = sign.SensorA;
                         SignalB = sign.SensorB;
                         AFSignalA = sign.AFSignalA;
                         AFSignalB = sign.AFSignalB;
 
 
-                        PatternZ = (int)atfMachine.FocusSystem.Pattern;
-                        FSP = atfMachine.FocusSystem.FSP;
-                        NSP = atfMachine.FocusSystem.NSP;
+                        PatternZ = (int)atfMachine.AFModule.AFSystem.Pattern;
+                        FSP = atfMachine.AFModule.AFSystem.FSP;
+                        NSP = atfMachine.AFModule.AFSystem.NSP;
                     }
-                    PositionZ = (int)atfMachine.FocusSystem.AxisZPosition;
+                    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
                     await Task.Delay(300);
                 }
 

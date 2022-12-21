@@ -4,14 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YuanliCore.Interface;
+using YuanliCore.Interface.Motion;
 
 namespace YuanliCore.Motion
 {
     public class SimulateMotionControllor : IMotionController
     {
+        private double[] simulatePosition; //暫存虛擬座標
+        private IEnumerable<Axis> axes;
+        public SimulateMotionControllor(IEnumerable< AxisInfo> axisInfos)
+        {
+            List<double> axesPos = new List<double>();
+
+            axes = axisInfos.Select(info => {
+
+                axesPos.Add(0);
+                return new Axis(this, info.AxisID);
+                
+                });
+            simulatePosition = axesPos.ToArray();
+        }
+
         public bool IsOpen => throw new NotImplementedException();
 
-        public IEnumerable<Axis> Axes => throw new NotImplementedException();
+        public IEnumerable<Axis> Axes => axes;
 
         public IEnumerable<SignalDI> IutputSignals => throw new NotImplementedException();
 
@@ -24,33 +40,35 @@ namespace YuanliCore.Motion
 
         public double GetPositionCommand(int id)
         {
-            throw new NotImplementedException();
+            return simulatePosition[id];
         }
 
         public void HomeCommand(int id)
         {
-            throw new NotImplementedException();
+            simulatePosition[id]=0;
         }
 
         public void InitializeCommand()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void MoveCommand(int id, double distance)
         {
-            throw new NotImplementedException();
+            simulatePosition[id]+= distance;
         }
 
         public void MoveToCommand(int id, double position)
         {
-            throw new NotImplementedException();
+            simulatePosition[id]  = position;
         }
 
         public Axis[] SetAxesParam(IEnumerable<AxisInfo> axisInfos)
         {
             throw new NotImplementedException();
         }
+
+       
 
         public void SetAxisDirectionCommand(int id, AxisDirection direction)
         {
@@ -76,6 +94,9 @@ namespace YuanliCore.Motion
         {
             throw new NotImplementedException();
         }
+
+        
+
     }
 
 }

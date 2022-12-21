@@ -13,8 +13,9 @@ namespace AutoFocusMachine.Model
 
         private IMotionController motionController;
         private MachineSetting machineSetting;
-
-
+        private Axis[] axes;
+        private ICamera camera;
+        private AutoFocusSystem focusSystem;
 
         private bool isSimulate ;
         public Machine()
@@ -23,12 +24,19 @@ namespace AutoFocusMachine.Model
             isSimulate = true;
             machineSetting = new MachineSetting();
 
+           Initialize();
+            AssisnModule();
+
         }
-        public AutoFocusSystem FocusSystem { get; protected set; }
-        public ICamera Camera { get; protected set; }
-        public Axis[] Axes { get; protected set; }
-        public SignalDI[] DIs { get; protected set; }
-        public SignalDO[] DOs { get; protected set; }
+     //   public AutoFocusSystem FocusSystem { get; protected set; }
+        public AutoFocusModule AFModule { get; protected set; }
+        public TableModule Table_Module { get; protected set; }
+ 
+
+    //    public ICamera Camera { get; protected set; }
+     //   public Axis[] Axes { get; protected set; }
+    //    public SignalDI[] DIs { get; protected set; }
+     //   public SignalDO[] DOs { get; protected set; }
 
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -11,37 +12,70 @@ namespace YuanliCore.CameraLib
 {
     public class SimulateCamera : ICamera
     {
-        public int Width => throw new NotImplementedException();
+        private BitmapSource simpleImage;
+        private Frame<byte[]> tempFrames;
+        private Subject<Frame<byte[]>> frames = new Subject<Frame<byte[]>>();
+        private bool freshImage;
+        public SimulateCamera(string path)
+        {
+            BitmapImage bi = new BitmapImage();
+            // BitmapImage.UriSource must be in a BeginInit/EndInit block.
+            bi.BeginInit();
+            bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bi.EndInit();
+            // Set the image source.
+            tempFrames = bi.ToByteFrame();
 
-        public int Height => throw new NotImplementedException();
 
-        public IObservable<Frame<byte[]>> Frames => throw new NotImplementedException();
 
-        public PixelFormat PixelFormat { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        }
+        public int Width => tempFrames.Width;
+
+        public int Height => tempFrames.Height;
+
+        public IObservable<Frame<byte[]>> Frames => frames;
+
+        public PixelFormat PixelFormat { get => tempFrames.Format; set => throw new NotImplementedException(); }
 
         public void Close()
         {
-            throw new NotImplementedException();
+
         }
 
         public IDisposable Grab()
         {
-            throw new NotImplementedException();
+            freshImage = true;
+            Task.Run(ShowImage);
+            return null;
         }
 
         public Task<BitmapSource> GrabAsync()
         {
-            throw new NotImplementedException();
+            return Task.Run(() => tempFrames.ToBitmapSource());
         }
 
         public void Open()
         {
-            throw new NotImplementedException();
+
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            freshImage = false;
+        }
+
+
+
+        private async Task ShowImage()
+        {
+            while (freshImage)
+            {
+                frames.OnNext(tempFrames);
+
+                await Task.Delay(300);
+            }
+
+
         }
     }
 

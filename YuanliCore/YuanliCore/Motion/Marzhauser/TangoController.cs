@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using YuanliCore.Interface;
+using YuanliCore.Interface.Motion;
 
 namespace YuanliCore.Motion.Marzhauser
 {
@@ -234,13 +235,6 @@ namespace YuanliCore.Motion.Marzhauser
 
             if (loc_err != 0)
                 throw new Exception("Set Direction Fail");
-
-
-        }
-
-        private void Open()
-        {
-
 
 
         }
