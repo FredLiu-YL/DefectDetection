@@ -70,7 +70,11 @@ namespace AutoFocusMachine.Model
         {
             ICamera camera;
             if (isSimulate)
-                camera = new SimulateCamera("C:\\Users\\User\\Documents\\03.bmp");
+            {
+                string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                camera = new SimulateCamera($"{systemPath}\\03.bmp");
+            }
+                
             else
             {
                 var ueyeCamera = new UeyeCamera();

@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +22,7 @@ namespace AutoFocusMachine
     /// <summary>
     /// MainWindow.xaml 的互動邏輯
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         public MainWindow()
         {

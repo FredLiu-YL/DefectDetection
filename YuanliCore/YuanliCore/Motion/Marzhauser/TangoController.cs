@@ -40,6 +40,7 @@ namespace YuanliCore.Motion.Marzhauser
 
         public async void InitializeCommand()
         {
+
             try
             {
                 #region 初始化流程
@@ -70,7 +71,6 @@ namespace YuanliCore.Motion.Marzhauser
                 //  SetEncoderRefSignal();
                 //  SetEncoderPosition();
                 #endregion
-
 
 
                 Int32 ShowProt = 0;

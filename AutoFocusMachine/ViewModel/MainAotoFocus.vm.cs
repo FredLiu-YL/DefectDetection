@@ -58,22 +58,12 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand OpenCommand => new RelayCommand(() =>
         {
-            /*  if (focusSystem == null)
-              {
-                  focusSystem = new AutoFocusSystem("COM1", 19200);
 
-              }
-
-
-              isRefresh = true;
-              focusSystem.Open();
-              focusSystem.JustFocus += AFRunningStates;
-              taskRefresh = Task.Run(RefreshState);*/
         });
         public ICommand CloseCommand => new RelayCommand(async () =>
         {
-          
-            // focusSystem.Close();
+
+
 
         });
         public ICommand CamOpenCommand => new RelayCommand(() =>
@@ -110,12 +100,25 @@ namespace AutoFocusMachine.ViewModel
         public ICommand TEST3Command => new RelayCommand(() =>
         {
             //  Drawings.Add( new ROICross { X=200 , Y=200 ,Size=100 });
-
-            for (int x = 0; x < 70; x++)
+            int t;
+            int count = 80;
+            int radus = 2000;
+            int pitch = radus*2 / count ;
+            //半徑假設350
+            for (int x = 1; x <= count + 1; x++)
             {
-                for (int y = 0; y < 70; y++)
+                for (int y = 1; y <= count + 1; y++)
                 {
-                    AddShapeAction.Execute(new ROIRotatedRect { X = 10 + x * 15, Y = 10 + y * 15, LengthX = 5, LengthY = 5, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
+
+                    System.Windows.Point point = new System.Windows.Point(radus, radus);
+
+                    System.Windows.Point drawPoint = new System.Windows.Point(x * pitch, y * pitch);
+                    System.Windows.Vector v = point - drawPoint;
+
+                    if (v.Length < radus )
+                        AddShapeMappingAction.Execute(new ROIRotatedRect { X = 500 + drawPoint.X, Y = 500 + drawPoint.Y, LengthX = pitch/2.2, LengthY = pitch/2.2, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
+                    else
+                          t = count+2;
 
                 }
             }
@@ -207,11 +210,13 @@ namespace AutoFocusMachine.ViewModel
         });
 
         public ICommand MoveToCommand => new RelayCommand(() =>
-       {
-           atfMachine.AFModule.AFSystem.MoveTo(MovePosZ);
+        {
+            atfMachine.AFModule.AFSystem.FSP = MovePosZ - 1500;
+            atfMachine.AFModule.AFSystem.NSP = MovePosZ + 1500;
+            atfMachine.AFModule.AFSystem.MoveTo(MovePosZ);
 
 
-       });
+        });
 
 
         public ICommand MovePTCommand => new RelayCommand<string>(async key =>
@@ -238,7 +243,7 @@ namespace AutoFocusMachine.ViewModel
         {
             try
             {
-
+                if (atfMachine.AFModule.AFSystem == null) return;
                 while (isRefresh)
                 {
                     if (!atfMachine.AFModule.AFSystem.IsRunning)
@@ -254,7 +259,7 @@ namespace AutoFocusMachine.ViewModel
                         NSP = atfMachine.AFModule.AFSystem.NSP;
                     }
 
-                    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
+
                     await Task.Delay(300);
                 }
 

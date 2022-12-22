@@ -21,7 +21,7 @@ namespace YuanliCore.Motion
                 axesPos.Add(0);
                 return new Axis(this, info.AxisID);
                 
-                });
+                }).ToArray();
             simulatePosition = axesPos.ToArray();
         }
 

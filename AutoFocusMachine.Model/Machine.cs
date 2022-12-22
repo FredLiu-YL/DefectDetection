@@ -22,7 +22,7 @@ namespace AutoFocusMachine.Model
         public Machine()
         {
 
-            isSimulate = false;
+            isSimulate = true;
             machineSetting = new MachineSetting();
 
             Initialize();
@@ -45,8 +45,9 @@ namespace AutoFocusMachine.Model
         public void Dispose()
         {
             camera.Close();
-            focusSystem.Close();
-           
+            if (focusSystem != null)
+                focusSystem.Close();
+
         }
 
     }

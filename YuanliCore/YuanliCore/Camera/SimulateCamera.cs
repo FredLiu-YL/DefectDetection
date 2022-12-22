@@ -62,6 +62,7 @@ namespace YuanliCore.CameraLib
         public void Stop()
         {
             freshImage = false;
+
         }
 
 

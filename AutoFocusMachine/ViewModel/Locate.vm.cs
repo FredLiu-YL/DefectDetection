@@ -71,7 +71,7 @@ namespace AutoFocusMachine.ViewModel
         {
             try
             {
-               Point pos = await atfMachine.Table_Module.GetPostion();
+                Point pos = await atfMachine.Table_Module.GetPostion();
                 switch (key)
                 {
                     case "1":
@@ -93,9 +93,9 @@ namespace AutoFocusMachine.ViewModel
             catch (Exception ex)
             {
 
-               MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
-            
+
 
 
         });
@@ -110,22 +110,23 @@ namespace AutoFocusMachine.ViewModel
                                           new Point(TargetPosX3, TargetPosY3) };
 
             HAffineTransform hAffineTransform = new HAffineTransform(sources, targets);
-            var sps =  SourceDieList.ToArray();
-            TargetDieList = new ObservableCollection<Point> (sps.Select(p => hAffineTransform.TransPoint(p)));
-      
-
-        });
-
-        public ICommand MoveToDieCommand => new RelayCommand(() =>
-        {
-
+            var sps = SourceDieList.ToArray();
+            TargetDieList = new ObservableCollection<Point>(sps.Select(p => hAffineTransform.TransPoint(p)));
 
 
         });
-        public ICommand NextDieCommand => new RelayCommand(() =>
+
+        public ICommand MoveToDieCommand => new RelayCommand(async () =>
         {
 
-
+            Point pos = TargetDieList[TargetDieIndex];
+            await atfMachine.Table_Module.TableMoveTo(pos);
+        });
+        public ICommand NextDieCommand => new RelayCommand(async () =>
+        {
+            TargetDieIndex++;
+            Point pos = TargetDieList[TargetDieIndex];
+            await atfMachine.Table_Module.TableMoveTo(pos);
 
         });
 
