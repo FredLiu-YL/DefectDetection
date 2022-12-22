@@ -36,6 +36,10 @@ namespace AutoFocusMachine.Model
             Table_Module=  new TableModule(axes , camera);
         }
 
+        public  void Home()
+        {
+             Task.Run(()=> motionController.HomeCommand(0) ).Wait() ;
+        }
 
         private Axis[] InitialMotionController(bool isSimulate)
         {

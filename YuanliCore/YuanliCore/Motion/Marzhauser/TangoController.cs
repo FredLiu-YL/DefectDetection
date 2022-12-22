@@ -97,8 +97,33 @@ namespace YuanliCore.Motion.Marzhauser
 
         public void MoveToCommand(int id, double position)
         {
-            TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
+            TangoLib.LS_GetPos(out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
+            switch (id)
+            {
+                case 1:
+                    TangoLib.LS_MoveAbs(position, pdY, pdZ, pdA, 1);
+                    break;
 
+                case 2:
+                    TangoLib.LS_MoveAbs(pdX, position, pdZ, pdA, 1);
+                    break;
+
+
+                case 3:
+                    
+                    break;
+
+
+                case 4:
+                    
+                    break;
+                default:
+                    break;
+            }
+
+
+         
+           // TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
         }
 
 

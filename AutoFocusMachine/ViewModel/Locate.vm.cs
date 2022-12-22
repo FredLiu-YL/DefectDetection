@@ -162,7 +162,13 @@ namespace AutoFocusMachine.ViewModel
             {
                 mainRecipe = AbstractRecipe.Load<AFMachineRecipe>(dlg.FileName);
 
-
+                SeachPosX1 = mainRecipe.FiducialMarkPos[0].X;
+                SeachPosY1 = mainRecipe.FiducialMarkPos[0].Y;
+                SeachPosX2 = mainRecipe.FiducialMarkPos[1].X;
+                SeachPosY2 = mainRecipe.FiducialMarkPos[1].Y;
+                SeachPosX3 = mainRecipe.FiducialMarkPos[2].X;
+                SeachPosY3 = mainRecipe.FiducialMarkPos[2].Y;
+                SourceDieList = new ObservableCollection<Point>(mainRecipe.LayoutPos);
             }
 
         });

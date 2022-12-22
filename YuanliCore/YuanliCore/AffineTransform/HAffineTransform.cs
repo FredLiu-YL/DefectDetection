@@ -22,7 +22,7 @@ namespace YuanliCore.AffineTransform
         public Point TransPoint(Point point)
         {
 
-            var tX = homMat2D.AffineTransPoint2d(point.Y, point.X, out double tY);
+            var tY = homMat2D.AffineTransPoint2d(point.Y, point.X, out double tX);
             return new  Point(tX, tY) ;
         }
 

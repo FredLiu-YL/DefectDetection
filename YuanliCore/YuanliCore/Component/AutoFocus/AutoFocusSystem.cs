@@ -76,7 +76,7 @@ namespace YuanliCore
             isRefresh = true;
             serialPort.Open();
             Stop();
-
+            Pattern = ReadPattern();
             //task = Task.Run(Refresh);
         }
         public void Close()
@@ -143,25 +143,28 @@ namespace YuanliCore
                     serialPort.Write(message + "\r\n");
                 }
 
-                Task.Delay(200).Wait();
+                Task.Delay(100).Wait();
                 var str = serialPort.ReadExisting();
                 return str;
 
             }
 
         }
-        public void Move(double distance)
+        public  Task Move(double distance)
         {
             try
             {
-                if (distance == 0)
-                    return;
-                string response = "";
-                if (distance < 0)
-                    response = SendMessage($"F:{-distance}");
+                return  Task.Run(()=> {
+                    if (distance == 0)
+                        return;
+                    string response = "";
+                    if (distance < 0)
+                        response = SendMessage($"F:{-distance}");
 
-                else if (distance > 0)
-                    response = SendMessage($"N:{distance}");
+                    else if (distance > 0)
+                        response = SendMessage($"N:{distance}");
+                });
+         
 
 
             }
@@ -370,17 +373,25 @@ namespace YuanliCore
         {
             string response = SendMessage("SIGD");
             var strSplit = response.Split(new char[] { ',', '\r' });
-
-            if (double.TryParse(strSplit[2], out double output))//判斷能不能轉換
+            try
             {
-                var sensorA = Convert.ToDouble(strSplit[2].Insert(1, "."));
-                var sensorB = Convert.ToDouble(strSplit[3].Insert(1, "."));
-                var aFSignalA = Convert.ToDouble(strSplit[0].Insert(1, "."));
-                var aFSignalB = Convert.ToDouble(strSplit[1].Insert(1, "."));
+                if (double.TryParse(strSplit[2], out double output))//判斷能不能轉換
+                {
+                    var sensorA = Convert.ToDouble(strSplit[2].Insert(1, "."));
+                    var sensorB = Convert.ToDouble(strSplit[3].Insert(1, "."));
+                    var aFSignalA = Convert.ToDouble(strSplit[0].Insert(1, "."));
+                    var aFSignalB = Convert.ToDouble(strSplit[1].Insert(1, "."));
 
-               return new AFSSignal( sensorA, sensorB, aFSignalA, aFSignalB );
+                    return new AFSSignal(sensorA, sensorB, aFSignalA, aFSignalB);
+                }
+                return new AFSSignal();
             }
-            return new AFSSignal();
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+           
         }
 
 

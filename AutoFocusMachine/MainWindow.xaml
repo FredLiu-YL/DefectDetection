@@ -107,7 +107,12 @@
                         </i:Interaction.Triggers>
                     </Button>
                     <ComboBox SelectedIndex="0" Text="{Binding TableDistance}"  >
+                        <Label Content="0.001" />
+                        <Label Content="0.01" />
+                        <Label Content="0.1" />
+                        <Label Content="0.5" />
                         <Label Content="1" />
+                        <Label Content="4.3" />
                         <Label Content="5" />
                         <Label Content="10" />
                         <Label Content="50" />

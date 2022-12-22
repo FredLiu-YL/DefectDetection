@@ -103,7 +103,7 @@ namespace AutoFocusMachine.ViewModel
             int t;
             int count = 80;
             int radus = 2000;
-            int pitch = radus*2 / count ;
+            int pitch = radus * 2 / count;
             //半徑假設350
             for (int x = 1; x <= count + 1; x++)
             {
@@ -115,10 +115,10 @@ namespace AutoFocusMachine.ViewModel
                     System.Windows.Point drawPoint = new System.Windows.Point(x * pitch, y * pitch);
                     System.Windows.Vector v = point - drawPoint;
 
-                    if (v.Length < radus )
-                        AddShapeMappingAction.Execute(new ROIRotatedRect { X = 500 + drawPoint.X, Y = 500 + drawPoint.Y, LengthX = pitch/2.2, LengthY = pitch/2.2, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
+                    if (v.Length < radus)
+                        AddShapeMappingAction.Execute(new ROIRotatedRect { X = 500 + drawPoint.X, Y = 500 + drawPoint.Y, LengthX = pitch / 2.2, LengthY = pitch / 2.2, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
                     else
-                          t = count+2;
+                        t = count + 2;
 
                 }
             }
@@ -181,14 +181,14 @@ namespace AutoFocusMachine.ViewModel
                 {
                     case "+":
                         var tempPos = PositionZ + DistanceZ;
-                        atfMachine.AFModule.AFSystem.Move(DistanceZ);
+                        await atfMachine.AFModule.AFSystem.Move(DistanceZ);
                         atfMachine.AFModule.AFSystem.FSP = tempPos - 1500;
                         atfMachine.AFModule.AFSystem.NSP = tempPos + 1500;
                         break;
 
                     case "-":
                         var tempPos1 = PositionZ - DistanceZ;
-                        atfMachine.AFModule.AFSystem.Move(-DistanceZ);
+                        await atfMachine.AFModule.AFSystem.Move(-DistanceZ);
                         atfMachine.AFModule.AFSystem.FSP = tempPos1 - 1500;
                         atfMachine.AFModule.AFSystem.NSP = tempPos1 + 1500;
                         break;

@@ -19,14 +19,15 @@ namespace AutoFocusMachine.Model
 
 
         private bool isSimulate;
-        public Machine()
+        public  Machine()
         {
 
-            isSimulate = true;
+            isSimulate = false;
             machineSetting = new MachineSetting();
 
             Initialize();
             AssisnModule();
+            Home() ; 
 
         }
         //   public AutoFocusSystem FocusSystem { get; protected set; }
