@@ -57,7 +57,10 @@ namespace YuanliCore.Interface
             await Task.Run(() => { controller.HomeCommand(AxisID); });
             isBusy = false;
         }
-
+        public async Task Stop()
+        {
+            controller.StopCommand(AxisID);
+        }
 
         public async Task MoveAsync(double distance)
         {

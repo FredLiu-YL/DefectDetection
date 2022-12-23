@@ -135,9 +135,43 @@ namespace AutoFocusMachine.ViewModel
 
 
         });
+        public ICommand TableContinueMoveCommand => new RelayCommand<string>(async key =>
+        {
+            var dis = Convert.ToDouble(TableDistance);
+            if (dis == 0)
+            {
+                switch (key)
+                {
+                    case "X+":
+                        await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitN);
+                        break;
+                    case "X-":
+                        await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitP);
+                        break;
+                    case "Y+":
+                        await atfMachine.Table_Module.TableY.MoveToAsync(-dis);
+                        break;
+                    case "Y-":
+                        await atfMachine.Table_Module.TableY.MoveToAsync(dis);
+                        break;
+
+                }
+
+            }
+
+
+
+        });
+
         public ICommand TableMoveCommand => new RelayCommand<string>(async key =>
         {
             var dis = Convert.ToDouble(TableDistance);
+            if (dis == 0)
+            {
+                await atfMachine.Table_Module.TableX.Stop();
+                await atfMachine.Table_Module.TableY.Stop();
+            }
+
             switch (key)
             {
                 case "X+":

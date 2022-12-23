@@ -386,6 +386,11 @@ namespace YuanliCore.Motion.Marzhauser
             };
 
         }
+
+        public void StopCommand(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

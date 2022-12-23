@@ -54,8 +54,8 @@ namespace AutoFocusMachine.Model
                 };
                 motionController = new SimulateMotionControllor(axesInfo);
             }
-            else
-                motionController = new TangoController(machineSetting.TangoComPort);
+          //  else
+          //      motionController = new TangoController(machineSetting.TangoComPort);
 
 
 

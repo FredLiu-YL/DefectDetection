@@ -79,6 +79,9 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Column="0" Grid.Row="1"  Content="←"   >
                         <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseDown">
+                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
+                            </i:EventTrigger>
                             <i:EventTrigger EventName="PreviewMouseUp">
                                 <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
                             </i:EventTrigger>
@@ -94,6 +97,9 @@
                     </Button>
                     <Button Grid.Column="2" Grid.Row="1"  Content="→">
                         <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseDown">
+                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
+                            </i:EventTrigger>
                             <i:EventTrigger EventName="PreviewMouseUp">
                                 <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
                             </i:EventTrigger>
@@ -106,7 +112,8 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Button>
-                    <ComboBox SelectedIndex="0" Text="{Binding TableDistance}"  >
+                    <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedIndex="0" Text="{Binding TableDistance}"  >
+                        <Label Content="0" />
                         <Label Content="0.001" />
                         <Label Content="0.01" />
                         <Label Content="0.1" />
@@ -116,7 +123,7 @@
                         <Label Content="5" />
                         <Label Content="10" />
                         <Label Content="50" />
-                        <Label Content="0" />
+                        <TextBox  />
                     </ComboBox>
                 </Grid>
 
@@ -138,7 +145,7 @@
                     <Label Grid.Column="0" Grid.Row="1" Content="平台Y:" />
                     <TextBox  Grid.Column="1" Grid.Row="1"  Text="{Binding TablePosY}"  Width="160"/>
                 </Grid>
-             
+
             </GroupBox>
 
         </StackPanel>
@@ -174,11 +181,11 @@
                         <Button Content="存檔" Width="150"   FontSize="40"  />
                     </StackPanel>
                     <GroupBox Grid.Row="1" FontSize="20" Header="生產資訊">
-                        
+
                     </GroupBox>
                     <GroupBox Grid.Row="2" FontSize="20" Header="Log資訊">
                         <TextBox  MaxLines="30" metro:ControlsHelper.FocusBorderBrush="#FFE8C2C2" metro:ControlsHelper.MouseOverBorderBrush="#FF918585" metro:TextBoxHelper.HasText="True"  >
-                            
+
                         </TextBox>
                     </GroupBox>
                 </Grid>
@@ -399,6 +406,7 @@
                                 <Label Content="設計座標Y:" />
                                 <TextBox  Text="{Binding SeachPosY1}"  />
                                 <Button  Content="Get Position" Command="{Binding TableGetPosCommand}" CommandParameter="1" />
+                                <Button  Content="Move" Command="{Binding SampleMovePosCommand}" CommandParameter="1" />
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -415,6 +423,7 @@
                                 <Label Content="設計座標Y:" />
                                 <TextBox  Text="{Binding SeachPosY2}"  />
                                 <Button  Content="Get Position" Command="{Binding TableGetPosCommand}"  CommandParameter="2" />
+                                <Button  Content="Move" Command="{Binding SampleMovePosCommand}" CommandParameter="2" />
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -431,6 +440,7 @@
                                 <Label Content="設計座標Y:" />
                                 <TextBox  Text="{Binding SeachPosY3}"  />
                                 <Button  Content="Get Position" Command="{Binding TableGetPosCommand}" CommandParameter="3" />
+                                <Button  Content="Move" Command="{Binding SampleMovePosCommand}" CommandParameter="3" />
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -465,7 +475,16 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                       
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.5*"/>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="0.4*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="1"  Content="X座標"/>
+                                <Label Grid.Column="2"   Content="Y座標"/>
+                            </Grid>
                             <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" >
                                 <Label  Content="樣本1" />
                                 <TextBox  Width="120"  Text="{Binding TargetPosX1}"  />
@@ -491,7 +510,7 @@
                     <GroupBox Grid.Row="2" Grid.Column="0" Header="轉換後座標" FontSize="20" BorderBrush="Black"  BorderThickness="2">
                         <Grid>
                             <Grid.ColumnDefinitions >
-                               
+
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -502,7 +521,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                           
+
                             <Label Grid.Row="0" Grid.Column="1"  Content="檢查座標 列表"  FontSize="20" />
                             <ListView Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" ItemsSource="{Binding TargetDieList}" BorderThickness="1" BorderBrush="Aquamarine" SelectedIndex="{Binding TargetDieIndex}"  />
                             <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" >
@@ -537,7 +556,7 @@
                         <views:VirtualCanvas Grid.Column="0" Grid.Row="0" Margin="3" ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
                                              AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
                         Grid.ColumnSpan="2" IsShowBar="False"    >
-                            
+
                         </views:VirtualCanvas>
                     </GroupBox>
                 </Grid>

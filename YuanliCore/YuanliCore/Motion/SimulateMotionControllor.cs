@@ -109,6 +109,11 @@ namespace YuanliCore.Motion
         {
             throw new NotImplementedException();
         }
+
+        public void StopCommand(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

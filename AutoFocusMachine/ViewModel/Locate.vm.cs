@@ -99,6 +99,35 @@ namespace AutoFocusMachine.ViewModel
 
 
         });
+        public ICommand SampleMovePosCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+             
+                switch (key)
+                {
+                    case "1":
+                       
+                        break;
+                    case "2":
+                       
+                        break;
+                    case "3":
+                       
+                        break;
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+
+        });
+        
+
         public ICommand LocateTransCommand => new RelayCommand(() =>
         {
             Point[] sources = new Point[] { new Point(SeachPosX1, SeachPosY1) ,

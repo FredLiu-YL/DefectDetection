@@ -28,7 +28,7 @@ namespace YuanliCore.Interface
         SignalDO[] SetOutputs(IEnumerable<string> names);
         SignalDI[] SetInputs(IEnumerable<string> names);
 
-
+        void StopCommand(int id);
         void MoveCommand( int id,  double distance);
 
         void MoveToCommand( int id ,double position);
