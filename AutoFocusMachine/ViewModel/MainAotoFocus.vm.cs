@@ -149,10 +149,10 @@ namespace AutoFocusMachine.ViewModel
                         await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitP);
                         break;
                     case "Y+":
-                        await atfMachine.Table_Module.TableY.MoveToAsync(-dis);
+                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitN);
                         break;
                     case "Y-":
-                        await atfMachine.Table_Module.TableY.MoveToAsync(dis);
+                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitP);
                         break;
 
                 }
