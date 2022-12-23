@@ -22,7 +22,7 @@ namespace AutoFocusMachine.Model
         public  Machine()
         {
 
-            isSimulate = false;
+            isSimulate = true;
             machineSetting = new MachineSetting();
 
             Initialize();

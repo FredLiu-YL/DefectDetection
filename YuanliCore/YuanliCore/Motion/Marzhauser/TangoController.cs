@@ -79,7 +79,7 @@ namespace YuanliCore.Motion.Marzhauser
                 if (loc_err == 0)
                 {
                     IsOpen = true;
-                    var axisinfo_ = GetAxisVel();
+                    //  var axisinfo_ = GetAxisVel();
                 }
                 else
                     throw new Exception("Tango Initialize Fail");
@@ -101,37 +101,37 @@ namespace YuanliCore.Motion.Marzhauser
             switch (id)
             {
                 case 1:
-                    TangoLib.LS_MoveAbs(position, pdY, pdZ, pdA, 1);
+                    var r1 = TangoLib.LS_MoveAbs(position, pdY, pdZ, pdA, 1);
                     break;
 
                 case 2:
-                    TangoLib.LS_MoveAbs(pdX, position, pdZ, pdA, 1);
+                    var r2 = TangoLib.LS_MoveAbs(pdX, position, pdZ, pdA, 1);
                     break;
 
 
                 case 3:
-                    
+
                     break;
 
 
                 case 4:
-                    
+
                     break;
                 default:
                     break;
             }
 
 
-         
-           // TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
+
+            // TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
         }
 
 
         public void HomeCommand(int id)
         {
-          //  TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
-            TangoLib.LS_Calibrate();
-            TangoLib.LS_RMeasure();
+            //  TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
+            var r1 = TangoLib.LS_Calibrate();
+            var r2 = TangoLib.LS_RMeasure();
         }
 
         public double GetPositionCommand(int id)
@@ -169,7 +169,7 @@ namespace YuanliCore.Motion.Marzhauser
 
                 throw ex;
             }
-           
+
         }
 
         public Axis[] SetAxesParam(IEnumerable<AxisInfo> axisInfos)
@@ -187,7 +187,7 @@ namespace YuanliCore.Motion.Marzhauser
             throw new NotImplementedException();
         }
 
-        public void MoveCommand(int id ,double distance)
+        public void MoveCommand(int id, double distance)
         {
             try
             {
@@ -297,13 +297,13 @@ namespace YuanliCore.Motion.Marzhauser
             };
 
         }
-        private IEnumerable< Axis> GetDefaultAxes()
+        private IEnumerable<Axis> GetDefaultAxes()
         {
             List<Axis> axesList = new List<Axis>();
 
             for (int i = 1; i <= 4; i++)
             {
-                axesList.Add(new Axis(this ,i) );
+                axesList.Add(new Axis(this, i));
             }
             return axesList;
         }
