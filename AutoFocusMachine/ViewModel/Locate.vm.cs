@@ -168,7 +168,22 @@ namespace AutoFocusMachine.ViewModel
                 SeachPosY2 = mainRecipe.FiducialMarkPos[1].Y;
                 SeachPosX3 = mainRecipe.FiducialMarkPos[2].X;
                 SeachPosY3 = mainRecipe.FiducialMarkPos[2].Y;
+
+
+               /* var test1 = mainRecipe.LayoutPos[0];
+                var test2 = mainRecipe.LayoutPos[1];
+                Point[] s1 = new Point[] { new Point(68, 0), new Point(1, 0) };
+                HAffineTransform hAffine = new HAffineTransform(s1, mainRecipe.LayoutPos);
+                for (int i = 1; i <= 68; i++)
+                {
+                    Point point = hAffine.TransPoint(new Point(i, 0));
+                    SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
+                }*/
+
                 SourceDieList = new ObservableCollection<Point>(mainRecipe.LayoutPos);
+
+
+
             }
 
         });

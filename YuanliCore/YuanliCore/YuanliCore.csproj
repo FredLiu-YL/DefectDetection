@@ -54,6 +54,7 @@
     <Compile Include="Camera\IDS\ueyeCamera.cs" />
     <Compile Include="Interface\IMotioncontroller.cs" />
     <Compile Include="Interface\Motion\AxisInfo.cs" />
+    <Compile Include="Interface\Motion\MotionVelocity.cs" />
     <Compile Include="Interface\Motion\SignalDI.cs" />
     <Compile Include="Interface\Motion\SignalDO.cs" />
     <Compile Include="Motion\Marzhauser\TangoController.cs" />

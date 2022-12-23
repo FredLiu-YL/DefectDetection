@@ -79,7 +79,7 @@ namespace YuanliCore.Motion.Marzhauser
                 if (loc_err == 0)
                 {
                     IsOpen = true;
-                    var axisinfo_ = GetAxisVel();
+                    //  var axisinfo_ = GetAxisVel();
                 }
                 else
                     throw new Exception("Tango Initialize Fail");
@@ -97,41 +97,41 @@ namespace YuanliCore.Motion.Marzhauser
 
         public void MoveToCommand(int id, double position)
         {
-            TangoLib.LS_GetPos(out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
+            /*TangoLib.LS_GetPos(out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
             switch (id)
             {
                 case 1:
-                    TangoLib.LS_MoveAbs(position, pdY, pdZ, pdA, 1);
+                    var r1 = TangoLib.LS_MoveAbs(position, pdY, pdZ, pdA, 1);
                     break;
 
                 case 2:
-                    TangoLib.LS_MoveAbs(pdX, position, pdZ, pdA, 1);
+                    var r2 = TangoLib.LS_MoveAbs(pdX, position, pdZ, pdA, 1);
                     break;
 
 
                 case 3:
-                    
+
                     break;
 
 
                 case 4:
-                    
+
                     break;
                 default:
                     break;
-            }
+            }*/
 
 
-         
-           // TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
+
+            var r1 = TangoLib.LS_MoveAbsSingleAxis(id, position, 0);
         }
 
 
         public void HomeCommand(int id)
         {
-          //  TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
-            TangoLib.LS_Calibrate();
-            TangoLib.LS_RMeasure();
+            //  TangoLib.LS_MoveAbsSingleAxis(id, position, 1);
+            var r1 = TangoLib.LS_Calibrate();
+            var r2 = TangoLib.LS_RMeasure();
         }
 
         public double GetPositionCommand(int id)
@@ -169,7 +169,7 @@ namespace YuanliCore.Motion.Marzhauser
 
                 throw ex;
             }
-           
+
         }
 
         public Axis[] SetAxesParam(IEnumerable<AxisInfo> axisInfos)
@@ -187,11 +187,11 @@ namespace YuanliCore.Motion.Marzhauser
             throw new NotImplementedException();
         }
 
-        public void MoveCommand(int id ,double distance)
+        public void MoveCommand(int id, double distance)
         {
             try
             {
-                TangoLib.LS_MoveRelSingleAxis(id, distance, 1);
+                var r1 = TangoLib.LS_MoveRelSingleAxis(id, distance, 0);
 
             }
             catch (Exception ex)
@@ -213,9 +213,36 @@ namespace YuanliCore.Motion.Marzhauser
             Int32 loc_err = TangoLib.LS_SetLimit(1, id, limitN, limitP);
         }
 
-        public void SetSpeedCommand(int id, double velocity, double accVelocity, double decVelocity)
+        public AxisDirection GetAxisDirectionCommand(int id)
         {
-            throw new NotImplementedException();
+            Int32  loc_err = TangoLib.LSX_GetAxisDirection(1, out int plXD, out int plYD, out int plZD, out int plAD);
+
+            switch (id)
+            {
+                case 1:
+                    return (AxisDirection)plXD;
+                    break;
+
+                case 2:
+                    return (AxisDirection)plYD;
+                    break;
+
+                 
+                case 3:
+                    return (AxisDirection)plZD;
+                    break;
+
+                   
+                case 4:
+                    return (AxisDirection)plAD;
+                    break;
+
+                default:
+                    break;
+            }
+
+
+            return AxisDirection.Forward;
         }
 
         public void SetAxisDirectionCommand(int id, AxisDirection direction)
@@ -282,28 +309,14 @@ namespace YuanliCore.Motion.Marzhauser
             }
         }
 
-        private AxisInfo[] GetAxisVel()
-        {
-
-            TangoLib.LS_GetVel(out double motionVelX, out double motionVelY, out double motionVelZ, out double motionVelA);
-            TangoLib.LS_GetAccel(out double motionAccVelX, out double motionAccVelY, out double motionAccVelZ, out double motionAccVelA);
-            TangoLib.LS_GetStopAccel(out double motionDecVelX, out double motionDecVelY, out double motionDecVelZ, out double motionDecVelA);
-
-            return new AxisInfo[] {
-                    new AxisInfo(){AxisName="AxisX" , AxisID=1, AxisVelocity= motionVelX, AxisAccVelocity=motionAccVelX , AxisDecVelocity = motionDecVelX},
-                    new AxisInfo(){AxisName="AxisY" , AxisID=2, AxisVelocity= motionVelY, AxisAccVelocity=motionAccVelY , AxisDecVelocity = motionDecVelY},
-                    new AxisInfo(){AxisName="AxisZ" , AxisID=3, AxisVelocity= motionVelZ, AxisAccVelocity=motionAccVelZ , AxisDecVelocity = motionDecVelZ},
-                    new AxisInfo(){AxisName="AxisA" , AxisID=4, AxisVelocity= motionVelA, AxisAccVelocity=motionAccVelA , AxisDecVelocity = motionDecVelA},
-            };
-
-        }
-        private IEnumerable< Axis> GetDefaultAxes()
+    
+        private IEnumerable<Axis> GetDefaultAxes()
         {
             List<Axis> axesList = new List<Axis>();
 
             for (int i = 1; i <= 4; i++)
             {
-                axesList.Add(new Axis(this ,i) );
+                axesList.Add(new Axis(this, i));
             }
             return axesList;
         }
@@ -314,6 +327,63 @@ namespace YuanliCore.Motion.Marzhauser
         private void JoysticSwitch()
         {
 
+
+        }
+
+        public MotionVelocity GetSpeedCommand(int id)
+        {
+            TangoLib.LS_GetVel(out double motionVelX, out double motionVelY, out double motionVelZ, out double motionVelA);
+            TangoLib.LS_GetAccel(out double motionAccVelX, out double motionAccVelY, out double motionAccVelZ, out double motionAccVelA);
+            TangoLib.LS_GetStopAccel(out double motionDecVelX, out double motionDecVelY, out double motionDecVelZ, out double motionDecVelA);
+
+            switch (id)
+            {
+                case 1:
+                    MotionVelocity velocityX = new MotionVelocity(motionVelX, motionAccVelX, motionDecVelX);
+                    return velocityX;
+                    break;
+
+                case 2:
+                    MotionVelocity velocityY = new MotionVelocity(motionVelY, motionAccVelY, motionDecVelY);
+                    return velocityY;
+                    break;
+
+
+                case 3:
+                    MotionVelocity velocityZ = new MotionVelocity(motionVelZ, motionAccVelZ, motionDecVelZ);
+                    return velocityZ;
+                    break;
+
+
+                case 4:
+                    MotionVelocity velocityA = new MotionVelocity(motionVelA, motionAccVelA, motionDecVelA);
+                    return velocityA;
+                    break;
+
+                default:
+                    throw new NotImplementedException("Axis  does not exist");
+                    break;
+            }
+        }
+
+        public void SetSpeedCommand(int id, MotionVelocity motionVelocity)
+        {
+            throw new NotImplementedException();
+        }
+
+        private AxisInfo[] GetAxisVel()
+        {
+
+            TangoLib.LS_GetVel(out double motionVelX, out double motionVelY, out double motionVelZ, out double motionVelA);
+            TangoLib.LS_GetAccel(out double motionAccVelX, out double motionAccVelY, out double motionAccVelZ, out double motionAccVelA);
+            TangoLib.LS_GetStopAccel(out double motionDecVelX, out double motionDecVelY, out double motionDecVelZ, out double motionDecVelA);
+
+            return new AxisInfo[] {
+                    new AxisInfo(){AxisName="AxisX" , AxisID=1,Velocity= new MotionVelocity( motionVelX,motionAccVelX , motionDecVelX)},
+                    new AxisInfo(){AxisName="AxisY" , AxisID=2, Velocity=new MotionVelocity( motionVelY,motionAccVelY , motionDecVelY)},
+                    new AxisInfo(){AxisName="AxisZ" , AxisID=3, Velocity=new MotionVelocity( motionVelZ,motionAccVelZ , motionDecVelZ)},
+                    new AxisInfo(){AxisName="AxisA" , AxisID=4, Velocity=new MotionVelocity( motionVelA,motionAccVelA , motionDecVelA)},
+            };
 
         }
     }

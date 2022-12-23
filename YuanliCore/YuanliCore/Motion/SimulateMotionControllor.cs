@@ -33,6 +33,11 @@ namespace YuanliCore.Motion
 
         public IEnumerable<SignalDO> InputSignals => throw new NotImplementedException();
 
+        public AxisDirection GetAxisDirectionCommand(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public void GetLimitCommand(int id, out double limitN, out double limitP)
         {
             throw new NotImplementedException();
@@ -41,6 +46,11 @@ namespace YuanliCore.Motion
         public double GetPositionCommand(int id)
         {
             return simulatePosition[id];
+        }
+
+        public MotionVelocity GetSpeedCommand(int id)
+        {
+            throw new NotImplementedException();
         }
 
         public void HomeCommand(int id)
@@ -95,8 +105,10 @@ namespace YuanliCore.Motion
             throw new NotImplementedException();
         }
 
-        
-
+        public void SetSpeedCommand(int id, MotionVelocity motionVelocity)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

@@ -87,13 +87,13 @@ namespace AutoFocusMachine.ViewModel
         public ICommand TEST1Command => new RelayCommand(() =>
         {
 
-
+            atfMachine.Table_Module.TableX.AxisDir = YuanliCore.Interface.AxisDirection.Backward;
 
 
         });
         public ICommand TEST2Command => new RelayCommand(() =>
         {
-
+            atfMachine.Table_Module.TableX.AxisDir = YuanliCore.Interface.AxisDirection.Forward;
 
 
         });
