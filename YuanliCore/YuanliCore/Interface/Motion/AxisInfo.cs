@@ -17,17 +17,11 @@ namespace YuanliCore.Interface.Motion
         /// </summary>
         public string AxisName { get; set; }
         /// <summary>
-        /// 運動軸最高速度
+        /// 運動軸速度
         /// </summary>
-        public double AxisVelocity { get; set; }
-        /// <summary>
-        /// 運動軸加速度
-        /// </summary>
-        public double AxisAccVelocity { get; set; }
-        /// <summary>
-        /// 運動軸減速度
-        /// </summary>
-        public double AxisDecVelocity { get; set; }
+        public MotionVelocity Velocity { get; set; }
+  
+       
         /// <summary>
         /// 運動軸方向
         /// </summary>

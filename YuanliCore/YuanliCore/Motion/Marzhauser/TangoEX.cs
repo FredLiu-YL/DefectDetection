@@ -38,13 +38,20 @@ namespace YuanliCore.Motion.Marzhauser
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_SetVel(Double pdX, Double pdY, Double pdZ, Double pdA);
-       
-        
+
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_GetLimit(int lLSID,int lAxis,out double pdMinRange, out double pdMaxRange);
- 
+        public static extern Int32 LS_SetAccel(int lLSID, double dX, double dY, double dZ, double dA);
+        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
+        public static extern Int32 LS_SetStopAccel(int lLSID, double dX, double dY, double dZ, double dA);
+
+        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
+        public static extern Int32 LS_GetLimit(int lLSID, int lAxis, out double pdMinRange, out double pdMaxRange);
+
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_SetLimit(int lLSID, Int32 lAxis, Double dMinRange, Double dMaxRange);
+
+        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
+        public static extern Int32 LS_GetLimitControl(int lLSID, Int32 lAxis, out bool pbActive);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_SetLimitControl(int lLSID, Int32 lAxis, bool pbActive);
@@ -79,7 +86,7 @@ namespace YuanliCore.Motion.Marzhauser
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LSX_GetAxisDirection(int lLSID, out int plXD, out int plYD, out int plZD, out int plAD);
 
-        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]      
+        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LSX_SetAxisDirection(int lLSID, int plXD, int plYD, int plZD, int plAD);
 
 

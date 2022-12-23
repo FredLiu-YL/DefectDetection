@@ -28,7 +28,7 @@ namespace YuanliCore.Interface
         SignalDO[] SetOutputs(IEnumerable<string> names);
         SignalDI[] SetInputs(IEnumerable<string> names);
 
-
+        void StopCommand(int id);
         void MoveCommand( int id,  double distance);
 
         void MoveToCommand( int id ,double position);
@@ -39,8 +39,9 @@ namespace YuanliCore.Interface
 
         void GetLimitCommand(int id, out double limitN, out double limitP);
         void SetLimitCommand(int id, double minPos , double maxPos);
-
-        void SetSpeedCommand(int id, double velocity, double accVelocity, double decVelocity);
+        MotionVelocity GetSpeedCommand(int id);
+        void SetSpeedCommand(int id, MotionVelocity motionVelocity);
         void SetAxisDirectionCommand(int id ,AxisDirection direction);
+        AxisDirection GetAxisDirectionCommand(int id);
     }
 }

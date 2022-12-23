@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YuanliCore.Interface.Motion;
 
 namespace YuanliCore.Interface
 {
@@ -33,7 +34,7 @@ namespace YuanliCore.Interface
         /// <summary>
         /// 軟體正極限
         /// </summary>
-        public double LimitN { get => GetLimitN(); set=> SetLimitN(value); }
+        public double LimitN { get => GetLimitN(); set => SetLimitN(value); }
         /// <summary>
         /// 軟體負極限
         /// </summary>
@@ -41,7 +42,13 @@ namespace YuanliCore.Interface
         /// <summary>
         /// 運動軸方向
         /// </summary>
-        public AxisDirection AxisDir { get; set; }
+        public AxisDirection AxisDir { get => GetDirection(); set => SetDirection(value); }
+        /// <summary>
+        /// 運動軸速度
+        /// </summary>
+        public MotionVelocity AxisVelocity { get; set; }
+
+
 
         public async Task HomeAsync()
         {
@@ -50,7 +57,10 @@ namespace YuanliCore.Interface
             await Task.Run(() => { controller.HomeCommand(AxisID); });
             isBusy = false;
         }
-
+        public async Task Stop()
+        {
+            controller.StopCommand(AxisID);
+        }
 
         public async Task MoveAsync(double distance)
         {
@@ -58,7 +68,7 @@ namespace YuanliCore.Interface
             isBusy = true;
             await Task.Run(() =>
             {
-                controller.MoveCommand(AxisID , distance);
+                controller.MoveCommand(AxisID, distance);
             });
             isBusy = false;
         }
@@ -68,7 +78,7 @@ namespace YuanliCore.Interface
             if (isBusy) return;
             await Task.Run(() =>
             {
-                controller.MoveToCommand(AxisID ,postion);
+                controller.MoveToCommand(AxisID, postion);
             });
             isBusy = false;
         }
@@ -78,14 +88,17 @@ namespace YuanliCore.Interface
             return controller.GetPositionCommand(AxisID);
 
         }
-
+        private AxisDirection GetDirection()
+        {
+           return controller.GetAxisDirectionCommand(AxisID);
+        }
         private void SetDirection(AxisDirection direction)
         {
-            controller.SetAxisDirectionCommand(AxisID , direction);
+            controller.SetAxisDirectionCommand(AxisID, direction);
         }
         private double GetLimitP()
         {
-            controller.GetLimitCommand(AxisID,out double limitN,  out double limitP);
+            controller.GetLimitCommand(AxisID, out double limitN, out double limitP);
             return limitP;
         }
         private double GetLimitN()
@@ -104,9 +117,20 @@ namespace YuanliCore.Interface
             controller.SetLimitCommand(AxisID, LimitN, limit);
         }
 
+        private void SetVelocity(MotionVelocity axisVelocity)
+        {
+
+            double velocity = axisVelocity.FainalVelocity;
+            double accVelocity = axisVelocity.AccVelocity;
+            double decVelocity = axisVelocity.DecVelocity;
+            controller.SetSpeedCommand(AxisID, axisVelocity);
+
+
+        }
+
     }
 
-  
+
     public enum AxisDirection
     {
 
