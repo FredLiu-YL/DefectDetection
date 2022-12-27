@@ -43,11 +43,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AffineTransform\CogAffineTransform.cs" />
     <Compile Include="AffineTransform\HAffineTransform.cs" />
     <Compile Include="Camera\SimulateCamera.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Component\AutoFocus\AutoFocusSystem.cs" />
     <Compile Include="CommonExtension\CamerEX.cs" />
+    <Compile Include="ImageProcess\LineSearch.cs" />
     <Compile Include="Interface\AbstractRecipe.cs" />
+    <Compile Include="Interface\ITransform.cs" />
     <Compile Include="Interface\Motion\Axis.cs" />
     <Compile Include="Interface\ICamera.cs" />
     <Compile Include="CommonExtension\RxLinq.cs" />
@@ -86,6 +90,17 @@
     <Compile Include="ViewControl\ZoomableCanvas\ZoomableCanvas.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Cognex.VisionPro, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505" />
+    <Reference Include="Cognex.VisionPro.CalibFix, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.CalibFix.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.CalibFix.Controls, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.CalibFix.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Controls, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505" />
+    <Reference Include="Cognex.VisionPro.Core, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505" />
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>

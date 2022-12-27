@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using YuanliCore.Interface;
 
 namespace YuanliCore.AffineTransform
 {
-    public class HAffineTransform
+    public class HAffineTransform : ITransform
     {
-        HHomMat2D homMat2D = new HHomMat2D();
+
+
+        private HHomMat2D homMat2D = new HHomMat2D();
 
         public HAffineTransform(IEnumerable<Point> source, IEnumerable<Point> target)
         {
