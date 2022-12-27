@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Cognex.VisionPro;
+using Cognex.VisionPro.ImageProcessing;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using YuanliCore.Interface;
 
 namespace YuanliCore.CameraLib
 {
@@ -140,18 +143,7 @@ namespace YuanliCore.CameraLib
             return new TransformedBitmap(image, transform);
         }
 
-        public static BitmapSource FormatConvertTo(this BitmapSource image, PixelFormat format)
-        {
-            ThrowIfFormatIsIndexed(format);
 
-            FormatConvertedBitmap fcbmp = new FormatConvertedBitmap();
-            fcbmp.BeginInit();
-            fcbmp.Source = image;
-            fcbmp.DestinationFormat = format;
-            fcbmp.EndInit();
-
-            return fcbmp;
-        }
 
         /// <summary>
         /// 判斷指定的檔案是否為影像檔案。
@@ -237,94 +229,9 @@ namespace YuanliCore.CameraLib
             }
         }
 
-        /// <summary>
-        /// 從像素陣列建立新的 BitmapSource。
-        /// </summary>
-        /// <param name="buffer">影像來源陣列。</param>
-        /// <param name="width">影像寬度。</param>
-        /// <param name="height">影像高度。</param>
-        /// <param name="format">影像像素格式。</param>
-        /// <param name="dpiX">螢幕水平解析度，預設為 96。</param>
-        /// <param name="dpiY">螢幕垂直解析度，預設為 96。</param>
-        /// <returns>BitmapSource影像。</returns>
-        public static BitmapSource ToBitmapSource(this byte[] buffer, int width, int height, PixelFormat format)
-        {
-            int dpiX = 96;
-            int dpiY = 96;
+      
 
-            int bytesPerPixel = format.GetBytesPerPixel();
-            int stride = bytesPerPixel * width;
-            return BitmapSource.Create(width, height, dpiX, dpiY, format, format.DefaultPalette(), buffer, stride);
-        }
-
-        /// <summary>
-        /// 從儲存在 Unmanaged 記憶體內的像素陣列，建立新的 BitmapSource。
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        public static BitmapSource ToBitmapSource(this IntPtr buffer, int width, int height, PixelFormat format)
-        {
-            ThrowIfFormatIsIndexed(format);
-
-            int dpiX = 96;
-            int dpiY = 96;
-
-            int bytesPerPixel = format.GetBytesPerPixel();
-            int stride = bytesPerPixel * width;
-            return BitmapSource.Create(width, height, dpiX, dpiY, format, null, buffer, stride * height, stride);
-        }
-
-        /// <summary>
-        /// 從 BitmapSource 建立新的像素陣列。
-        /// </summary>
-        /// <param name="source">來源影像。</param>
-        /// <returns>影像陣列資料。</returns>
-        public static byte[] ToBytes(this BitmapSource source)
-        {
-            int bytesPerPixel = (source.Format.BitsPerPixel + 7) / 8;
-            int stride = source.PixelWidth * bytesPerPixel;
-
-            byte[] buffer = new byte[source.PixelHeight * stride];
-            source.CopyPixels(buffer, stride, 0);
-
-            return buffer;
-        }
-
-        public static void CopyPixels(this BitmapSource source, byte[] buffer)
-        {
-            int stride = source.Format.GetBytesPerPixel() * source.PixelWidth;
-            int bufferSize = source.PixelHeight * stride;
-            if (buffer.Length != bufferSize) throw new ArgumentException("buffer's length is wrong.");
-            source.CopyPixels(buffer, stride, 0);
-        }
-
-        /// <summary>
-        /// 取得指定像素格式的預設調色盤。
-        /// </summary>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        private static BitmapPalette DefaultPalette(this PixelFormat format)
-        {
-            if (format == PixelFormats.Indexed1) return BitmapPalettes.BlackAndWhite;
-            if (format == PixelFormats.Indexed2) return BitmapPalettes.Gray4;
-            if (format == PixelFormats.Indexed4) return BitmapPalettes.Gray16;
-            if (format == PixelFormats.Indexed8) return BitmapPalettes.Gray256;
-            return null;
-        }
-
-        // 若指定的像素格式為 Indexed 格式則丟出例外狀況。
-        private static void ThrowIfFormatIsIndexed(PixelFormat format)
-        {
-            if (format == PixelFormats.Indexed1 ||
-               format == PixelFormats.Indexed2 ||
-               format == PixelFormats.Indexed4 ||
-               format == PixelFormats.Indexed8)
-                throw new NotImplementedException("Not support indexed format.");
-        }
-
+     
         private static Brush RandomBrush()
         {
             var t = typeof(Brushes);
@@ -404,5 +311,37 @@ namespace YuanliCore.CameraLib
         ///// Microsoft Windows Media Photo 影像。
         ///// </summary>
         //Wmp
+    }
+
+    class SafeMalloc : SafeBuffer
+    {
+        /// <summary>
+        /// Allocates memory and initialises the SaveBuffer
+        /// </summary>
+        /// <param name="size">The number of bytes to allocate</param>
+        public SafeMalloc(int size) : base(true)
+        {
+            this.SetHandle(Marshal.AllocHGlobal(size));
+            this.Initialize((ulong)size);
+        }
+
+        /// <summary>
+        /// Called when the object is disposed, ferr the
+        /// memory via FreeHGlobal().
+        /// </summary>
+        /// <returns></returns>
+        protected override bool ReleaseHandle()
+        {
+            Marshal.FreeHGlobal(this.handle);
+            return true;
+        }
+
+        /// <summary>
+        /// Cast to IntPtr
+        /// </summary>
+        public static implicit operator IntPtr(SafeMalloc h)
+        {
+            return h.handle;
+        }
     }
 }

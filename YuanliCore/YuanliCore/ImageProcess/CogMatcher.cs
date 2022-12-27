@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace YuanliCore.ImageProcess
 {
-    public   class LineSearch
+    public   class CogMatcher
     {
+
+        public CogMatcher()
+        {
+
+
+        }
 
     }
 }

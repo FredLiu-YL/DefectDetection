@@ -17,7 +17,7 @@ namespace YuanliCore.AffineTransform
 
         public CogAffineTransform(IEnumerable<Point> source, IEnumerable<Point> target)
         {
-
+           
             calibNPointTool = new CogCalibNPointToNPointTool();
             calibNPointTool.Calibration.DOFsToCompute = CogNPointToNPointDOFConstants.ScalingRotationAndTranslation;
 
