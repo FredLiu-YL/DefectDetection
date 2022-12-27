@@ -186,7 +186,10 @@ namespace YuanliCore.Motion.Marzhauser
         {
             throw new NotImplementedException();
         }
-
+        public void StopCommand(int id)
+        {
+            TangoLib.LS_StopAxes();
+        }
         public void MoveCommand(int id, double distance)
         {
             try
@@ -387,10 +390,7 @@ namespace YuanliCore.Motion.Marzhauser
 
         }
 
-        public void StopCommand(int id)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
 }

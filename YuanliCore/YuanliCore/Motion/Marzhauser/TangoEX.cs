@@ -14,6 +14,10 @@ namespace YuanliCore.Motion.Marzhauser
         // 參考手冊
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_ConnectSimple(Int32 lAnInterfaceType, String pcAComName, Int32 lABaudRate, Int32 bAShowProt);
+       
+        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
+        public static extern Int32 LS_Disconnect(int lLSID);
+        
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_GetPos(out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
@@ -98,6 +102,10 @@ namespace YuanliCore.Motion.Marzhauser
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LSX_GetEncoder(int lLSID, out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
+        [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
+        public static extern Int32 LSX_GetStatusAxis(int lLSID, out char pcStatusAxisStr, int lMaxLen);
+       
+        
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LSX_ClearEncoder(int lLSID, int lAxis);
