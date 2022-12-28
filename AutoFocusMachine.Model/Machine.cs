@@ -42,7 +42,7 @@ namespace AutoFocusMachine.Model
           
             
             
-            isSimulate = false;
+            isSimulate = true;
             machineSetting = new MachineSetting();
 
 

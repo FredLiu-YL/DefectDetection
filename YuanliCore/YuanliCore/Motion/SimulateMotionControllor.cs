@@ -22,7 +22,7 @@ namespace YuanliCore.Motion
                 return new Axis(this, info.AxisID);
                 
                 }).ToArray();
-            simulatePosition = axesPos.ToArray();
+            simulatePosition = axesPos.ToArray();   
         }
 
         public bool IsOpen => throw new NotImplementedException();

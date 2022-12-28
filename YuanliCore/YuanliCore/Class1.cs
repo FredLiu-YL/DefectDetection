@@ -56,7 +56,7 @@ namespace YuanliCore
             {
                 for (var j = 0; j < sum.Column; j++)
                 {
-                    sum[i, j] = Left[i, j] + Right[i, j];
+                    sum[i, j ] = Left[i, j] + Right[i, j];
                 }
             }
 
