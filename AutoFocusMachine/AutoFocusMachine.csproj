@@ -245,8 +245,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModel\Locate.vm.cs" />
+    <Compile Include="ViewModel\MainLocate.vm.cs" />
     <Compile Include="ViewModel\MainAotoFocus.vm.cs" />
+    <Compile Include="ViewModel\MainMeansure.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">

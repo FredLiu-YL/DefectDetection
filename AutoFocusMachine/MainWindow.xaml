@@ -562,6 +562,38 @@
                 </Grid>
 
             </TabItem>
+
+            <TabItem  Header="Meansure"  Width="180"  Height="30"   >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <GroupBox  Header="標記樣本" FontSize="30" >
+                        <Grid >
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" />
+                            <StackPanel Grid.Column="1">
+                                <Button Height="50" Content="編輯"  Command="{Binding EditSampleCommand}"  />
+                                <Button  Height="50" Content="測試" />
+                            </StackPanel>
+                        </Grid>
+                      
+                    </GroupBox>
+                    
+                </Grid>
+            </TabItem>
+
         </TabControl>
 
 

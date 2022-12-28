@@ -138,10 +138,11 @@ namespace AutoFocusMachine.ViewModel
                                           new Point(TargetPosX2, TargetPosY2) ,
                                           new Point(TargetPosX3, TargetPosY3) };
 
-            HAffineTransform hAffineTransform = new HAffineTransform(sources, targets);
+        //  ITransform hAffineTransform = new HAffineTransform(sources, targets);
+            ITransform hAffineTransform = new CogAffineTransform(sources, targets);
             var sps = SourceDieList.ToArray();
             TargetDieList = new ObservableCollection<Point>(sps.Select(p => hAffineTransform.TransPoint(p)));
-
+         
 
         });
 
