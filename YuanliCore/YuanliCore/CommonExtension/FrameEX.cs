@@ -3,6 +3,7 @@ using Cognex.VisionPro.ImageProcessing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -130,7 +131,7 @@ namespace YuanliCore.CameraLib
             return cogImage;
         }
 
-        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame, double bayerRedScale, double bayerGreenScale, double bayerBlueScale)
+        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame, double bayerRedScale =0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
         {
             try
             {
@@ -158,6 +159,29 @@ namespace YuanliCore.CameraLib
                 throw ex;
             }
         }
+
+
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+        public static System.Windows.Media.Imaging.BitmapSource ToBitmapSource(this Bitmap bitmap)
+        {
+            IntPtr ptr = bitmap.GetHbitmap();
+            System.Windows.Media.Imaging.BitmapSource result =
+                System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                    ptr, IntPtr.Zero, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            //release resource
+            DeleteObject(ptr);
+
+            return result;
+        }
+        public static System.Windows.Media.Imaging.BitmapSource ToBitmapSource(this System.Drawing.Image image)
+        {
+
+            Bitmap bitmap = new Bitmap(image);
+            return bitmap.ToBitmapSource();
+        }
+ 
+
         public static void CopyPixels(this BitmapSource source, byte[] buffer)
         {
             int stride = source.Format.GetBytesPerPixel() * source.PixelWidth;

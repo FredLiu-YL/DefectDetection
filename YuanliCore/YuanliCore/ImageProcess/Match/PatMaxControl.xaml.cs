@@ -24,7 +24,7 @@ namespace YuanliCore.ImageProcess.Match
     public  partial class PatMaxControl : UserControl
     {
         private static readonly DependencyProperty ImageProperty = DependencyProperty.Register(nameof(Image), typeof(ICogImage), typeof(PatMaxControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnImageChanged)));
-    //    private static readonly DependencyProperty PatmaxParamProperty = DependencyProperty.Register(nameof(PatmaxParam), typeof(PatmaxParams), typeof(PatMaxControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPatmaxParamChanged)));
+       private static readonly DependencyProperty PatmaxParamProperty = DependencyProperty.Register(nameof(PatmaxParam), typeof(PatmaxParams), typeof(PatMaxControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPatmaxParamChanged)));
 
         private CogPMAlignTool tool;
         private CogPMAlignEditV2 editor;
@@ -36,7 +36,7 @@ namespace YuanliCore.ImageProcess.Match
             tool = new CogPMAlignTool();
             editor = new CogPMAlignEditV2();
 
-    //        PatmaxParam = PatmaxParams.Default(tool, 0);
+           PatmaxParam = PatmaxParams.Default(tool, 0);
 
             tool.Changed += PatMaxTool_Changed;
 
@@ -67,9 +67,9 @@ namespace YuanliCore.ImageProcess.Match
             Trace.WriteLine($"SearchRegion_Changed => {flagName}");
         }
 
-    //   public event EventHandler<PatmaxParamsEventArgs> PatternTrainedEvent;
+     //   public event EventHandler<PatmaxParamsEventArgs> PatternTrainedEvent;
 
-     //   public event EventHandler<PatmaxParamsEventArgs> ParameterChangedEvent;
+    //    public event EventHandler<PatmaxParamsEventArgs> ParameterChangedEvent;
 
         public ICogImage Image
         {
@@ -77,11 +77,11 @@ namespace YuanliCore.ImageProcess.Match
             set => SetValue(ImageProperty, value);
         }
 
-        //public PatmaxParams PatmaxParam
-        //{
-        //    get => (PatmaxParams)GetValue(PatmaxParamProperty);
-        //    set => SetValue(PatmaxParamProperty, value);
-        //}
+        public PatmaxParams PatmaxParam
+        {
+            get => (PatmaxParams)GetValue(PatmaxParamProperty);
+            set => SetValue(PatmaxParamProperty, value);
+        }
 
         private static void OnImageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -108,11 +108,11 @@ namespace YuanliCore.ImageProcess.Match
             tool.Pattern.Changed -= Pattern_Changed;
             tool.RunParams.Changed -= RunParams_Changed;
             if (tool.SearchRegion != null) tool.SearchRegion.Changed -= SearchRegion_Changed;
-            
+
             // 更新 tool 內的 Pax 參數
-       //     tool.Pattern = PatmaxParam.Pattern;
-      //      tool.RunParams = PatmaxParam.RunParams;
-      //      tool.SearchRegion = PatmaxParam.SearchRegion;
+            tool.Pattern = PatmaxParam.Pattern;
+            tool.RunParams = PatmaxParam.RunParams;
+            tool.SearchRegion = PatmaxParam.SearchRegion;
 
             // 將新參數委派事件           
             if (tool.RunParams != null) tool.RunParams.Changed += RunParams_Changed;
@@ -147,9 +147,9 @@ namespace YuanliCore.ImageProcess.Match
 
         public void SetToParam()
         {
-        //    PatmaxParam.Pattern = tool.Pattern;
-        //    PatmaxParam.SearchRegion = tool.SearchRegion;
-       //     PatmaxParam.RunParams = tool.RunParams;
+            PatmaxParam.Pattern = tool.Pattern;
+            PatmaxParam.SearchRegion = tool.SearchRegion;
+            PatmaxParam.RunParams = tool.RunParams;
         }
         #endregion
 

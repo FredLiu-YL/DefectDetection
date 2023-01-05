@@ -17,8 +17,7 @@ namespace AutoFocusMachine.ViewModel
         private double signalA = 2.012, signalB = 0.012, aFsignalA = 1.234, aFsignalB = 3.111;
         private int patternZ = 600, distancePatternZ = 20, nSP, fSP;
 
-        private BitmapImage bitmapImage;
-        private BitmapSource mainImage;
+     
         //    private UeyeCamera ueyeCamera;
         private Task taskRefresh1 = Task.CompletedTask;
         private Task taskRefresh2 = Task.CompletedTask;

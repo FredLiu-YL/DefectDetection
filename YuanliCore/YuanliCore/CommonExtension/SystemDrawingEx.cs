@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using YuanliCore.Interface;
 
-namespace YuanliCore.CameraLib
+namespace System.Drawing
 {
     public static class SystemDrawingEx
     {
@@ -100,6 +102,7 @@ namespace YuanliCore.CameraLib
             return ToBitmap(frame.Data, frame.Width, frame.Height, format);
         }
 
+
         /// <summary>
         /// 從 Bitmap 建立新的像素陣列。
         /// </summary>
@@ -120,6 +123,34 @@ namespace YuanliCore.CameraLib
             return bytes;
         }
 
+        /// <summary>
+        /// 将图片Image转换成Byte[]
+        /// </summary>
+        /// <param name="Image">image对象</param>
+        /// <param name="imageFormat">后缀名</param>
+        /// <returns></returns>
+        public static Frame<byte[]>  ImageToBytes(this Image Image, System.Drawing.Imaging.ImageFormat imageFormat)
+        {
+            if (Image == null) { return null; }
+            byte[] data = null;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (Bitmap Bitmap = new Bitmap(Image))
+                {
+                    Bitmap.Save(ms, imageFormat);
+                    ms.Position = 0;
+                    data = new byte[ms.Length];
+                    ms.Read(data, 0, Convert.ToInt32(ms.Length));
+                    ms.Flush();
+                }
+            }
+
+            Frame<byte[]> frame = new Frame<byte[]>(data, Image.Width, Image.Height, ConvertPixelFormat( Image.PixelFormat));
+
+            return frame;
+        }
+
+
         public static void CloneTo(this Bitmap bitmap, ref byte[] array)
         {
             var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
@@ -139,7 +170,23 @@ namespace YuanliCore.CameraLib
             }
         }
 
+        private static System.Windows.Media.PixelFormat ConvertPixelFormat(System.Drawing.Imaging.PixelFormat sourceFormat)
+        {
+            switch (sourceFormat)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                    return System.Windows.Media.PixelFormats.Bgr24;
 
+                case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
+                    return System.Windows.Media.PixelFormats.Bgra32;
+
+                case System.Drawing.Imaging.PixelFormat.Format32bppRgb:
+                    return System.Windows.Media.PixelFormats.Bgr32;
+
+                    // .. as many as you need...
+            }
+            return new System.Windows.Media.PixelFormat();
+        }
 
     }
 }

@@ -132,7 +132,7 @@ namespace YuanliCore.Interface
         }
     }
 
-    public static partial class goonØ
+    public static  class FrameConvert
     {
         public static Frame<byte[]> Rotate(this Frame<byte[]> frame, RotateAngles angle)
         {

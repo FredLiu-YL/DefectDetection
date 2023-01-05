@@ -43,7 +43,7 @@ namespace AutoFocusMachine.ViewModel
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
         private WriteableBitmap mappingImage;
-        private WriteableBitmap image;
+        private WriteableBitmap mainImage;
         private double tablePosX, tablePosY;
         private string recipeName;
         private AFMachineRecipe mainRecipe = new AFMachineRecipe();
@@ -58,7 +58,7 @@ namespace AutoFocusMachine.ViewModel
 
 
         }
-        public WriteableBitmap Image { get => image; set => SetValue(ref image, value); }
+        public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public WriteableBitmap MappingImage { get => mappingImage; set => SetValue(ref mappingImage, value); }
         
 
@@ -142,14 +142,16 @@ namespace AutoFocusMachine.ViewModel
 
             atfMachine.Table_Module.Camera.Grab();
             MappingImage = new WriteableBitmap(6000, 6000, 96, 96, atfMachine.Table_Module.Camera.PixelFormat, null);
-            Image = new WriteableBitmap(atfMachine.Table_Module.Camera.Width, atfMachine.Table_Module.Camera.Height, 96, 96, atfMachine.Table_Module.Camera.PixelFormat, null);
+            MainImage = new WriteableBitmap(atfMachine.Table_Module.Camera.Width, atfMachine.Table_Module.Camera.Height, 96, 96, atfMachine.Table_Module.Camera.PixelFormat, null);
+          
+
             camlive = atfMachine.Table_Module.Camera.Frames.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
                          .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
                          .Subscribe(frame =>
                          {
 
                              var a = System.Threading.Thread.CurrentThread.ManagedThreadId;
-                             if (frame != null) Image.WritePixels(frame);
+                             if (frame != null) MainImage.WritePixels(frame);
                              //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
                          });
         }

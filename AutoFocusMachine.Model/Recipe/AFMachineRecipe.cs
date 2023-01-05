@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 
 namespace AutoFocusMachine.Model.Recipe
@@ -17,8 +18,9 @@ namespace AutoFocusMachine.Model.Recipe
        
         public Point[] FiducialMarkPos { get; set; }
 
+    public Point[] LayoutPos { get; set; }
 
-        public Point[] LayoutPos { get; set; }
+        public PatmaxParams PMParams { get; set; }
     /*    public static AFMachineRecipe Load(string filename)
         {
             string extension = Path.GetExtension(filename);
@@ -52,5 +54,5 @@ namespace AutoFocusMachine.Model.Recipe
                 throw;
             }
         }*/
-    }
+}
 }

@@ -28,6 +28,8 @@ namespace YuanliCore.ImageProcess
         {
             var cogImg = frame.ColorFrameToCogImage(0.333, 0.333, 0.333);
             cogFindLineTool.InputImage = (CogImage8Grey)cogImg;
+          //  cogFindLineTool.RunParams.CaliperRunParams;
+
         }
 
         
