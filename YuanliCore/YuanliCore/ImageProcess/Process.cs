@@ -91,7 +91,6 @@ namespace YuanliCore.ImageProcess
           
        
             cogRecordsDisplay.Subject = cogDistanceSegmentTool.CreateLastRunRecord();
- 
             System.Drawing.Image runImg = cogRecordsDisplay.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
            var bs = runImg.ToBitmapSource();
             bs.Save("D:\\ mean.bmp ");
@@ -101,7 +100,7 @@ namespace YuanliCore.ImageProcess
             return (lineA, lineB);
         }
 
-        public void RunInsp(CogBlob cogBlobRunParams , ICogRegion cogRegion)
+        public ICogRecord RunInsp(CogBlob cogBlobRunParams , ICogRegion cogRegion)
         {
 
             cogBlobTool.InputImage = fixtureImg;
@@ -113,6 +112,8 @@ namespace YuanliCore.ImageProcess
             System.Drawing.Image runImg = cogRecordsDisplay.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
             var bs = runImg.ToBitmapSource();
             bs.Save("D:\\ blob.bmp ");
+            return cogBlobTool.CreateLastRunRecord().SubRecords[0];
+        
         }
 
         public void Dispose()

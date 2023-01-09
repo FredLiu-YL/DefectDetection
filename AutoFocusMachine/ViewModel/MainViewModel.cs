@@ -47,6 +47,7 @@ namespace AutoFocusMachine.ViewModel
         private double tablePosX, tablePosY;
         private string recipeName;
         private AFMachineRecipe mainRecipe = new AFMachineRecipe();
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -94,9 +95,7 @@ namespace AutoFocusMachine.ViewModel
         /// ²M°£ Shape
         /// </summary>
         public ICommand ClearShapeAction { get; set; }
-        public ICommand AddShapeMappingAction { get; set; }
 
-        public ICommand ClearShapeMappingAction { get; set; }
 
         public int TabControlIndex { get => tabControlIndex; set => SetValue(ref tabControlIndex, value); }
         public string RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }

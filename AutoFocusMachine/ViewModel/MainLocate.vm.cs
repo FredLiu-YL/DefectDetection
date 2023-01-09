@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using YuanliCore.AffineTransform;
 using YuanliCore.Interface;
+using YuanliCore.Views.CanvasShapes;
 
 namespace AutoFocusMachine.ViewModel
 {
@@ -20,8 +21,10 @@ namespace AutoFocusMachine.ViewModel
         private int targetDieIndex, sourcetDieIndex;
         private double seachPosX1, seachPosY1, seachPosX2, seachPosY2, seachPosX3, seachPosY3;
         private double targetPosX1, targetPosY1, targetPosX2, targetPosY2, targetPosX3, targetPosY3;
-
-
+        private ROIShape tempselectShape;
+        private System.Windows.Point mappingMousePixel;
+        private LocateData sourceLocate = new LocateData();
+        private LocateData targetLocate = new LocateData();
 
         public ObservableCollection<Point> TargetDieList { get => targetDieList; set => SetValue(ref targetDieList, value); }
         public ObservableCollection<Point> SourceDieList { get => sourceDieList; set => SetValue(ref sourceDieList, value); }
@@ -48,6 +51,13 @@ namespace AutoFocusMachine.ViewModel
         public double TargetPosX3 { get => targetPosX3; set => SetValue(ref targetPosX3, value); }
         public double TargetPosY3 { get => targetPosY3; set => SetValue(ref targetPosY3, value); }
 
+        public ICommand AddShapeMappingAction { get; set; }
+
+
+        public ICommand ClearShapeMappingAction { get; set; }
+
+        public System.Windows.Point MappingMousePixel { get => mappingMousePixel; set => SetValue(ref mappingMousePixel, value); }
+        public ICommand RemoveShapeMappingAction { get; set; }
 
         public ICommand AddDielistCommand => new RelayCommand(async () =>
        {
@@ -103,17 +113,17 @@ namespace AutoFocusMachine.ViewModel
         {
             try
             {
-             
+
                 switch (key)
                 {
                     case "1":
-                       
+
                         break;
                     case "2":
-                       
+
                         break;
                     case "3":
-                       
+
                         break;
 
 
@@ -126,7 +136,7 @@ namespace AutoFocusMachine.ViewModel
             }
 
         });
-        
+
 
         public ICommand LocateTransCommand => new RelayCommand(() =>
         {
@@ -138,11 +148,11 @@ namespace AutoFocusMachine.ViewModel
                                           new Point(TargetPosX2, TargetPosY2) ,
                                           new Point(TargetPosX3, TargetPosY3) };
 
-        //  ITransform hAffineTransform = new HAffineTransform(sources, targets);
+            //  ITransform hAffineTransform = new HAffineTransform(sources, targets);
             ITransform hAffineTransform = new CogAffineTransform(sources, targets);
             var sps = SourceDieList.ToArray();
             TargetDieList = new ObservableCollection<Point>(sps.Select(p => hAffineTransform.TransPoint(p)));
-         
+
 
         });
 
@@ -161,16 +171,16 @@ namespace AutoFocusMachine.ViewModel
         });
 
 
-        public ICommand SaveLocateDataCommand => new RelayCommand(() =>
+        public ICommand SaveSourceLocateDataCommand => new RelayCommand(() =>
         {
             List<Point> fPoints = new List<Point>();
             fPoints.Add(new Point(SeachPosX1, SeachPosY1));
             fPoints.Add(new Point(SeachPosX2, SeachPosY2));
             fPoints.Add(new Point(SeachPosX3, SeachPosY3));
 
-
-            mainRecipe.FiducialMarkPos = fPoints.ToArray();
-            mainRecipe.LayoutPos = SourceDieList.ToArray();
+            
+            sourceLocate.FiducialMarkPos = fPoints.ToArray();
+            sourceLocate.LayoutPos = SourceDieList.ToArray();
 
 
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -178,11 +188,11 @@ namespace AutoFocusMachine.ViewModel
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
             {
-                mainRecipe.Save(dlg.FileName);
+                sourceLocate.Save(dlg.FileName);
             }
 
         });
-        public ICommand LoadLocateDataCommand => new RelayCommand(() =>
+        public ICommand LoadSourceLocateDataCommand => new RelayCommand(() =>
         {
 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -190,32 +200,177 @@ namespace AutoFocusMachine.ViewModel
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
             {
-                mainRecipe = AbstractRecipe.Load<AFMachineRecipe>(dlg.FileName);
+                sourceLocate = LocateData.Load<LocateData>(dlg.FileName);
 
-                SeachPosX1 = mainRecipe.FiducialMarkPos[0].X;
-                SeachPosY1 = mainRecipe.FiducialMarkPos[0].Y;
-                SeachPosX2 = mainRecipe.FiducialMarkPos[1].X;
-                SeachPosY2 = mainRecipe.FiducialMarkPos[1].Y;
-                SeachPosX3 = mainRecipe.FiducialMarkPos[2].X;
-                SeachPosY3 = mainRecipe.FiducialMarkPos[2].Y;
+                SeachPosX1 = sourceLocate.FiducialMarkPos[0].X;
+                SeachPosY1 = sourceLocate.FiducialMarkPos[0].Y;
+                SeachPosX2 = sourceLocate.FiducialMarkPos[1].X;
+                SeachPosY2 = sourceLocate.FiducialMarkPos[1].Y;
+                SeachPosX3 = sourceLocate.FiducialMarkPos[2].X;
+                SeachPosY3 = sourceLocate.FiducialMarkPos[2].Y;
 
 
-               /* var test1 = mainRecipe.LayoutPos[0];
-                var test2 = mainRecipe.LayoutPos[1];
-                Point[] s1 = new Point[] { new Point(68, 0), new Point(1, 0) };
-                HAffineTransform hAffine = new HAffineTransform(s1, mainRecipe.LayoutPos);
-                for (int i = 1; i <= 68; i++)
-                {
-                    Point point = hAffine.TransPoint(new Point(i, 0));
-                    SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
-                }*/
+                /* var test1 = mainRecipe.LayoutPos[0];
+                 var test2 = mainRecipe.LayoutPos[1];
+                 Point[] s1 = new Point[] { new Point(68, 0), new Point(1, 0) };
+                 HAffineTransform hAffine = new HAffineTransform(s1, mainRecipe.LayoutPos);
+                 for (int i = 1; i <= 68; i++)
+                 {
+                     Point point = hAffine.TransPoint(new Point(i, 0));
+                     SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
+                 }*/
 
-                SourceDieList = new ObservableCollection<Point>(mainRecipe.LayoutPos);
+                SourceDieList = new ObservableCollection<Point>(sourceLocate.LayoutPos);
 
 
 
             }
 
         });
+
+        public ICommand SaveTargetLocateDataCommand => new RelayCommand(() =>
+        {
+            List<Point> fPoints = new List<Point>();
+            fPoints.Add(new Point(TargetPosX1, TargetPosY1));
+            fPoints.Add(new Point(TargetPosX2, TargetPosY2));
+            fPoints.Add(new Point(TargetPosX3, TargetPosY3));
+
+
+            targetLocate.FiducialMarkPos = fPoints.ToArray();
+            targetLocate.LayoutPos = TargetDieList.ToArray();
+
+
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.Filter = "Param Documents|*.json";
+            Nullable<bool> result = dlg.ShowDialog();
+            if (result == true)
+            {
+                targetLocate.Save(dlg.FileName);
+            }
+
+        });
+        public ICommand LoadTargetLocateDataCommand => new RelayCommand(() =>
+        {
+
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Filter = "Param Documents|*.json";
+            Nullable<bool> result = dlg.ShowDialog();
+            if (result == true)
+            {
+                targetLocate = LocateData.Load<LocateData>(dlg.FileName);
+
+                TargetPosX1 = targetLocate.FiducialMarkPos[0].X;
+                TargetPosY1 = targetLocate.FiducialMarkPos[0].Y;
+                TargetPosX2 = targetLocate.FiducialMarkPos[1].X;
+                TargetPosY2 = targetLocate.FiducialMarkPos[1].Y;
+                TargetPosX3 = targetLocate.FiducialMarkPos[2].X;
+                TargetPosY3 = targetLocate.FiducialMarkPos[2].Y;
+
+
+                /* var test1 = mainRecipe.LayoutPos[0];
+                 var test2 = mainRecipe.LayoutPos[1];
+                 Point[] s1 = new Point[] { new Point(68, 0), new Point(1, 0) };
+                 HAffineTransform hAffine = new HAffineTransform(s1, mainRecipe.LayoutPos); 
+                 for (int i = 1; i <= 68; i++)
+                 {
+                     Point point = hAffine.TransPoint(new Point(i, 0));
+                     SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
+                 }*/
+
+                TargetDieList = new ObservableCollection<Point>(targetLocate.LayoutPos);
+
+
+
+            }
+
+        });
+
+
+        public ICommand CreateWaferDataCommand => new RelayCommand(() =>
+        {
+
+
+            var waferSize = new Size(200000, 200000);
+            var dieSize = new Size(3429.183, 3163.755);
+            Vector diepitch = new Vector(0, 0);
+
+      
+            Wafer wafer = new Wafer(waferSize, dieSize, diepitch);
+
+
+            var circleCenter = new Point(waferSize.Width / 2, waferSize.Height / 2);
+
+            var circleDies = wafer.Dies.Select(die =>
+            {
+                var disRT = new Point(die.Position.X + dieSize.Width / 2, die.Position.Y - dieSize.Height / 2) - circleCenter;
+                var disRB = new Point(die.Position.X + dieSize.Width / 2, die.Position.Y + dieSize.Height / 2) - circleCenter;
+                var disLB = new Point(die.Position.X - dieSize.Width / 2, die.Position.Y + dieSize.Height / 2) - circleCenter;
+                var disLT = new Point(die.Position.X - dieSize.Width / 2, die.Position.Y - dieSize.Height / 2) - circleCenter;
+
+                if (disRT.Length < waferSize.Width / 2 && disRB.Length < waferSize.Width / 2 &&
+                    disLB.Length < waferSize.Width / 2 && disLT.Length < waferSize.Width / 2)
+                    return die;
+                else
+                    return null;
+            }).Where(d => d != null).ToArray();
+
+            SourceDieList = new ObservableCollection<Point>(circleDies.Select(d => d.Position));
+            //顯示用
+            foreach (var die in circleDies)
+            {
+                AddShapeMappingAction.Execute(new ROIRotatedRect
+                {
+                    X = die.Position.X / 50,
+                    Y = die.Position.Y / 50,
+                    LengthX = (dieSize.Width / 2) / 50,
+                    LengthY = (dieSize.Height / 2) / 50,
+                    IsInteractived = true,
+                    IsMoveEnabled = false,
+                    IsResizeEnabled = false,
+                    IsRotateEnabled = false,
+                    CenterCrossLength = 0,
+                    ToolTip = die.Name
+                });
+
+            }
+
+        });
+        public ICommand MappingPreviewMouseUpCommand => new RelayCommand(() =>
+        {
+            ROIShape selectShape = MappingDrawings.Select(shape =>
+             {
+                 var rectBegin = shape.LeftTop;
+                 var rectEnd = shape.RightBottom;
+                 var rect = new Rect(rectBegin, rectEnd);
+                 if (rect.Contains(MappingMousePixel))
+                     return shape;
+                 else
+                     return null;
+             }).Where(s => s != null).FirstOrDefault();
+
+
+            if (selectShape != null)
+            {
+                if (tempselectShape != null)
+                {
+                    tempselectShape.Stroke = System.Windows.Media.Brushes.LightGreen;
+
+                }
+
+                selectShape.Stroke = System.Windows.Media.Brushes.Red;
+                tempselectShape = selectShape;
+
+                //        AddShapeMappingAction.Execute(selectShape);
+
+                //         RemoveShapeMappingAction.Execute(selectShape);
+
+            }
+
+
+
+
+        });
+
+
     }
 }

@@ -51,6 +51,9 @@
     <Compile Include="CommonExtension\SystemDrawingEx.cs" />
     <Compile Include="Component\AutoFocus\AutoFocusSystem.cs" />
     <Compile Include="CommonExtension\CamerEX.cs" />
+    <Compile Include="ImageProcess\CogDisplayer.xaml.cs">
+      <DependentUpon>CogDisplayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImageProcess\CogFixture.cs" />
     <Compile Include="ImageProcess\CogLineSearch.cs" />
     <Compile Include="ImageProcess\Match\CogMatcher.cs" />
@@ -392,6 +395,10 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ImageProcess\CogDisplayer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ImageProcess\Match\PatMaxControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

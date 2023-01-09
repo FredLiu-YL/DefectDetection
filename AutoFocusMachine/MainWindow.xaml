@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight" 
-        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore"
+        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore" xmlns:autofocusmachine="clr-namespace:AutoFocusMachine;assembly=YuanliCore"
                    mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -171,7 +171,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.2*" />
-                        <RowDefinition Height="2.0*" />
+                        <RowDefinition Height="2.5*" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0"  Orientation="Horizontal"   >
@@ -181,7 +181,8 @@
                         <Button Content="存檔" Width="150"   FontSize="40"  />
                     </StackPanel>
                     <GroupBox Grid.Row="1" FontSize="20" Header="生產資訊">
-                        <match:PatMaxControl />
+                        <!--<match:PatMaxControl />-->
+
                     </GroupBox>
                     <GroupBox Grid.Row="2" FontSize="20" Header="Log資訊">
                         <TextBox  MaxLines="30" metro:ControlsHelper.FocusBorderBrush="#FFE8C2C2" metro:ControlsHelper.MouseOverBorderBrush="#FF918585" metro:TextBoxHelper.HasText="True"  >
@@ -543,10 +544,13 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Button  Grid.Row="0"   Content="自動對位" />
-                            <Button Grid.Row="3"  Content="存檔" Command="{Binding SaveLocateDataCommand}"  />
-                            <Button  Grid.Row="4"  Content="讀檔" Command="{Binding LoadLocateDataCommand}"  />
 
+                            <Button  Grid.Row="0"   Content="自動對位" />
+                            <Button Grid.Row="1"  Content="來源存檔" Command="{Binding SaveSourceLocateDataCommand}"  />
+                            <Button  Grid.Row="2"  Content="來源讀檔" Command="{Binding LoadSourceLocateDataCommand}"  />
+                            <Button Grid.Row="3"  Content="目標存檔" Command="{Binding SaveTargetLocateDataCommand}"  />
+                            <Button  Grid.Row="4"  Content="目標讀檔" Command="{Binding LoadTargetLocateDataCommand}"  />
+                            <Button  Grid.Row="5"  Content=" Create Wafer " Command="{Binding CreateWaferDataCommand}"  />
                         </Grid>
                     </GroupBox>
 
@@ -554,9 +558,13 @@
 
                     <GroupBox Grid.Row="2" Grid.Column="1"  Grid.ColumnSpan="2" Header="Mapping圖" FontSize="20" BorderBrush="Black"  BorderThickness="2">
                         <views:VirtualCanvas Grid.Column="0" Grid.Row="0" Margin="3" ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
-                                             AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
+                                      MousePixcel="{Binding MappingMousePixel}"  RemoveShapeAction="{Binding RemoveShapeMappingAction}"  AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
                         Grid.ColumnSpan="2" IsShowBar="False"    >
-
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewMouseUp">
+                                    <i:InvokeCommandAction Command="{Binding MappingPreviewMouseUpCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </views:VirtualCanvas>
                     </GroupBox>
                 </Grid>
@@ -570,10 +578,10 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="0.3*" />
+                        <RowDefinition Height="0.3*" />
                         <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
+
                     </Grid.RowDefinitions>
 
                     <GroupBox  Header="標記樣本" FontSize="30" >
@@ -588,9 +596,9 @@
                                 <Button  Height="50" Content="測試"  Command="{Binding TestMeansureCommand}"   />
                             </StackPanel>
                         </Grid>
-                      
+
                     </GroupBox>
-                    
+                    <autofocusmachine:CogDisplayer Grid.Row="2" Grid.ColumnSpan="2" Record="{Binding LastRecord}" Width="650" Height="370"  />
                 </Grid>
             </TabItem>
 

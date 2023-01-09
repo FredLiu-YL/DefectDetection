@@ -35,9 +35,11 @@ namespace AutoFocusMachine.ViewModel
 
         private BitmapSource sampleImage;
 
-
+        private ICogRecord lastRecord;
 
         public BitmapSource SampleImage { get => sampleImage; set => SetValue(ref sampleImage, value); }
+        public ICogRecord LastRecord { get => lastRecord; set => SetValue(ref lastRecord, value); }
+
         public ICommand TestCommand => new RelayCommand(async () =>
         {
             var result = cogMatcher.Find();
@@ -70,8 +72,8 @@ namespace AutoFocusMachine.ViewModel
             CogProcess cogProcess = new CogProcess(pmTool.Pattern, pmTool.RunParams);
             cogProcess.Run(frametemp);
             var resultLine = cogProcess.RunMeansure(findLineA.RunParams, findLineB.RunParams);
-            cogProcess.RunInsp(cogBlobTool.RunParams , cogBlobTool.Region);
-
+           var tes=  cogProcess.RunInsp(cogBlobTool.RunParams , cogBlobTool.Region);
+            LastRecord = tes;
             //     CogDistanceSegmentSegmentTool findLine1 = myTG.Tools["CogDistanceSegmentSegmentTool1"] as CogDistanceSegmentSegmentTool;
             var aa = new ROILine { X1 = resultLine.lineA.StartX, Y1 = resultLine.lineA.StartY, X2 = resultLine.lineA.EndX, Y2 = resultLine.lineA.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
             var ab = new ROILine { X1 = resultLine.lineB.StartX, Y1 = resultLine.lineB.StartY, X2 = resultLine.lineB.EndX, Y2 = resultLine.lineB.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
