@@ -61,7 +61,7 @@ namespace AutoFocusMachine
             set => SetValue(RecordProperty, value);
         }
 
-        public int Width
+        public  int Width
         {
             get => (int)GetValue(WidthProperty);
             set => SetValue(WidthProperty, value);

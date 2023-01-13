@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace YuanliCore.Motion.Marzhauser
 {
-    public class TangoLib
+    public static class TangoLib
     {
 
         #region Marzhauser Function
@@ -44,15 +44,15 @@ namespace YuanliCore.Motion.Marzhauser
         public static extern Int32 LS_SetVel(Double pdX, Double pdY, Double pdZ, Double pdA);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_SetAccel(int lLSID, double dX, double dY, double dZ, double dA);
+        public static extern Int32 LS_SetAccel( double dX, double dY, double dZ, double dA);
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_SetStopAccel(int lLSID, double dX, double dY, double dZ, double dA);
+        public static extern Int32 LS_SetStopAccel(  double dX, double dY, double dZ, double dA);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_GetLimit(int lLSID, int lAxis, out double pdMinRange, out double pdMaxRange);
+        public static extern Int32 LS_GetLimit(int lAxis, out double pdMinRange, out double pdMaxRange);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_SetLimit(int lLSID, Int32 lAxis, Double dMinRange, Double dMaxRange);
+        public static extern Int32 LS_SetLimit(Int32 lAxis, Double dMinRange, Double dMaxRange);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_GetLimitControl(int lLSID, Int32 lAxis, out bool pbActive);

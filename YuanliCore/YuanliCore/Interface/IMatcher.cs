@@ -33,5 +33,7 @@ namespace YuanliCore.Interface
         public double Angle { get; }
         public double Score { get;  }
 
+
+    
     }
 }

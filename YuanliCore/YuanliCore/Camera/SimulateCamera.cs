@@ -49,9 +49,11 @@ namespace YuanliCore.CameraLib
             return null;
         }
 
-        public Task<BitmapSource> GrabAsync()
+        public   BitmapSource GrabAsync()
         {
-            return Task.Run(() => tempFrames.ToBitmapSource());
+            return   tempFrames.ToBitmapSource();
+               
+            
         }
 
         public void Open()

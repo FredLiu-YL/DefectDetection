@@ -21,7 +21,7 @@ namespace YuanliCore.Interface
 
         void Open();
         void Close();
-        Task<BitmapSource> GrabAsync();
+        BitmapSource GrabAsync();
         IDisposable Grab();
 
         void Stop();

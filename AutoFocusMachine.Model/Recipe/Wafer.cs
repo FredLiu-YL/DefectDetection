@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using YuanliCore.AffineTransform;
 
-namespace AutoFocusMachine
+namespace AutoFocusMachine.Model
 {
     public class Wafer
     {
@@ -24,6 +24,9 @@ namespace AutoFocusMachine
 
             Dies = GenDies(RowDiameterCount, ColDiameterCount);
         }
+
+        public Point[] FiducialMarkPos { get; set; }
+
         /// <summary>
         /// 晶粒資訊
         /// </summary>

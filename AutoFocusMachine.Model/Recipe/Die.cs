@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace AutoFocusMachine
+namespace AutoFocusMachine.Model
 {
     public class Die
     {

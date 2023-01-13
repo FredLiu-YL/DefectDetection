@@ -100,7 +100,7 @@ namespace AutoFocusMachine.ViewModel
         public int TabControlIndex { get => tabControlIndex; set => SetValue(ref tabControlIndex, value); }
         public string RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }
 
-        public ICommand LoadedCommand => new RelayCommand<string>(async key =>
+        public ICommand LoadedCommand => new RelayCommand<string>( key =>
         {
 
             CameraLive();
@@ -126,7 +126,7 @@ namespace AutoFocusMachine.ViewModel
             atfMachine.Dispose();
 
         });
-        public ICommand TabControlChangedCommand => new RelayCommand<string>(async key =>
+        public ICommand TabControlChangedCommand => new RelayCommand<string>( key =>
         {
 
             int i = 0;
@@ -164,7 +164,7 @@ namespace AutoFocusMachine.ViewModel
 
                 while (isRefresh)
                 {
-                    var pos = await atfMachine.Table_Module.GetPostion();
+                    var pos =  atfMachine.Table_Module.GetPostion();
                     TablePosX = pos.X;
                     TablePosY = pos.Y;
 

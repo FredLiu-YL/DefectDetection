@@ -95,7 +95,8 @@ namespace YuanliCore.Interface
                 JsonSerializerSettings settings = new JsonSerializerSettings()
                 {
                     DefaultValueHandling = DefaultValueHandling.Populate,
-                    TypeNameHandling = TypeNameHandling.Auto
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    NullValueHandling = NullValueHandling.Ignore 
                 };
 
                 if (converter != null) settings.Converters = new List<JsonConverter>() { converter };

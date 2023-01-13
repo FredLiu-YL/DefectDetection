@@ -1,9 +1,12 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using YuanliCore.AffineTransform;
+using YuanliCore.Interface;
 using YuanliCore.Views.CanvasShapes;
 
 namespace AutoFocusMachine.ViewModel
@@ -127,10 +130,23 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand TEST4Command => new RelayCommand(async () =>
         {
-            var dis = Convert.ToDouble(TableDistance);
 
-            await atfMachine.Table_Module.TableX.MoveAsync(dis);
+            Point[] sources = new Point[] { new Point(1, 0) ,
+                                          new Point(48, 0) ,
+          
+            };
 
+            Point[] targets = new Point[] { new Point(246.838, 93.25) ,
+                                          new Point(85.538, 93.11) ,
+                   
+            };
+
+            //ITransform hAffineTransform = new HAffineTransform(sources, targets);
+            ITransform hAffineTransform = new CogAffineTransform(sources, targets);
+            for (int i = 1; i <= 48; i++)
+            {
+                SourceDieList.Add((new Point(i, 0) ,hAffineTransform.TransPoint(new Point(i,0))));
+            }
 
 
         });
@@ -141,17 +157,17 @@ namespace AutoFocusMachine.ViewModel
             {
                 switch (key)
                 {
-                    case "X+":
+                    case "X-":
                         await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitN);
                         break;
-                    case "X-":
+                    case "X+":
                         await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitP);
                         break;
                     case "Y+":
-                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitN);
+                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitP);
                         break;
                     case "Y-":
-                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitP);
+                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitN);
                         break;
 
                 }
@@ -174,16 +190,16 @@ namespace AutoFocusMachine.ViewModel
             switch (key)
             {
                 case "X+":
-                    await atfMachine.Table_Module.TableX.MoveAsync(-dis);
-                    break;
-                case "X-":
                     await atfMachine.Table_Module.TableX.MoveAsync(dis);
                     break;
+                case "X-":
+                    await atfMachine.Table_Module.TableX.MoveAsync(-dis);
+                    break;
                 case "Y+":
-                    await atfMachine.Table_Module.TableY.MoveAsync(-dis);
+                    await atfMachine.Table_Module.TableY.MoveAsync(dis);
                     break;
                 case "Y-":
-                    await atfMachine.Table_Module.TableY.MoveAsync(dis);
+                    await atfMachine.Table_Module.TableY.MoveAsync(-dis);
                     break;
 
             }
@@ -230,7 +246,7 @@ namespace AutoFocusMachine.ViewModel
             }
             catch (Exception ex)
             {
-
+                throw ex;
 
             }
             finally
@@ -300,7 +316,7 @@ namespace AutoFocusMachine.ViewModel
             catch (Exception ex)
             {
 
-                // throw ex;
+                 throw ex;
             }
 
 

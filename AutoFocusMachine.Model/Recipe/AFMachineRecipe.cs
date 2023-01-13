@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Cognex.VisionPro.Blob;
+using Cognex.VisionPro.Caliper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using YuanliCore.ImageProcess.Blob;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 
@@ -15,12 +18,21 @@ namespace AutoFocusMachine.Model.Recipe
     public class AFMachineRecipe : AbstractRecipe
     {
 
-
-        public Point[] FiducialMarkPos { get; set; }
+        public Wafer WaferData { get; set; }
+        
+        public Point[] FiducialMarkGrabPos { get; set; }
 
         public Point[] LayoutPos { get; set; }
 
         public PatmaxParams PMParams { get; set; }
+
+        public CogFindLine LineAParam { get; set; }
+        public CogFindLine LineBParam { get; set; }
+
+
+        public BlobParam DefectParam { get; set; }
+
+
         /*    public static AFMachineRecipe Load(string filename)
             {
                 string extension = Path.GetExtension(filename);
@@ -64,6 +76,8 @@ namespace AutoFocusMachine.Model.Recipe
         public Point[] FiducialMarkPos { get; set; }
 
         public Point[] LayoutPos { get; set; }
+
+        public  Point[]  LayoutIndex { get; set; }
     }
 
 }

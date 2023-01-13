@@ -447,11 +447,19 @@ namespace YuanliCore.CameraLib.IDS
             }
         }
 
-        public async Task<BitmapSource> GrabAsync()
+        public BitmapSource GrabAsync()
         {
-            //  using (var grab = IsGrabbing ? Disposable.Empty : Grab())
-            //      return await Frames.Take(1).Timeout(TimeSpan.FromSeconds(3));
-            return null;
+            using (var grab = IsGrabbing ? Disposable.Empty : Grab())
+            {
+                
+                // return   Frames.Take(1).Timeout(TimeSpan.FromSeconds(3));
+                  var f =  Frames.Take(1).Timeout(TimeSpan.FromSeconds(3)).FirstOrDefault();
+                  return  f.ToBitmapSource();
+      
+               
+            }
+                
+          
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

@@ -31,15 +31,17 @@ namespace AutoFocusMachine.Model
 
         public void AssisnModule()
         {
+            var vX = axes[0].AxisVelocity;
+            var vY = axes[1].AxisVelocity;
+            axes[0].AxisVelocity = new MotionVelocity(18, 2, 2) ;
+            axes[1].AxisVelocity = new MotionVelocity(18, 2, 2);
+
             AFModule = new AutoFocusModule(focusSystem);
 
-            Table_Module=  new TableModule(axes , camera);
+            Table_Module = new TableModule(axes, camera);
         }
 
-        public  void Home()
-        {
-             Task.Run(()=> motionController.HomeCommand(0) ).Wait() ;
-        }
+
 
         private Axis[] InitialMotionController(bool isSimulate)
         {
@@ -54,10 +56,10 @@ namespace AutoFocusMachine.Model
                 };
                 motionController = new SimulateMotionControllor(axesInfo);
             }
-          //  else
-          //      motionController = new TangoController(machineSetting.TangoComPort);
-
-
+            else
+            {
+                motionController = new TangoController(machineSetting.TangoComPort);
+            }
 
 
             motionController.InitializeCommand();
@@ -67,7 +69,12 @@ namespace AutoFocusMachine.Model
 
         }
 
+        public async void Home()
+        {
 
+            await Task.Run(() => motionController.HomeCommand(0));
+
+        }
 
 
         private ICamera InitialCamera(bool isSimulate)
@@ -78,7 +85,7 @@ namespace AutoFocusMachine.Model
                 string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 camera = new SimulateCamera($"{systemPath}\\03.bmp");
             }
-                
+
             else
             {
                 var ueyeCamera = new UeyeCamera();
@@ -101,6 +108,8 @@ namespace AutoFocusMachine.Model
             focusSystem.Open();
             return focusSystem;
         }
+
+
 
     }
 

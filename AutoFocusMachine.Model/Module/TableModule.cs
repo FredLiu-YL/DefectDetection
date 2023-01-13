@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using YuanliCore.Interface;
 
 namespace AutoFocusMachine.Model
@@ -36,11 +37,19 @@ namespace AutoFocusMachine.Model
             await Task.WhenAll(TableX.MoveAsync(Distance.X), TableY.MoveAsync(Distance.Y));
         }
 
-        public async Task<Point> GetPostion()
+        public  Point GetPostion()
         {
            return new Point(TableX.Position, TableY.Position);
 
         }
+
+        public BitmapSource GrabAsync()
+        {
+            BitmapSource tmg =    Camera.GrabAsync() ;
+            return tmg;
+        }
+
+
 
     }
 

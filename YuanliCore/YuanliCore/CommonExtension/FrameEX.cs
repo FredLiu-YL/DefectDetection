@@ -76,8 +76,7 @@ namespace YuanliCore.CameraLib
 
             // 因 BitmapData 的 Stride 在某些寬度時會比目前要轉換的影像還多，故需要每列複製，避免 Stride 長度不同的問題。
             int stride = width * bytesPerPixel;
-            for (int h = 0; h < height; h++)
-            {
+            for (int h = 0; h < height; h++) {
                 Marshal.Copy(buffer, h * stride, scan0 + h * bmpData.Stride, stride);
             }
             bitmap.UnlockBits(bmpData);
@@ -105,8 +104,7 @@ namespace YuanliCore.CameraLib
             CogImage8Grey cogImage = new CogImage8Grey();
             var rawSize = frame.Width * frame.Height;
             SafeMalloc buf = null;
-            try
-            {
+            try {
                 cogImage = new CogImage8Grey();
 
                 buf = new SafeMalloc(rawSize);
@@ -123,25 +121,21 @@ namespace YuanliCore.CameraLib
                 // And set the image roor
                 cogImage.SetRoot(cogRoot);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw ex;
             }
 
             return cogImage;
         }
 
-        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame, double bayerRedScale =0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
+        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
         {
-            try
-            {
+            try {
 
-                using (System.Drawing.Bitmap bmp = frame.ToBitmap())
-                {
+                using (System.Drawing.Bitmap bmp = frame.ToBitmap()) {
                     CogImage24PlanarColor cogImage = new CogImage24PlanarColor(bmp);
 
-                    using (CogImageConvertTool tool = new CogImageConvertTool())
-                    {
+                    using (CogImageConvertTool tool = new CogImageConvertTool()) {
                         tool.InputImage = cogImage;
                         tool.RunParams.RunMode = CogImageConvertRunModeConstants.IntensityFromWeightedRGB;
 
@@ -154,12 +148,34 @@ namespace YuanliCore.CameraLib
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw ex;
             }
         }
+        public static ICogImage ColorFrameToCogImage(this BitmapSource bitmapSource, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
+        {
+            try {
 
+                using (System.Drawing.Bitmap bmp = bitmapSource.ToByteFrame().ToBitmap()) {
+                    CogImage24PlanarColor cogImage = new CogImage24PlanarColor(bmp);
+
+                    using (CogImageConvertTool tool = new CogImageConvertTool()) {
+                        tool.InputImage = cogImage;
+                        tool.RunParams.RunMode = CogImageConvertRunModeConstants.IntensityFromWeightedRGB;
+
+                        tool.RunParams.IntensityFromWeightedRGBRedWeight = bayerRedScale;
+                        tool.RunParams.IntensityFromWeightedRGBGreenWeight = bayerGreenScale;
+                        tool.RunParams.IntensityFromWeightedRGBBlueWeight = bayerBlueScale;
+
+                        tool.Run();
+                        return (CogImage8Grey)tool.OutputImage;
+                    }
+                }
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+        }
 
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         public static extern bool DeleteObject(IntPtr hObject);
@@ -180,7 +196,21 @@ namespace YuanliCore.CameraLib
             Bitmap bitmap = new Bitmap(image);
             return bitmap.ToBitmapSource();
         }
- 
+        //方法有問題 讀硬碟沒事 ，取相機的影像會有事 待確認問題20230115 
+        public static System.Drawing.Bitmap ToBitmap(this BitmapSource bitmapSource)
+        {
+            //  BitmapSource m = (BitmapSource)image1.Source;
+
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(bitmapSource.PixelWidth, bitmapSource.PixelHeight, bitmapSource.Format.ConvertPixelFormat());
+
+            System.Drawing.Imaging.BitmapData data = bmp.LockBits(
+            new System.Drawing.Rectangle(System.Drawing.Point.Empty, bmp.Size), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+
+            bitmapSource.CopyPixels(Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride); 
+            bmp.UnlockBits(data);
+
+            return bmp;
+        }
 
         public static void CopyPixels(this BitmapSource source, byte[] buffer)
         {
@@ -225,6 +255,21 @@ namespace YuanliCore.CameraLib
                format == PixelFormats.Indexed8)
                 throw new NotImplementedException("Not support indexed format.");
         }
+        private static System.Drawing.Imaging.PixelFormat ConvertPixelFormat(this PixelFormat sourceFormat)
+        {
 
+            if (sourceFormat == PixelFormats.Bgr24)
+                return System.Drawing.Imaging.PixelFormat.Format24bppRgb;
+
+            if (sourceFormat == PixelFormats.Bgra32)
+                return System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+
+            if (sourceFormat == PixelFormats.Bgr32)
+                return System.Drawing.Imaging.PixelFormat.Format32bppRgb;
+
+            // .. as many as you need...
+
+            return new System.Drawing.Imaging.PixelFormat();
+        }
     }
 }

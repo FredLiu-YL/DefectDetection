@@ -295,13 +295,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Die.cs" />
     <Compile Include="ViewModel\MainLocate.vm.cs" />
     <Compile Include="ViewModel\MainAotoFocus.vm.cs" />
     <Compile Include="ViewModel\MainMeansure.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Wafer.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

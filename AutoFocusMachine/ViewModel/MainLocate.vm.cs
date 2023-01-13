@@ -1,4 +1,5 @@
-﻿using AutoFocusMachine.Model.Recipe;
+﻿using AutoFocusMachine.Model;
+using AutoFocusMachine.Model.Recipe;
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,8 @@ namespace AutoFocusMachine.ViewModel
 {
     public partial class MainViewModel
     {
-        private ObservableCollection<Point> targetDieList = new ObservableCollection<Point>();
-        private ObservableCollection<Point> sourceDieList = new ObservableCollection<Point>();
+        private ObservableCollection<(Point index, Point pos)> targetDieList = new ObservableCollection<(Point index, Point pos)>();
+        private ObservableCollection<(Point index, Point pos)> sourceDieList = new ObservableCollection<(Point index, Point pos)>();
         private int targetDieIndex, sourcetDieIndex;
         private double seachPosX1, seachPosY1, seachPosX2, seachPosY2, seachPosX3, seachPosY3;
         private double targetPosX1, targetPosY1, targetPosX2, targetPosY2, targetPosX3, targetPosY3;
@@ -26,8 +27,8 @@ namespace AutoFocusMachine.ViewModel
         private LocateData sourceLocate = new LocateData();
         private LocateData targetLocate = new LocateData();
 
-        public ObservableCollection<Point> TargetDieList { get => targetDieList; set => SetValue(ref targetDieList, value); }
-        public ObservableCollection<Point> SourceDieList { get => sourceDieList; set => SetValue(ref sourceDieList, value); }
+        public ObservableCollection<(Point index, Point pos)> TargetDieList { get => targetDieList; set => SetValue(ref targetDieList, value); }
+        public ObservableCollection<(Point index, Point pos)> SourceDieList { get => sourceDieList; set => SetValue(ref sourceDieList, value); }
         public int SourceDieIndex { get => sourcetDieIndex; set => SetValue(ref sourcetDieIndex, value); }
         public int TargetDieIndex { get => targetDieIndex; set => SetValue(ref targetDieIndex, value); }
 
@@ -61,8 +62,8 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand AddDielistCommand => new RelayCommand(async () =>
        {
-           Point pos = await atfMachine.Table_Module.GetPostion();
-           SourceDieList.Add(pos);
+           Point pos =  atfMachine.Table_Module.GetPostion();
+           SourceDieList.Add((new Point(SourceDieList.Count+1,0), pos));
 
        });
         public ICommand DelDielistCommand => new RelayCommand(() =>
@@ -81,7 +82,7 @@ namespace AutoFocusMachine.ViewModel
         {
             try
             {
-                Point pos = await atfMachine.Table_Module.GetPostion();
+                Point pos =  atfMachine.Table_Module.GetPostion();
                 switch (key)
                 {
                     case "1":
@@ -118,12 +119,14 @@ namespace AutoFocusMachine.ViewModel
                 {
                     case "1":
 
+                        await atfMachine.Table_Module.TableMoveTo(new Point(SeachPosX1, SeachPosY1));
                         break;
                     case "2":
 
+                        await atfMachine.Table_Module.TableMoveTo(new Point(SeachPosX2, SeachPosY2));
                         break;
                     case "3":
-
+                        await atfMachine.Table_Module.TableMoveTo(new Point(SeachPosX3, SeachPosY3));
                         break;
 
 
@@ -142,31 +145,34 @@ namespace AutoFocusMachine.ViewModel
         {
             Point[] sources = new Point[] { new Point(SeachPosX1, SeachPosY1) ,
                                           new Point(SeachPosX2, SeachPosY2) ,
-                                          new Point(SeachPosX3, SeachPosY3) };
+                                       //   new Point(SeachPosX3, SeachPosY3) 
+            };
 
             Point[] targets = new Point[] { new Point(TargetPosX1, TargetPosY1) ,
                                           new Point(TargetPosX2, TargetPosY2) ,
-                                          new Point(TargetPosX3, TargetPosY3) };
+                                       //   new Point(TargetPosX3, TargetPosY3) 
+            };
 
-            //  ITransform hAffineTransform = new HAffineTransform(sources, targets);
+            //ITransform hAffineTransform = new HAffineTransform(sources, targets);
             ITransform hAffineTransform = new CogAffineTransform(sources, targets);
+
             var sps = SourceDieList.ToArray();
-            TargetDieList = new ObservableCollection<Point>(sps.Select(p => hAffineTransform.TransPoint(p)));
+            TargetDieList = new ObservableCollection<(Point  index, Point pos)>(sps.Select(p => (p.index, hAffineTransform.TransPoint(p.pos))));
 
 
         });
 
         public ICommand MoveToDieCommand => new RelayCommand(async () =>
         {
-
-            Point pos = TargetDieList[TargetDieIndex];
-            await atfMachine.Table_Module.TableMoveTo(pos);
+            if (TargetDieIndex == -1) return;
+            var pos = TargetDieList[TargetDieIndex];
+            await atfMachine.Table_Module.TableMoveTo(pos.pos);
         });
         public ICommand NextDieCommand => new RelayCommand(async () =>
         {
             TargetDieIndex++;
-            Point pos = TargetDieList[TargetDieIndex];
-            await atfMachine.Table_Module.TableMoveTo(pos);
+            var pos = TargetDieList[TargetDieIndex];
+            await atfMachine.Table_Module.TableMoveTo(pos.pos);
 
         });
 
@@ -178,10 +184,10 @@ namespace AutoFocusMachine.ViewModel
             fPoints.Add(new Point(SeachPosX2, SeachPosY2));
             fPoints.Add(new Point(SeachPosX3, SeachPosY3));
 
-            
-            sourceLocate.FiducialMarkPos = fPoints.ToArray();
-            sourceLocate.LayoutPos = SourceDieList.ToArray();
 
+            sourceLocate.FiducialMarkPos = fPoints.ToArray();
+            sourceLocate.LayoutPos = SourceDieList.Select(p => p.pos).ToArray();
+            sourceLocate.LayoutIndex = SourceDieList.Select(p => p.index).ToArray();
 
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.Filter = "Param Documents|*.json";
@@ -219,9 +225,10 @@ namespace AutoFocusMachine.ViewModel
                      Point point = hAffine.TransPoint(new Point(i, 0));
                      SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
                  }*/
-
-                SourceDieList = new ObservableCollection<Point>(sourceLocate.LayoutPos);
-
+            
+                var test = sourceLocate.LayoutIndex.Zip(sourceLocate.LayoutPos, (i, p) => (i, p));
+                SourceDieList = new ObservableCollection<(Point, Point)>(test);
+                // SourceDieList = new ObservableCollection<(System.Drawing.Point, Point)>((test, sourceLocate.LayoutPos));
 
 
             }
@@ -237,8 +244,8 @@ namespace AutoFocusMachine.ViewModel
 
 
             targetLocate.FiducialMarkPos = fPoints.ToArray();
-            targetLocate.LayoutPos = TargetDieList.ToArray();
-
+            targetLocate.LayoutPos = TargetDieList.Select(p=> p.pos).ToArray();
+            targetLocate.LayoutIndex = TargetDieList.Select(p => p.index).ToArray();
 
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.Filter = "Param Documents|*.json";
@@ -252,32 +259,33 @@ namespace AutoFocusMachine.ViewModel
         public ICommand LoadTargetLocateDataCommand => new RelayCommand(() =>
         {
 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Filter = "Param Documents|*.json";
-            Nullable<bool> result = dlg.ShowDialog();
-            if (result == true)
-            {
-                targetLocate = LocateData.Load<LocateData>(dlg.FileName);
+        Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+        dlg.Filter = "Param Documents|*.json";
+        Nullable<bool> result = dlg.ShowDialog();
+        if (result == true)
+        {
+            targetLocate = LocateData.Load<LocateData>(dlg.FileName);
 
-                TargetPosX1 = targetLocate.FiducialMarkPos[0].X;
-                TargetPosY1 = targetLocate.FiducialMarkPos[0].Y;
-                TargetPosX2 = targetLocate.FiducialMarkPos[1].X;
-                TargetPosY2 = targetLocate.FiducialMarkPos[1].Y;
-                TargetPosX3 = targetLocate.FiducialMarkPos[2].X;
-                TargetPosY3 = targetLocate.FiducialMarkPos[2].Y;
+            TargetPosX1 = targetLocate.FiducialMarkPos[0].X;
+            TargetPosY1 = targetLocate.FiducialMarkPos[0].Y;
+            TargetPosX2 = targetLocate.FiducialMarkPos[1].X;
+            TargetPosY2 = targetLocate.FiducialMarkPos[1].Y;
+            TargetPosX3 = targetLocate.FiducialMarkPos[2].X;
+            TargetPosY3 = targetLocate.FiducialMarkPos[2].Y;
 
 
-                /* var test1 = mainRecipe.LayoutPos[0];
-                 var test2 = mainRecipe.LayoutPos[1];
-                 Point[] s1 = new Point[] { new Point(68, 0), new Point(1, 0) };
-                 HAffineTransform hAffine = new HAffineTransform(s1, mainRecipe.LayoutPos); 
-                 for (int i = 1; i <= 68; i++)
-                 {
-                     Point point = hAffine.TransPoint(new Point(i, 0));
-                     SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
-                 }*/
+            /* var test1 = mainRecipe.LayoutPos[0];
+             var test2 = mainRecipe.LayoutPos[1];
+             Point[] s1 = new Point[] { new Point(68, 0), new Point(1, 0) };
+             HAffineTransform hAffine = new HAffineTransform(s1, mainRecipe.LayoutPos); 
+             for (int i = 1; i <= 68; i++)
+             {
+                 Point point = hAffine.TransPoint(new Point(i, 0));
+                 SourceDieList.Add(new Point(point.X.Round(3), point.Y.Round(3)));
+             }*/
+            var test = targetLocate.LayoutIndex.Zip(targetLocate.LayoutPos, (i,p)=> (i ,p ) );
 
-                TargetDieList = new ObservableCollection<Point>(targetLocate.LayoutPos);
+                TargetDieList = new ObservableCollection<(Point ,Point)>(test);
 
 
 
@@ -290,11 +298,12 @@ namespace AutoFocusMachine.ViewModel
         {
 
 
-            var waferSize = new Size(200000, 200000);
-            var dieSize = new Size(3429.183, 3163.755);
-            Vector diepitch = new Vector(0, 0);
+            var waferSize = new Size(195000, 195000);
+            //   var dieSize = new Size(3429.183, 3163.755);
+            //   Vector diepitch = new Vector(0, 0);
+            var dieSize = new Size(3360.0, 3076.1);
+            Vector diepitch = new Vector(75, 75);
 
-      
             Wafer wafer = new Wafer(waferSize, dieSize, diepitch);
 
 
@@ -314,7 +323,7 @@ namespace AutoFocusMachine.ViewModel
                     return null;
             }).Where(d => d != null).ToArray();
 
-            SourceDieList = new ObservableCollection<Point>(circleDies.Select(d => d.Position));
+            SourceDieList = new ObservableCollection<( Point, Point)>(circleDies.Select(d => ( new Point( d.Index.X, d.Index.Y), d.Position)));
             //顯示用
             foreach (var die in circleDies)
             {

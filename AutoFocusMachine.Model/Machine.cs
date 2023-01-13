@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoFocusMachine.Model.Recipe;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace AutoFocusMachine.Model
         private Axis[] axes;
         private ICamera camera;
         private AutoFocusSystem focusSystem;
-
+    
 
         private bool isSimulate;
         public Machine()
@@ -42,7 +43,7 @@ namespace AutoFocusMachine.Model
           
             
             
-            isSimulate = true;
+            isSimulate = false;
             machineSetting = new MachineSetting();
 
 

@@ -203,7 +203,12 @@ namespace YuanliCore
             }
 
         }
-
+        public void ChangePort(string port)
+        {
+            //01 群組  Port:A B C D E F G
+            string response = SendMessage($"POT:01{port}");
+        
+        }
         public async Task Home()
         {
             string response = SendMessage($"FL");
@@ -211,11 +216,16 @@ namespace YuanliCore
 
 
         }
-        private void WriteFSP(int value)
+        private void WriteFSP( int value)
         {
             try
             {
                 string response = SendMessage($"P:001,01A{value}B{value}C{value}D{value}E{value}F{value}");
+               // string response = SendMessage($"P:001,01A{1000}B_C_D_E_F_");
+               // string response = SendMessage($"P:001,01A_B{1000}C_D_E_F_");
+               // string response = SendMessage($"P:001,01A_B_C{1000}D_E_F_");
+
+
                 tempFSP = value;
             }
             catch (Exception ex)

@@ -80,50 +80,53 @@
                     <Button Grid.Column="0" Grid.Row="1"  Content="←"   >
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewMouseDown">
-                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
+                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
                             </i:EventTrigger>
                             <i:EventTrigger EventName="PreviewMouseUp">
-                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
+                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Button>
 
                     <Button Grid.Column="1" Grid.Row="0"  Content="↑"  >
                         <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseDown">
+                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y-"/>
+                            </i:EventTrigger>
                             <i:EventTrigger EventName="PreviewMouseUp">
-                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+" />
+                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Button>
                     <Button Grid.Column="2" Grid.Row="1"  Content="→">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewMouseDown">
-                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
+                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
                             </i:EventTrigger>
                             <i:EventTrigger EventName="PreviewMouseUp">
-                                <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
+                                <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Button>
-                    <Button Grid.Column="1" Grid.Row="2"  Content="↓" Command="{Binding TableMoveCommand}"  CommandParameter="Y+">
+                    <Button Grid.Column="1" Grid.Row="2"  Content="↓" >
                         <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseDown">
+                                <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                            </i:EventTrigger>
                             <i:EventTrigger EventName="PreviewMouseUp">
-                                <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
+                                <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Button>
                     <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedIndex="0" Text="{Binding TableDistance}"  >
+                        <TextBox  Text="{Binding TableDistance}"/>
                         <Label Content="0" />
-                        <Label Content="0.001" />
                         <Label Content="0.01" />
                         <Label Content="0.1" />
                         <Label Content="0.5" />
                         <Label Content="1" />
-                        <Label Content="4.3" />
-                        <Label Content="5" />
                         <Label Content="10" />
-                        <Label Content="50" />
-                        <TextBox  />
+
                     </ComboBox>
                 </Grid>
 
@@ -312,8 +315,26 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-
-                        <Grid Grid.Column="1">
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                             
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.2*"/>
+                                <RowDefinition />
+                                <RowDefinition />
+                             
+                            </Grid.RowDefinitions>
+                            <ComboBox  Grid.Row="0"  SelectedIndex="0" FontSize="34" >
+                                <Label Content="5X" />
+                                <Label Content="10X" />
+                                <Label Content="20X" />
+                                <Label Content="50X" />
+                                <Label Content="100X" />
+                            </ComboBox>
+                        </Grid>
+                            <Grid Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -461,7 +482,7 @@
                                 <Button  Content="新增"  Command="{Binding AddDielistCommand}"  Width="100"/>
                                 <Button  Content="刪除"  Command="{Binding DelDielistCommand}" Width="100" />
                                 <Button  Content="清除"  Command="{Binding ClearDielistCommand}"  Width="100"/>
-
+                                <Button  Content="test"  Command="{Binding TEST4Command}"  Width="100"/>
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -598,7 +619,40 @@
                         </Grid>
 
                     </GroupBox>
-                    <autofocusmachine:CogDisplayer Grid.Row="2" Grid.ColumnSpan="2" Record="{Binding LastRecord}" Width="650" Height="370"  />
+
+                    <GroupBox  Grid.Row="0" Grid.Column="1" Header="量測" FontSize="30" >
+                        <Grid >
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0"  Source="{Binding SampleImage}" />
+                            <StackPanel Grid.Column="1">
+                                <Button Height="50" Content="編輯"  Command="{Binding EditCommand}"  />
+                                <Button  Height="50" Content="測試"  Command="{Binding TestMeansureCommand}"   />
+                            </StackPanel>
+                        </Grid>
+
+                    </GroupBox>
+
+                    <GroupBox  Grid.Row="1" Grid.Column="0"  Header="功能" FontSize="30" >
+                     
+                            <StackPanel >
+                            <Button  Content="流程開始"  Command="{Binding TestingFlowStartCommand}" />
+                            <Button  Content="流程停止"  Command="{Binding TestingFlowStopCommand}" />
+                        </StackPanel>
+                   
+                        
+                    </GroupBox>
+                    <TabControl Grid.Row="2" Grid.ColumnSpan="2">
+                        <TabItem Header="量測" FontSize="22">
+                            <autofocusmachine:CogDisplayer  Record="{Binding MeansureLastRecord}" Width="650" Height="500"  />
+                        </TabItem>
+                        <TabItem Header="檢測" FontSize="22">
+                            <autofocusmachine:CogDisplayer  Record="{Binding InspLastRecord}" Width="950" Height="570"  />
+                        </TabItem>
+                    </TabControl>
+              
                 </Grid>
             </TabItem>
 

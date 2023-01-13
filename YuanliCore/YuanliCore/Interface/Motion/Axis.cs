@@ -43,10 +43,11 @@ namespace YuanliCore.Interface
         /// 運動軸方向
         /// </summary>
         public AxisDirection AxisDir { get => GetDirection(); set => SetDirection(value); }
+
         /// <summary>
         /// 運動軸速度
         /// </summary>
-        public MotionVelocity AxisVelocity { get; set; }
+        public MotionVelocity AxisVelocity { get => GetVelocity(); set => SetVelocity(value); }
 
 
 
@@ -69,6 +70,7 @@ namespace YuanliCore.Interface
             await Task.Run(() =>
             {
                 controller.MoveCommand(AxisID, distance);
+
             });
             isBusy = false;
         }
@@ -76,10 +78,16 @@ namespace YuanliCore.Interface
         public async Task MoveToAsync(double postion)
         {
             if (isBusy) return;
-            await Task.Run(() =>
-            {
-                controller.MoveToCommand(AxisID, postion);
-            });
+            await Task.Run( async() =>
+           {
+               controller.MoveToCommand(AxisID, postion);
+               
+               while (Math.Abs(Position- postion)>0.003)
+               {
+                   await Task.Delay(100);
+               }
+
+           });
             isBusy = false;
         }
 
@@ -90,7 +98,7 @@ namespace YuanliCore.Interface
         }
         private AxisDirection GetDirection()
         {
-           return controller.GetAxisDirectionCommand(AxisID);
+            return controller.GetAxisDirectionCommand(AxisID);
         }
         private void SetDirection(AxisDirection direction)
         {
@@ -116,7 +124,10 @@ namespace YuanliCore.Interface
         {
             controller.SetLimitCommand(AxisID, LimitN, limit);
         }
-
+        private MotionVelocity GetVelocity()
+        {
+            return controller.GetSpeedCommand(AxisID);
+        }
         private void SetVelocity(MotionVelocity axisVelocity)
         {
 
