@@ -326,7 +326,7 @@
                                 <RowDefinition />
                              
                             </Grid.RowDefinitions>
-                            <ComboBox  Grid.Row="0"  SelectedIndex="0" FontSize="34" >
+                            <ComboBox  Grid.Row="0"  SelectedIndex="0" FontSize="34"  >
                                 <Label Content="5X" />
                                 <Label Content="10X" />
                                 <Label Content="20X" />

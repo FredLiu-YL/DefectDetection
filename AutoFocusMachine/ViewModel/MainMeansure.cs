@@ -155,30 +155,36 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand EditSampleCommand => new RelayCommand(async () =>
         {
-            if (cogMatchWindow == null)
-                cogMatchWindow = new CogMatchWindow(MainImage);
+            try {
+                if (cogMatchWindow == null)
+                    cogMatchWindow = new CogMatchWindow(MainImage);
 
 
-
-            cogMatchWindow.PatmaxParam = new PatmaxParams();
-
+                cogMatchWindow.PatmaxParam = new PatmaxParams();
 
 
-            cogMatchWindow.ShowDialog();
+                cogMatchWindow.ShowDialog();
 
 
-            cogMatcher.Patmaxparams = cogMatchWindow.PatmaxParam;
-            mainRecipe.PMParams = cogMatcher.Patmaxparams;
+                cogMatcher.Patmaxparams = cogMatchWindow.PatmaxParam;
+                mainRecipe.PMParams = cogMatcher.Patmaxparams;
 
-            var aa = (CogRectangle)cogMatchWindow.PatmaxParam.Pattern.TrainRegion;
+            //    var aa = (CogRectangle)cogMatchWindow.PatmaxParam.Pattern.TrainRegion;
+            //    var ab = cogMatchWindow.PatmaxParam.Pattern.Origin;
 
-            var ab = cogMatchWindow.PatmaxParam.Pattern.Origin;
+                ICogImage cogbip = cogMatchWindow.PatmaxParam.Pattern.GetTrainedPatternImage();
+                if (cogbip == null) return;
+                Bitmap bip = cogbip.ToBitmap();
 
-            Bitmap bip = cogMatchWindow.PatmaxParam.Pattern.GetTrainedPatternImage().ToBitmap();
 
+                SampleImage = bip.ToBitmapSource();
+                //  cogMatchWindow.Close();
+            }
+            catch (Exception ex) {
 
-            SampleImage = bip.ToBitmapSource();
-            //  cogMatchWindow.Close();
+                MessageBox.Show(ex.Message);
+            }
+            
 
 
         });

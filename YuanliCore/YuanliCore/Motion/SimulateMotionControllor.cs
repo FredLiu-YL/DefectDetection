@@ -50,7 +50,7 @@ namespace YuanliCore.Motion
 
         public MotionVelocity GetSpeedCommand(int id)
         {
-            throw new NotImplementedException();
+            return new MotionVelocity();
         }
 
         public void HomeCommand(int id)
@@ -102,12 +102,12 @@ namespace YuanliCore.Motion
 
         public void SetSpeedCommand(int id, double velocity, double accVelocity, double decVelocity)
         {
-            throw new NotImplementedException();
+             
         }
 
         public void SetSpeedCommand(int id, MotionVelocity motionVelocity)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void StopCommand(int id)
