@@ -133,23 +133,31 @@ namespace AutoFocusMachine.ViewModel
 
             Point[] sources = new Point[] { new Point(1, 0) ,
                                           new Point(48, 0) ,
-          
+
             };
 
             Point[] targets = new Point[] { new Point(246.838, 93.25) ,
                                           new Point(85.538, 93.11) ,
-                   
+
             };
+
+            for (int i = 0; i < 50; i++) {
+                Logger($"123545  {i}");
+            }
+         
 
             //ITransform hAffineTransform = new HAffineTransform(sources, targets);
             ITransform hAffineTransform = new CogAffineTransform(sources, targets);
-            for (int i = 1; i <= 48; i++)
-            {
-                SourceDieList.Add((new Point(i, 0) ,hAffineTransform.TransPoint(new Point(i,0))));
+            for (int i = 1; i <= 48; i++) {
+                SourceDieList.Add((new Point(i, 0), hAffineTransform.TransPoint(new Point(i, 0))));
             }
 
 
-        });
+        })
+        {
+
+        };
+
         public ICommand TableContinueMoveCommand => new RelayCommand<string>(async key =>
         {
             var dis = Convert.ToDouble(TableDistance);

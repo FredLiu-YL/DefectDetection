@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -45,7 +46,7 @@ namespace AutoFocusMachine.ViewModel
         private WriteableBitmap mappingImage;
         private WriteableBitmap mainImage;
         private double tablePosX, tablePosY;
-        private string recipeName;
+        private string recipeName, mainLog;
         private AFMachineRecipe mainRecipe = new AFMachineRecipe();
 
         /// <summary>
@@ -61,14 +62,14 @@ namespace AutoFocusMachine.ViewModel
         }
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public WriteableBitmap MappingImage { get => mappingImage; set => SetValue(ref mappingImage, value); }
-        
+
 
         /// <summary>
         /// 取得或設定 shape 
         /// </summary>
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
         public ObservableCollection<ROIShape> MappingDrawings { get => mappingDrawings; set => SetValue(ref mappingDrawings, value); }
-        
+
 
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
@@ -99,17 +100,17 @@ namespace AutoFocusMachine.ViewModel
 
         public int TabControlIndex { get => tabControlIndex; set => SetValue(ref tabControlIndex, value); }
         public string RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }
+        public string MainLog { get => mainLog; set => SetValue(ref mainLog, value); }
+        public ICommand LoadedCommand => new RelayCommand<string>(key =>
+       {
 
-        public ICommand LoadedCommand => new RelayCommand<string>( key =>
-        {
+           CameraLive();
 
-            CameraLive();
+           isRefresh = true;
+           taskRefresh1 = Task.Run(RefreshAFState);
+           taskRefresh2 = Task.Run(RefreshPos);
 
-            isRefresh = true;
-            taskRefresh1 = Task.Run(RefreshAFState);
-            taskRefresh2 = Task.Run(RefreshPos);
-
-        });
+       });
         public ICommand ClosingCommand => new RelayCommand<string>(async key =>
         {
             isRefresh = false;
@@ -126,13 +127,13 @@ namespace AutoFocusMachine.ViewModel
             atfMachine.Dispose();
 
         });
-        public ICommand TabControlChangedCommand => new RelayCommand<string>( key =>
-        {
+        public ICommand TabControlChangedCommand => new RelayCommand<string>(key =>
+       {
 
-            int i = 0;
-            var c = i++;
+           int i = 0;
+           var c = i++;
 
-        });
+       });
 
 
 
@@ -142,7 +143,7 @@ namespace AutoFocusMachine.ViewModel
             atfMachine.Table_Module.Camera.Grab();
             MappingImage = new WriteableBitmap(6000, 6000, 96, 96, atfMachine.Table_Module.Camera.PixelFormat, null);
             MainImage = new WriteableBitmap(atfMachine.Table_Module.Camera.Width, atfMachine.Table_Module.Camera.Height, 96, 96, atfMachine.Table_Module.Camera.PixelFormat, null);
-          
+
 
             camlive = atfMachine.Table_Module.Camera.Frames.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
                          .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
@@ -159,12 +160,10 @@ namespace AutoFocusMachine.ViewModel
         private async Task RefreshPos()
         {
 
-            try
-            {
+            try {
 
-                while (isRefresh)
-                {
-                    var pos =  atfMachine.Table_Module.GetPostion();
+                while (isRefresh) {
+                    var pos = atfMachine.Table_Module.GetPostion();
                     TablePosX = pos.X;
                     TablePosY = pos.Y;
 
@@ -174,14 +173,30 @@ namespace AutoFocusMachine.ViewModel
                 }
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
 
                 // throw ex;
             }
 
         }
+        private void Logger(string message)
+        {
 
+            MainLog = message;
+            //string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //DateTime dateTime = DateTime.Now;
+          
+            //string str = $"{dateTime.ToString("G")} :{  dateTime.Millisecond}   {message} \r\n";
+            //string path = $"{systemPath}\\AutoFocusMachine";
+            //if (!Directory.Exists(path)) ; Directory.CreateDirectory(path);
+           
+
+            //File.AppendAllText($"{path}\\Log.txt", str);
+          
+            //MainLog += str;
+            
+
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

@@ -51,46 +51,54 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand TestMeansureCommand => new RelayCommand(() =>
         {
+            try {
+                //讀取job檔
+                CogJob myjob = (CogJob)CogSerializer.LoadObjectFromFile("D:\\Fred\\Line_Finder0114.vpp");
 
-            //讀取job檔
-            CogJob myjob = (CogJob)CogSerializer.LoadObjectFromFile("D:\\Fred\\Line_Finder0114.vpp");
-
-            CogToolGroup myTG = myjob.VisionTool as CogToolGroup;
-
-
-            BitmapSource img = MainImage.FormatConvertTo(System.Windows.Media.PixelFormats.Bgr24);
-            Frame<byte[]> frametemp = img.ToByteFrame();
-
-           // ICogImage cogImg = img.ColorFrameToCogImage(0.333, 0.333, 0.333);
+                CogToolGroup myTG = myjob.VisionTool as CogToolGroup;
 
 
+                BitmapSource img = MainImage.FormatConvertTo(System.Windows.Media.PixelFormats.Bgr24);
+                Frame<byte[]> frametemp = img.ToByteFrame();
 
-            CogPMAlignTool pmTool = myTG.Tools["CogPMAlignTool1"] as CogPMAlignTool;
-            Bitmap bip = pmTool.Pattern.GetTrainedPatternImage().ToBitmap();
-            SampleImage = bip.ToBitmapSource();
-
-
-            CogFindLineTool findLineA = myTG.Tools["CogFindLineToolA"] as CogFindLineTool;
-            CogFindLineTool findLineB = myTG.Tools["CogFindLineToolB"] as CogFindLineTool;
-            CogBlobTool cogBlobTool = myTG.Tools["CogBlobTool1"] as CogBlobTool;
-            CogProcess cogProcess = new CogProcess();
-            var result = cogProcess.RunPatternMatch(frametemp, pmTool.Pattern, pmTool.RunParams);
-            cogProcess.RunFixture(result[0].CogImg, result[0].Linear);
-            var resultLine = cogProcess.RunMeansure(findLineA.RunParams, findLineB.RunParams);
-            var tes = cogProcess.RunInsp(cogBlobTool.RunParams, cogBlobTool.Region);
-
-            MeansureLastRecord = resultLine.record;
-            InspLastRecord = tes.record;
-            //     CogDistanceSegmentSegmentTool findLine1 = myTG.Tools["CogDistanceSegmentSegmentTool1"] as CogDistanceSegmentSegmentTool;
-            var aa = new ROILine { X1 = resultLine.lineA.StartX, Y1 = resultLine.lineA.StartY, X2 = resultLine.lineA.EndX, Y2 = resultLine.lineA.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
-            var ab = new ROILine { X1 = resultLine.lineB.StartX, Y1 = resultLine.lineB.StartY, X2 = resultLine.lineB.EndX, Y2 = resultLine.lineB.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
-
-            AddShapeAction.Execute(aa);
-            AddShapeAction.Execute(ab);
+                // ICogImage cogImg = img.ColorFrameToCogImage(0.333, 0.333, 0.333);
 
 
-            cogProcess.Dispose();
-            myjob.Shutdown();
+
+                CogPMAlignTool pmTool = myTG.Tools["CogPMAlignTool1"] as CogPMAlignTool;
+                Bitmap bip = pmTool.Pattern.GetTrainedPatternImage().ToBitmap();
+                SampleImage = bip.ToBitmapSource();
+
+
+                CogFindLineTool findLineA = myTG.Tools["CogFindLineToolA"] as CogFindLineTool;
+                CogFindLineTool findLineB = myTG.Tools["CogFindLineToolB"] as CogFindLineTool;
+                CogBlobTool cogBlobTool = myTG.Tools["CogBlobTool1"] as CogBlobTool;
+                CogProcess cogProcess = new CogProcess();
+                var result = cogProcess.RunPatternMatch(frametemp, pmTool.Pattern, pmTool.RunParams);
+                cogProcess.RunFixture(result[0].CogImg, result[0].Linear);
+                var resultLine = cogProcess.RunMeansure(findLineA.RunParams, findLineB.RunParams);
+                var tes = cogProcess.RunInsp(cogBlobTool.RunParams, cogBlobTool.Region);
+
+                MeansureLastRecord = resultLine.record;
+                InspLastRecord = tes.record;
+                //     CogDistanceSegmentSegmentTool findLine1 = myTG.Tools["CogDistanceSegmentSegmentTool1"] as CogDistanceSegmentSegmentTool;
+                var aa = new ROILine { X1 = resultLine.lineA.StartX, Y1 = resultLine.lineA.StartY, X2 = resultLine.lineA.EndX, Y2 = resultLine.lineA.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
+                var ab = new ROILine { X1 = resultLine.lineB.StartX, Y1 = resultLine.lineB.StartY, X2 = resultLine.lineB.EndX, Y2 = resultLine.lineB.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
+
+                AddShapeAction.Execute(aa);
+                AddShapeAction.Execute(ab);
+
+                cogProcess.Dispose();
+                myjob.Shutdown();
+
+            }
+            catch (Exception ex) 
+            {
+
+                MessageBox.Show(ex.ToString()); ;
+            }
+           
+
         });
         public ICommand TestControlCommand => new RelayCommand(() =>
         {/*

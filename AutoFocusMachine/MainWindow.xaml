@@ -1,4 +1,5 @@
-﻿<metro:MetroWindow xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls" 
+﻿<metro:MetroWindow 
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls" 
         x:Class="AutoFocusMachine.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     
@@ -7,7 +8,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight" 
-        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore" xmlns:autofocusmachine="clr-namespace:AutoFocusMachine;assembly=YuanliCore"
+        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore" xmlns:autofocusmachine="clr-namespace:AutoFocusMachine;assembly=YuanliCore" xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore"
                    mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -187,11 +188,10 @@
                         <!--<match:PatMaxControl />-->
 
                     </GroupBox>
-                    <GroupBox Grid.Row="2" FontSize="20" Header="Log資訊">
-                        <TextBox  MaxLines="30" metro:ControlsHelper.FocusBorderBrush="#FFE8C2C2" metro:ControlsHelper.MouseOverBorderBrush="#FF918585" metro:TextBoxHelper.HasText="True"  >
-
-                        </TextBox>
-                    </GroupBox>
+               
+                     <logger:LoggerUC   Grid.Row="2" Message="{Binding MainLog}"  />
+                        
+                   
                 </Grid>
             </TabItem>
             <TabItem  Header=" AutoFocus"  Width="180"  Height="30"    >

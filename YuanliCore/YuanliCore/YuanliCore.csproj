@@ -78,6 +78,9 @@
     <Compile Include="Interface\Motion\MotionVelocity.cs" />
     <Compile Include="Interface\Motion\SignalDI.cs" />
     <Compile Include="Interface\Motion\SignalDO.cs" />
+    <Compile Include="Logger\LoggerUC.xaml.cs">
+      <DependentUpon>LoggerUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Motion\Marzhauser\TangoController.cs" />
     <Compile Include="Motion\Marzhauser\TangoEX.cs" />
     <Compile Include="Motion\SimulateMotionControllor.cs" />
@@ -410,6 +413,10 @@
     <Page Include="ImageProcess\Match\CogMatchWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Logger\LoggerUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ViewControl\VirtualCanvas.xaml">
       <Generator>MSBuild:Compile</Generator>
