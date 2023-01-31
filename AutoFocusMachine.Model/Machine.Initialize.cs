@@ -15,21 +15,20 @@ namespace AutoFocusMachine.Model
 {
     public partial class Machine
     {
+        public event Action<string> IsInitialMessageEvent;
 
-
-
-        public void Initialize()
+        private void Initialize()
         {
-
-            axes = InitialMotionController(isSimulate);
             camera = InitialCamera(isSimulate);
+            axes = InitialMotionController(isSimulate);
+         
             focusSystem = InitialAFsystem(isSimulate);
 
 
 
         }
 
-        public void AssisnModule()
+        private void AssisnModule()
         {
             var vX = axes[0].AxisVelocity;
             var vY = axes[1].AxisVelocity;
@@ -45,7 +44,7 @@ namespace AutoFocusMachine.Model
 
         private Axis[] InitialMotionController(bool isSimulate)
         {
-
+            IsInitialMessageEvent?.Invoke(" Initial Motion Start");
             if (isSimulate)
             {
                 AxisInfo[] axesInfo = new AxisInfo[]
@@ -63,7 +62,7 @@ namespace AutoFocusMachine.Model
 
 
             motionController.InitializeCommand();
-
+            IsInitialMessageEvent?.Invoke(" Initial Motion End");
             return motionController.Axes.ToArray();
 
 
@@ -71,15 +70,16 @@ namespace AutoFocusMachine.Model
 
         public async void Home()
         {
-
+            IsInitialMessageEvent?.Invoke("Home Start");
             await Task.Run(() => motionController.HomeCommand(0));
-
+            IsInitialMessageEvent?.Invoke("Home end");
         }
 
 
         private ICamera InitialCamera(bool isSimulate)
         {
             ICamera camera;
+            IsInitialMessageEvent?.Invoke(" Initial Camera Start");
             if (isSimulate)
             {
                 string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -94,6 +94,7 @@ namespace AutoFocusMachine.Model
                 ueyeCamera.Load(machineSetting.CameraFilePath);
                 camera = ueyeCamera;
             }
+            IsInitialMessageEvent?.Invoke(" Initial Camera End");
             return camera;
         }
 

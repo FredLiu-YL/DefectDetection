@@ -47,14 +47,22 @@ namespace AutoFocusMachine.Model
             machineSetting = new MachineSetting();
 
 
-            Initialize();
-            AssisnModule();
-            Home();
 
 
 
 
         }
+        public void Initial()
+        {
+
+
+            Initialize();
+
+            AssisnModule();
+
+            Home();
+        }
+
         //   public AutoFocusSystem FocusSystem { get; protected set; }
         public AutoFocusModule AFModule { get; protected set; }
         public TableModule Table_Module { get; protected set; }

@@ -412,7 +412,7 @@ namespace YuanliCore.Motion.Marzhauser
 
                 default:
                     throw new NotImplementedException("Axis  does not exist");
-                    break;
+                    
             }
         }
 

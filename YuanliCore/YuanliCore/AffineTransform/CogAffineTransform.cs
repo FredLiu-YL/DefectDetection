@@ -15,17 +15,31 @@ namespace YuanliCore.AffineTransform
         private System.Windows.Media.Matrix matrix2D = System.Windows.Media.Matrix.Identity;
         private CogCalibNPointToNPointTool calibNPointTool;
 
+        public CogAffineTransform()
+        {
+            calibNPointTool = new CogCalibNPointToNPointTool();
+        }
+
         public CogAffineTransform(IEnumerable<Point> source, IEnumerable<Point> target)
         {
-           
-            calibNPointTool = new CogCalibNPointToNPointTool();
-            calibNPointTool.Calibration.DOFsToCompute = CogNPointToNPointDOFConstants.ScalingRotationAndTranslation;
 
-            matrix2D = CreateMatriX(source.ToArray(), target.ToArray());
+            try {
+                calibNPointTool = new CogCalibNPointToNPointTool();
+                calibNPointTool.Calibration.DOFsToCompute = CogNPointToNPointDOFConstants.ScalingRotationAndTranslation;
+
+                matrix2D = CreateMatriX(source.ToArray(), target.ToArray());
+            }
+            catch (Exception ex) {
+
+                throw ex;
+            }
+
 
         }
         private System.Windows.Media.Matrix CreateMatriX(Point[] source, Point[] target)
         {
+            if (calibNPointTool == null) throw new Exception("Calibration is not create");
+
             System.Windows.Media.Matrix mat = System.Windows.Media.Matrix.Identity;
             if (source.Length != target.Length) throw new Exception("poins are incorrect");
 

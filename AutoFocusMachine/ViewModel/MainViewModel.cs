@@ -39,14 +39,14 @@ namespace AutoFocusMachine.ViewModel
     /// </summary>
     public partial class MainViewModel : ViewModelBase, INotifyPropertyChanged
     {
-        private Machine atfMachine;
+        private Machine atfMachine = new Machine();
         private int tabControlIndex;
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
         private WriteableBitmap mappingImage;
         private WriteableBitmap mainImage;
         private double tablePosX, tablePosY;
-        private string recipeName, mainLog;
+        private string recipeName, mainLog="";
         private AFMachineRecipe mainRecipe = new AFMachineRecipe();
 
         /// <summary>
@@ -55,9 +55,12 @@ namespace AutoFocusMachine.ViewModel
         public MainViewModel()
         {
 
-            atfMachine = new Machine();
-
-
+            atfMachine.IsInitialMessageEvent += (message) => 
+            { 
+                Logger(message); 
+            };
+       
+            atfMachine.Initial();
 
         }
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
