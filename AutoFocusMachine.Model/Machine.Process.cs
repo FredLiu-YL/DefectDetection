@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -26,29 +27,29 @@ namespace AutoFocusMachine.Model
         private CogAffineTransform cogAffineTransform;
 
 
-        public event Action<CogProcessResult> ResultEvent;
+        public event Action<CogProcessResult> ResultEvent ;
+        public event Action<string> processMessage;
         public event Action<ICogRecord> RecordEvent;
         public Die[] SimilateDies;
 
 
         public async Task ProcessRun(AFMachineRecipe mainRecipe)
         {
+            int id =  Thread.CurrentThread.ManagedThreadId;
             await   Task.Run( async () =>
             {
                 try
                 {
                     PorcessInitial();
-
+                    int id1 = Thread.CurrentThread.ManagedThreadId;
                     //wafer 整體位置 定位
                     //          Die[] dies = await WaferLocate(MainRecipe.PMParams, MainRecipe.WaferData, MainRecipe.FiducialMarkGrabPos);
                     Die[] dies = SimilateDies;
                     foreach (var die in dies)
                     {
-
+                        processMessage?.Invoke($" Processing Index  X:{die.Index.X } , Index  X:{die.Index.Y }  ");
                         BitmapSource bmp = await GetDieImage(die);
-
-                        await DieProcess(bmp, mainRecipe);
-
+                        await DieProcess(die.Index, bmp, mainRecipe);
 
                     }
                 }
@@ -82,6 +83,7 @@ namespace AutoFocusMachine.Model
             //找出Wafer  3點來與原資料做定位
             foreach (var pos in grabPos)
             {
+              
                 await Table_Module.TableMoveTo(pos);
 
                 BitmapSource img = Table_Module.GrabAsync();
@@ -110,24 +112,40 @@ namespace AutoFocusMachine.Model
 
 
         }
-        private async Task DieProcess(BitmapSource bmp, AFMachineRecipe mainRecipe)
+        private async Task DieProcess(System.Drawing.Point index , BitmapSource bmp, AFMachineRecipe mainRecipe)
         {
-
+            int id1 = Thread.CurrentThread.ManagedThreadId;
             ICogImage cogImg1 = bmp.ColorFrameToCogImage(0.333, 0.333, 0.333);
             await DieLocate(cogImg1, mainRecipe.PMParams);
+            try {
+                processMessage?.Invoke($" Meansure Processing  ");
+                var meansureResult = Meansure(mainRecipe.LineAParam, mainRecipe.LineBParam);
+                if (meansureResult.lineA == null || meansureResult.lineB == null)
+                {
+                    bmp.Save($"E:\\ErrorImage {index.X}-{index.Y}.bmp");
+                    return;
+                }
+                processMessage?.Invoke($" Inspection Processing  ");
+                var inspResult = Inspection( mainRecipe.DefectParam.RunParams, mainRecipe.DefectParam.ROI);
 
-            var meansureResult = Meansure(mainRecipe.LineAParam, mainRecipe.LineBParam);
+                ResultEvent?.Invoke(new CogProcessResult {Index= index ,LineA = meansureResult.lineA, LineB = meansureResult.lineB,MeansureRecord= meansureResult.record ,
+                                                 Distance= meansureResult.Distance,   DefectCenter = inspResult.defectCenter,   DefectArea= inspResult.defectArea, InspRecord = inspResult.record });
 
-            var inspResult = Inspection( mainRecipe.DefectParam.RunParams, mainRecipe.DefectParam.ROI);
+            }
+            catch (Exception ex)
+            {
 
-            ResultEvent?.Invoke(new CogProcessResult { LineA = meansureResult.lineA, LineB = meansureResult.lineB,MeansureRecord= meansureResult.record ,
-                                                    DefectCenter = inspResult.defectCenter, InspRecord = inspResult.record });
+                throw ex;
+            }
         }
         private async Task<BitmapSource> GetDieImage(Die die)
         {
+            int id1 = Thread.CurrentThread.ManagedThreadId;
             await Table_Module.TableMoveTo(die.Position);
-            await Task.Delay(200);
+            processMessage?.Invoke($" Move To : {die.Position}  ");
+            await Task.Delay(500);
             BitmapSource bmp = Table_Module.GrabAsync();
+            processMessage?.Invoke($" Grab Image  ");
             return bmp;
         }
         private async Task DieLocate(ICogImage cogImg1, PatmaxParams patmaxParams)
@@ -137,30 +155,33 @@ namespace AutoFocusMachine.Model
             if (result.Item1.Count() == 0) throw new Exception("Pattern is not Found ");
             cogProcess.RunFixture(result.Item1[0].CogImg, result.Item1[0].Linear);
 
-            RecordEvent?.Invoke(result.Item2);
+         //   RecordEvent?.Invoke(result.Item2);
 
         }
 
-        private (CogLineSegment lineA, CogLineSegment lineB, ICogRecord record) Meansure( CogFindLine findLineParamA, CogFindLine findLineParamB)
+        private (CogLineSegment lineA, CogLineSegment lineB, double Distance, ICogRecord record) Meansure( CogFindLine findLineParamA, CogFindLine findLineParamB)
         {
+            int id1 = Thread.CurrentThread.ManagedThreadId;
             return cogProcess.RunMeansure(findLineParamA, findLineParamB);
 
 
         }
 
-        private (Point[] defectCenter, ICogRecord record) Inspection( CogBlob cogBlobRunParams, ICogRegion cogRegion)
+        private (Point[] defectCenter, double[] defectArea, ICogRecord record) Inspection( CogBlob cogBlobRunParams, ICogRegion cogRegion)
         {
-
+            int id1 = Thread.CurrentThread.ManagedThreadId;
             return cogProcess.RunInsp(cogBlobRunParams, cogRegion);
         }
     }
 
     public class CogProcessResult
     {
-
+        public System.Drawing.Point Index ;
         public CogLineSegment LineA;
         public CogLineSegment LineB;
+        public double Distance;
         public Point[] DefectCenter;
+        public double[] DefectArea;
         public ICogRecord MeansureRecord;
         public ICogRecord InspRecord;
     }

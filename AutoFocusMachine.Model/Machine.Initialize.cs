@@ -32,8 +32,8 @@ namespace AutoFocusMachine.Model
         {
             var vX = axes[0].AxisVelocity;
             var vY = axes[1].AxisVelocity;
-            axes[0].AxisVelocity = new MotionVelocity(18, 2, 2) ;
-            axes[1].AxisVelocity = new MotionVelocity(18, 2, 2);
+            axes[0].AxisVelocity = new MotionVelocity(12, 2, 2) ;
+            axes[1].AxisVelocity = new MotionVelocity(12, 2, 2);
 
             AFModule = new AutoFocusModule(focusSystem);
 

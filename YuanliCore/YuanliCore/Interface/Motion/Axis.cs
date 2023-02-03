@@ -11,6 +11,8 @@ namespace YuanliCore.Interface
     {
         private IMotionController controller;
         private bool isBusy;
+        private bool isStop;
+        private readonly object lockObj = new object();
 
         public Axis(IMotionController motioncontroller, int axisNum)
         {
@@ -61,35 +63,57 @@ namespace YuanliCore.Interface
         public async Task Stop()
         {
             controller.StopCommand(AxisID);
+            isStop = true;
         }
 
         public async Task MoveAsync(double distance)
         {
-            if (isBusy) return;
+            if (isBusy) throw new Exception($"ID{ AxisID}  {AxisName}  is Busy");
+            int i = 0;
             isBusy = true;
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 controller.MoveCommand(AxisID, distance);
+                double postion = Position + distance;
+                while (Math.Abs(Position - postion) > 0.005 && !isStop) {
+                    i++;
+                    await Task.Delay(50);
+                    if (i >= 200) throw new Exception($"ID{ AxisID}  {AxisName}  Time out");
+
+                }
 
             });
             isBusy = false;
+            isStop = false;
         }
 
         public async Task MoveToAsync(double postion)
         {
-            if (isBusy) return;
-            await Task.Run( async() =>
-           {
-               controller.MoveToCommand(AxisID, postion);
-               
-               while (Math.Abs(Position- postion)>0.003)
-               {
-                   await Task.Delay(100);
-               }
 
-           });
+            if (isBusy) throw new Exception($"ID{ AxisID}  {AxisName}  is Busy");
+
+            isBusy = true;
+            int i = 0;
+            await Task.Run(async () =>
+            {
+
+                controller.MoveToCommand(AxisID, postion);
+                double nowPosition = Position;
+                while (Math.Abs(nowPosition - postion) > 0.005 && !isStop) {
+                    i++;
+                    await Task.Delay(50);
+                    if (i >= 200) throw new Exception($"ID{ AxisID}  {AxisName}  Time out ,Target:{postion} now:{nowPosition}");
+                    nowPosition = Position;
+                }
+
+            });
             isBusy = false;
+            isStop = false;
+
+
         }
+
+
 
         private double GetPositon()
         {

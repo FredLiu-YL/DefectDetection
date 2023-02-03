@@ -46,7 +46,7 @@ namespace AutoFocusMachine.ViewModel
         private WriteableBitmap mappingImage;
         private WriteableBitmap mainImage;
         private double tablePosX, tablePosY;
-        private string recipeName, mainLog="";
+        private string recipeName, mainLog = "Test123";
         private AFMachineRecipe mainRecipe = new AFMachineRecipe();
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace AutoFocusMachine.ViewModel
         public MainViewModel()
         {
 
-            atfMachine.IsInitialMessageEvent += (message) => 
-            { 
-                Logger(message); 
+            atfMachine.IsInitialMessageEvent += (message) =>
+            {
+                Logger(message);
             };
-       
+
             atfMachine.Initial();
 
         }
@@ -182,22 +182,22 @@ namespace AutoFocusMachine.ViewModel
             }
 
         }
-        private void Logger(string message)
+        protected void Logger(string message)
         {
 
             MainLog = message;
             //string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //DateTime dateTime = DateTime.Now;
-          
+
             //string str = $"{dateTime.ToString("G")} :{  dateTime.Millisecond}   {message} \r\n";
             //string path = $"{systemPath}\\AutoFocusMachine";
             //if (!Directory.Exists(path)) ; Directory.CreateDirectory(path);
-           
+
 
             //File.AppendAllText($"{path}\\Log.txt", str);
-          
+
             //MainLog += str;
-            
+
 
         }
 

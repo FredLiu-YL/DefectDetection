@@ -1,5 +1,8 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using CsvHelper;
+using GalaSoft.MvvmLight.Command;
 using System;
+using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -11,6 +14,7 @@ using YuanliCore.Views.CanvasShapes;
 
 namespace AutoFocusMachine.ViewModel
 {
+
     public partial class MainViewModel
     {
         private bool isRefresh;
@@ -20,7 +24,7 @@ namespace AutoFocusMachine.ViewModel
         private double signalA = 2.012, signalB = 0.012, aFsignalA = 1.234, aFsignalB = 3.111;
         private int patternZ = 600, distancePatternZ = 20, nSP, fSP;
 
-     
+
         //    private UeyeCamera ueyeCamera;
         private Task taskRefresh1 = Task.CompletedTask;
         private Task taskRefresh2 = Task.CompletedTask;
@@ -95,61 +99,72 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand TEST2Command => new RelayCommand(() =>
         {
-            atfMachine.Table_Module.TableX.AxisDir = YuanliCore.Interface.AxisDirection.Forward;
-
+            testResults.Add(new TestResult { Area = 10, Center = new Point(101, 100) });
+            var writer = new StreamWriter("test.csv");
+            var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            csv.WriteRecords(testResults);
+            csv.Dispose();
 
         });
+
         public ICommand TEST3Command => new RelayCommand(() =>
-        {
-            //  Drawings.Add( new ROICross { X=200 , Y=200 ,Size=100 });
-            int t;
-            int count = 80;
-            int radus = 2000;
-            int pitch = radus * 2 / count;
-            //半徑假設350
-            for (int x = 1; x <= count + 1; x++)
             {
-                for (int y = 1; y <= count + 1; y++)
+                //  Drawings.Add( new ROICross { X=200 , Y=200 ,Size=100 });
+                int t;
+                int count = 80;
+                int radus = 2000;
+                int pitch = radus * 2 / count;
+                //半徑假設350
+                for (int x = 1; x <= count + 1; x++)
                 {
+                    for (int y = 1; y <= count + 1; y++)
+                    {
 
-                    System.Windows.Point point = new System.Windows.Point(radus, radus);
+                        System.Windows.Point point = new System.Windows.Point(radus, radus);
 
-                    System.Windows.Point drawPoint = new System.Windows.Point(x * pitch, y * pitch);
-                    System.Windows.Vector v = point - drawPoint;
+                        System.Windows.Point drawPoint = new System.Windows.Point(x * pitch, y * pitch);
+                        System.Windows.Vector v = point - drawPoint;
 
-                    if (v.Length < radus)
-                        AddShapeMappingAction.Execute(new ROIRotatedRect { X = 500 + drawPoint.X, Y = 500 + drawPoint.Y, LengthX = pitch / 2.2, LengthY = pitch / 2.2, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
-                    else
-                        t = count + 2;
+                        if (v.Length < radus)
+                            AddShapeMappingAction.Execute(new ROIRotatedRect { X = 500 + drawPoint.X, Y = 500 + drawPoint.Y, LengthX = pitch / 2.2, LengthY = pitch / 2.2, IsInteractived = false, IsMoveEnabled = false, CenterCrossLength = 2 });
+                        else
+                            t = count + 2;
 
+                    }
                 }
-            }
 
 
 
-        });
+            });
         public ICommand TEST4Command => new RelayCommand(async () =>
         {
 
-            Point[] sources = new Point[] { new Point(1, 0) ,
-                                          new Point(48, 0) ,
+            Point[] sources = new Point[] { new Point(1, 1) ,new Point(48,1),
+                                          new Point(48, 5) ,
 
             };
 
-            Point[] targets = new Point[] { new Point(246.838, 93.25) ,
-                                          new Point(85.538, 93.11) ,
+            Point[] targets = new Point[] { new Point(245.5919, 105.6269) ,new Point(87.652, 105.67) ,
+                                          new Point(87.598, 93.05) ,
 
             };
 
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 50; i++)
+            {
                 Logger($"123545  {i}");
             }
-         
+
 
             //ITransform hAffineTransform = new HAffineTransform(sources, targets);
             ITransform hAffineTransform = new CogAffineTransform(sources, targets);
-            for (int i = 1; i <= 48; i++) {
-                SourceDieList.Add((new Point(i, 0), hAffineTransform.TransPoint(new Point(i, 0))));
+            for (int i = 1; i <= 48; i++)
+            {
+                for (int y = 1; y <= 5; y++)
+                {
+
+
+                    SourceDieList.Add((new Point(i, y), hAffineTransform.TransPoint(new Point(i, y))));
+                }
             }
 
 
@@ -160,56 +175,76 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand TableContinueMoveCommand => new RelayCommand<string>(async key =>
         {
-            var dis = Convert.ToDouble(TableDistance);
-            if (dis == 0)
+            try
             {
-                switch (key)
+
+
+                var dis = Convert.ToDouble(TableDistance);
+                if (dis == 0)
                 {
-                    case "X-":
-                        await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitN);
-                        break;
-                    case "X+":
-                        await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitP);
-                        break;
-                    case "Y+":
-                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitP);
-                        break;
-                    case "Y-":
-                        await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitN);
-                        break;
+                    switch (key)
+                    {
+                        case "X-":
+                            await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitN);
+                            break;
+                        case "X+":
+                            await atfMachine.Table_Module.TableX.MoveToAsync(atfMachine.Table_Module.TableX.LimitP);
+                            break;
+                        case "Y+":
+                            await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitP);
+                            break;
+                        case "Y-":
+                            await atfMachine.Table_Module.TableY.MoveToAsync(atfMachine.Table_Module.TableY.LimitN);
+                            break;
+
+                    }
 
                 }
 
             }
+            catch (Exception ex)
+            {
 
-
+                MessageBox.Show(ex.Message);
+            }
 
         });
 
         public ICommand TableMoveCommand => new RelayCommand<string>(async key =>
         {
-            var dis = Convert.ToDouble(TableDistance);
-            if (dis == 0)
+            try
             {
-                await atfMachine.Table_Module.TableX.Stop();
-                await atfMachine.Table_Module.TableY.Stop();
+
+                var dis = Convert.ToDouble(TableDistance);
+                if (dis == 0)
+                {
+                    await atfMachine.Table_Module.TableX.Stop();
+                    await atfMachine.Table_Module.TableY.Stop();
+                }
+                else
+                {
+                    switch (key)
+                    {
+                        case "X+":
+                            await atfMachine.Table_Module.TableX.MoveAsync(dis);
+                            break;
+                        case "X-":
+                            await atfMachine.Table_Module.TableX.MoveAsync(-dis);
+                            break;
+                        case "Y+":
+                            await atfMachine.Table_Module.TableY.MoveAsync(dis);
+                            break;
+                        case "Y-":
+                            await atfMachine.Table_Module.TableY.MoveAsync(-dis);
+                            break;
+
+                    }
+                }
             }
-
-            switch (key)
+            catch (Exception ex)
             {
-                case "X+":
-                    await atfMachine.Table_Module.TableX.MoveAsync(dis);
-                    break;
-                case "X-":
-                    await atfMachine.Table_Module.TableX.MoveAsync(-dis);
-                    break;
-                case "Y+":
-                    await atfMachine.Table_Module.TableY.MoveAsync(dis);
-                    break;
-                case "Y-":
-                    await atfMachine.Table_Module.TableY.MoveAsync(-dis);
-                    break;
 
+                MessageBox.Show(ex.Message);
             }
 
 
@@ -324,7 +359,7 @@ namespace AutoFocusMachine.ViewModel
             catch (Exception ex)
             {
 
-                 throw ex;
+                throw ex;
             }
 
 
@@ -347,4 +382,8 @@ namespace AutoFocusMachine.ViewModel
 
 
     }
+
+
+
+
 }

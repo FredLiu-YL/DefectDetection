@@ -171,30 +171,92 @@
                 </i:EventTrigger>
 
             </i:Interaction.Triggers>
-            <TabItem Header="Main" Width="180"  Height="30">
+            <TabItem Header="Main" FontSize="30" Width="180"  Height="40">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*"/>
+                        <ColumnDefinition Width="23*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.2*" />
                         <RowDefinition Height="2.5*" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0"  Orientation="Horizontal"   >
+                    <StackPanel Grid.Row="0"  Orientation="Horizontal" Grid.ColumnSpan="2"   >
                         <Label Content="Recipe:" FontSize="40" />
-                        <TextBlock Text="{Binding RecipeName}" Width="500" FontSize="40"  />
-                        <Button Content="讀取" Width="150"   FontSize="40"  />
-                        <Button Content="存檔" Width="150"   FontSize="40"  />
+                        <TextBlock Text="{Binding RecipeName}" Width="400" FontSize="40"  />
+                        <Button Content="讀取" Width="130"   FontSize="34"  />
+                        <Button Content="存檔" Width="130"   FontSize="34"  />
+                        <Button  Content="流程開始"  FontSize="34" Command="{Binding TestingFlowStartCommand}" />
+                        <Button  Content="流程停止"  FontSize="34" Command="{Binding TestingFlowStopCommand}" />
                     </StackPanel>
-                    <GroupBox Grid.Row="1" FontSize="20" Header="生產資訊">
-                        <!--<match:PatMaxControl />-->
+                    <GroupBox Grid.Row="1" FontSize="20" Header="生產資訊" Grid.ColumnSpan="2">
+                        <TabControl Grid.Row="2" Grid.ColumnSpan="2">
+                            <TabItem Header="量測" FontSize="22">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2.5*"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <autofocusmachine:CogDisplayer Grid.Column="0"  Record="{Binding MeansureLastRecord}"    />
+                                    <Grid Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0.2*"/>
+                                            <RowDefinition Height="0.2*"/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+
+                                            <Label Content="index:   " FontSize="28" />
+                                            <TextBlock Text="{Binding InspIndexX}"  Width="40"  FontSize="28" />
+                                            <Label Content="-" Width="30" FontSize="28" />
+                                            <TextBlock Text="{Binding InspIndexY}"  Width="40"  FontSize="28" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+
+                                            <Label Content="距離:" FontSize="28" />
+                                            <TextBlock Text="{Binding LineGap}"  Width="100"  FontSize="28" />
+                                            <Label Content="um" Width="50" FontSize="28" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+
+                            </TabItem>
+                            <TabItem Header="檢測" FontSize="22">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2.5*"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <autofocusmachine:CogDisplayer Grid.Column="0" Record="{Binding InspLastRecord}"     />
+
+                                    <Grid Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0.2*"/>
+                                            <RowDefinition Height="0.2*"/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="面積:" FontSize="28" />
+                                            <TextBlock  Text="{Binding InspArea}"  Width="100"  FontSize="28" />
+
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
 
                     </GroupBox>
-               
-                     <logger:LoggerUC   Grid.Row="2" Message="{Binding MainLog}"  />
-                        
-                   
+
+                    <logger:LoggerUC   Grid.Row="2" Message="{Binding MainLog}" Grid.ColumnSpan="2"  />
+
+
                 </Grid>
             </TabItem>
-            <TabItem  Header=" AutoFocus"  Width="180"  Height="30"    >
+            <TabItem  Header=" AutoFocus"  Width="180"  FontSize="30" Height="40"    >
                 <Grid  >
 
                     <Grid.RowDefinitions>
@@ -318,15 +380,18 @@
                         <Grid Grid.Column="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
-                             
+
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="0.2*"/>
+                                <RowDefinition Height="0.3*"/>
+                                <RowDefinition  Height="0.3*" />
                                 <RowDefinition />
                                 <RowDefinition />
-                             
+                                <RowDefinition />
+
                             </Grid.RowDefinitions>
-                            <ComboBox  Grid.Row="0"  SelectedIndex="0" FontSize="34"  >
+                            <Label  Content="鏡頭倍率切換" />
+                            <ComboBox  Grid.Row="1"  SelectedIndex="0" FontSize="34"  >
                                 <Label Content="5X" />
                                 <Label Content="10X" />
                                 <Label Content="20X" />
@@ -334,7 +399,7 @@
                                 <Label Content="100X" />
                             </ComboBox>
                         </Grid>
-                            <Grid Grid.Column="1">
+                        <Grid Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -343,7 +408,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="1" Grid.Column="0" Header="相機功能操作 " FontSize="40"  >
+                            <GroupBox Grid.Row="1" Grid.Column="0" Header="相機功能操作 " FontSize="40"  Visibility="Hidden" >
                                 <StackPanel>
 
                                     <!--<Button  Command="{Binding CamOpenCommand}"  Content="Open" FontSize="20"  Height="50" />
@@ -403,7 +468,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem  Header=" Locate"  Width="180"  Height="30"   >
+            <TabItem  Header=" Locate"  Width="180"  FontSize="30" Height="40"  >
                 <Grid>
                     <Grid.RowDefinitions >
                         <RowDefinition  Height="0.8*"/>
@@ -549,7 +614,7 @@
                             <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" >
 
                                 <Button  Content="移動"  Command="{Binding MoveToDieCommand}" Width="100" />
-                                <Button  Content="下一個"  Command="{Binding NextDieCommand}" Width="100" />
+                                <Button  Content="下一個"  Command="{Binding NextDieCommand}"  IsEnabled="{Binding IsBtnEnable}"  Width="100" />
 
                             </StackPanel>
                         </Grid>
@@ -592,11 +657,12 @@
 
             </TabItem>
 
-            <TabItem  Header="Meansure"  Width="180"  Height="30"   >
+            <TabItem  Header="Meansure"  Width="180"  FontSize="30" Height="40" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="23*" />
+                        <ColumnDefinition Width="113*"/>
+                        <ColumnDefinition Width="136*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.3*" />
@@ -605,7 +671,7 @@
 
                     </Grid.RowDefinitions>
 
-                    <GroupBox  Header="標記樣本" FontSize="30" >
+                    <GroupBox  Header="標記樣本" FontSize="30" Grid.ColumnSpan="2" >
                         <Grid >
                             <Grid.ColumnDefinitions >
                                 <ColumnDefinition />
@@ -620,7 +686,7 @@
 
                     </GroupBox>
 
-                    <GroupBox  Grid.Row="0" Grid.Column="1" Header="量測" FontSize="30" >
+                    <GroupBox  Grid.Row="0" Grid.Column="2" Header="量測" FontSize="30" >
                         <Grid >
                             <Grid.ColumnDefinitions >
                                 <ColumnDefinition />
@@ -635,26 +701,19 @@
 
                     </GroupBox>
 
-                    <GroupBox  Grid.Row="1" Grid.Column="0"  Header="功能" FontSize="30" >
-                     
-                            <StackPanel >
+                    <GroupBox  Grid.Row="1" Grid.Column="0"  Header="功能" FontSize="30" Grid.ColumnSpan="2" >
+
+                        <StackPanel >
                             <Button  Content="流程開始"  Command="{Binding TestingFlowStartCommand}" />
                             <Button  Content="流程停止"  Command="{Binding TestingFlowStopCommand}" />
                         </StackPanel>
-                   
-                        
+
+
                     </GroupBox>
-                    <TabControl Grid.Row="2" Grid.ColumnSpan="2">
-                        <TabItem Header="量測" FontSize="22">
-                            <autofocusmachine:CogDisplayer  Record="{Binding MeansureLastRecord}" Width="650" Height="500"  />
-                        </TabItem>
-                        <TabItem Header="檢測" FontSize="22">
-                            <autofocusmachine:CogDisplayer  Record="{Binding InspLastRecord}" Width="950" Height="570"  />
-                        </TabItem>
-                    </TabControl>
-              
+
                 </Grid>
             </TabItem>
+            <DataGrid Height="100" Width="100"/>
 
         </TabControl>
 

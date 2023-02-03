@@ -170,10 +170,20 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand NextDieCommand => new RelayCommand(async () =>
         {
-            TargetDieIndex++;
-            var pos = TargetDieList[TargetDieIndex];
-            await atfMachine.Table_Module.TableMoveTo(pos.pos);
+            try
+            {
+                IsBtnEnable = false;
+                TargetDieIndex++;
+                var pos = TargetDieList[TargetDieIndex];
+                await atfMachine.Table_Module.TableMoveTo(pos.pos);
+                IsBtnEnable = true;
+            }
+            catch (Exception ex)
+            {
 
+                MessageBox.Show(ex.Message);
+            }
+          
         });
 
 

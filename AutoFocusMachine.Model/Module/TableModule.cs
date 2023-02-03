@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -28,6 +29,7 @@ namespace AutoFocusMachine.Model
 
         public async Task TableMoveTo(Point Pos)
         {
+            int id1 = Thread.CurrentThread.ManagedThreadId;
             await Task.WhenAll(TableX.MoveToAsync(Pos.X), TableY.MoveToAsync(Pos.Y));
 
         }

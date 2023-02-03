@@ -118,7 +118,7 @@ namespace YuanliCore.ImageProcess
 
         }
 
-        public (CogLineSegment lineA, CogLineSegment lineB, ICogRecord record) RunMeansure(CogFindLine findLineParamA, CogFindLine findLineParamB)
+        public (CogLineSegment lineA, CogLineSegment lineB,double Distance, ICogRecord record) RunMeansure(CogFindLine findLineParamA, CogFindLine findLineParamB)
         {
             cogFindLineToolA.RunParams = findLineParamA;
             cogFindLineToolB.RunParams = findLineParamB;
@@ -131,7 +131,7 @@ namespace YuanliCore.ImageProcess
             cogFindLineToolB.Run();
             var lineB = cogFindLineToolB.Results.GetLineSegment();
 
-            if (lineA == null || lineB == null) throw new Exception(" LineSegment not enough ");
+            if (lineA == null || lineB == null) return (null, null, 0, null);
             cogDistanceSegmentTool.InputImage = fixtureImg;
 
             cogDistanceSegmentTool.SegmentA = lineA;
@@ -149,10 +149,10 @@ namespace YuanliCore.ImageProcess
 
             //   return (new Point(cogDistanceSegmentTool.SegmentAX, cogDistanceSegmentTool.SegmentAY), new Point(cogDistanceSegmentTool.SegmentBX, cogDistanceSegmentTool.SegmentBY));
 
-            return (lineA, lineB, record.SubRecords[0]);
+            return (lineA, lineB, dis, record.SubRecords[0]);
         }
 
-        public (Point[] defectCenter, ICogRecord record) RunInsp(CogBlob cogBlobRunParams, ICogRegion cogRegion)
+        public (Point[] defectCenter, double[] defectArea, ICogRecord record) RunInsp(CogBlob cogBlobRunParams, ICogRegion cogRegion)
         {
 
             cogBlobTool.InputImage = fixtureImg;
@@ -163,18 +163,21 @@ namespace YuanliCore.ImageProcess
      //       cogRecordsDisplay.Subject = cogBlobTool.CreateLastRunRecord();
 
             List<Point> points = new List<Point>();
+            List<double>  areas = new List<double>();
             for (int i = 0; i < blobs.Count; i++) {
                 var x = blobs[i].CenterOfMassX;
                 var y = blobs[i].CenterOfMassY;
+                var area = blobs[i].Area;
                 points.Add(new Point(x, y));
-
+                areas.Add(area);
 
             }
-     //       cogRecordsDisplay.Subject = cogBlobTool.CreateLastRunRecord().SubRecords[0];
+
+            //       cogRecordsDisplay.Subject = cogBlobTool.CreateLastRunRecord().SubRecords[0];
             //    System.Drawing.Image runImg = cogRecordsDisplay.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
             //     var bs = runImg.ToBitmapSource();
 
-            return (points.ToArray(), cogBlobTool.CreateLastRunRecord().SubRecords[0]);
+            return (points.ToArray(), areas.ToArray(), cogBlobTool.CreateLastRunRecord().SubRecords[0]) ;
 
         }
 
