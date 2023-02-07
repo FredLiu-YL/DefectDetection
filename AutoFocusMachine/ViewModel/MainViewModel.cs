@@ -185,7 +185,7 @@ namespace AutoFocusMachine.ViewModel
         protected void Logger(string message)
         {
 
-            MainLog = message;
+            MainLog ="Admin" +message;
             //string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //DateTime dateTime = DateTime.Now;
 

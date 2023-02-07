@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -99,13 +100,29 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand TEST2Command => new RelayCommand(() =>
         {
+            List<TestClass> testClass = new List<TestClass>();
+          
+
+             testClass.Add(new TestClass{ Ares = 123, Distance = 456.0 });
+               testClass.Add(new TestClass { Ares = 789, Distance = 101156.0 });
+            
+
             testResults.Add(new TestResult { Area = 10, Center = new Point(101, 100) });
-            var writer = new StreamWriter("test.csv");
+            var writer = new StreamWriter( "test.csv");
+           
+            
             var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecords(testResults);
+            csv.WriteRecords(testClass);
             csv.Dispose();
 
         });
+        
+        class TestClass
+        {
+           public int Ares { get; set; }
+
+            public double Distance { get; set; }
+        }
 
         public ICommand TEST3Command => new RelayCommand(() =>
             {

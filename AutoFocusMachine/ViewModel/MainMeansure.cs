@@ -3,7 +3,6 @@ using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace AutoFocusMachine.ViewModel
         private ICogRecord meansurelastRecord;
         private ICogRecord inspLastRecord;
         private List<TestResult> testResults = new List<TestResult>();
-        private int inspIndexX, inspIndexY;
+        private double inspIndexX, inspIndexY;
 
 
         public BitmapSource SampleImage { get => sampleImage; set => SetValue(ref sampleImage, value); }
@@ -55,8 +54,8 @@ namespace AutoFocusMachine.ViewModel
 
         public double LineGap { get => lineGap; set => SetValue(ref lineGap, value); }
         public double InspArea { get => inspArea; set => SetValue(ref inspArea, value); }
-        public int InspIndexX { get => inspIndexX; set => SetValue(ref inspIndexX, value); }
-        public int InspIndexY { get => inspIndexY; set => SetValue(ref inspIndexY, value); }
+        public double InspIndexX { get => inspIndexX; set => SetValue(ref inspIndexX, value); }
+        public double InspIndexY { get => inspIndexY; set => SetValue(ref inspIndexY, value); }
 
         public ICommand TestCommand => new RelayCommand(async () =>
         {
@@ -81,7 +80,7 @@ namespace AutoFocusMachine.ViewModel
 
 
                 CogPMAlignTool pmTool = myTG.Tools["CogPMAlignTool1"] as CogPMAlignTool;
-                Bitmap bip = pmTool.Pattern.GetTrainedPatternImage().ToBitmap();
+                System.Drawing.Bitmap bip = pmTool.Pattern.GetTrainedPatternImage().ToBitmap();
                 SampleImage = bip.ToBitmapSource();
 
 
@@ -198,7 +197,7 @@ namespace AutoFocusMachine.ViewModel
 
                 ICogImage cogbip = cogMatchWindow.PatmaxParam.Pattern.GetTrainedPatternImage();
                 if (cogbip == null) return;
-                Bitmap bip = cogbip.ToBitmap();
+                System.Drawing.Bitmap bip = cogbip.ToBitmap();
 
 
                 SampleImage = bip.ToBitmapSource();
@@ -225,6 +224,7 @@ namespace AutoFocusMachine.ViewModel
                 Nullable<bool> result = dlg.ShowDialog();
                 if (result == true)
                 {
+                    Logger(" 流程開始");
                     //讀取job檔
                     myjob = (CogJob)CogSerializer.LoadObjectFromFile(dlg.FileName);
                 }
@@ -256,6 +256,7 @@ namespace AutoFocusMachine.ViewModel
             {
 
                 MessageBox.Show(ex.Message);
+                Logger(ex.Message);
             }
             finally
             {
@@ -267,11 +268,12 @@ namespace AutoFocusMachine.ViewModel
                 atfMachine.ResultEvent -= DisplayResult;
                 atfMachine.processMessage -= Logger;
                 atfMachine.RecordEvent -= SaveCogResult;
-
+                Logger(" 產生報表");
                 var writer = new StreamWriter("test.csv");
                 var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
                 csv.WriteRecords(testResults);
                 csv.Dispose();
+                Logger(" 流程結束");
             }
 
         });
@@ -341,10 +343,10 @@ namespace AutoFocusMachine.ViewModel
     }
     public class TestResult
     {
-        public System.Drawing.Point Index { get; set; }
+        public System.Windows.Point Index { get; set; }
         public double Distance { get; set; }
-        public double  Area { get; set; }
-        public System.Windows.Point  Center { get; set; }
+        public double Area { get; set; }
+        public System.Windows.Point Center { get; set; }
 
     }
 }

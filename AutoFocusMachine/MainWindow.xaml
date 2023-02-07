@@ -408,7 +408,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="1" Grid.Column="0" Header="相機功能操作 " FontSize="40"  Visibility="Hidden" >
+                            <GroupBox Grid.Row="1" Grid.Column="0" Header="相機功能操作 " FontSize="40"  >
                                 <StackPanel>
 
                                     <!--<Button  Command="{Binding CamOpenCommand}"  Content="Open" FontSize="20"  Height="50" />

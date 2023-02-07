@@ -128,7 +128,7 @@ namespace AutoFocusMachine.Model
                 processMessage?.Invoke($" Inspection Processing  ");
                 var inspResult = Inspection( mainRecipe.DefectParam.RunParams, mainRecipe.DefectParam.ROI);
 
-                ResultEvent?.Invoke(new CogProcessResult {Index= index ,LineA = meansureResult.lineA, LineB = meansureResult.lineB,MeansureRecord= meansureResult.record ,
+                ResultEvent?.Invoke(new CogProcessResult {Index=new Point( index.X,index.Y) ,LineA = meansureResult.lineA, LineB = meansureResult.lineB,MeansureRecord= meansureResult.record ,
                                                  Distance= meansureResult.Distance,   DefectCenter = inspResult.defectCenter,   DefectArea= inspResult.defectArea, InspRecord = inspResult.record });
 
             }
@@ -176,7 +176,7 @@ namespace AutoFocusMachine.Model
 
     public class CogProcessResult
     {
-        public System.Drawing.Point Index ;
+        public  Point Index ;
         public CogLineSegment LineA;
         public CogLineSegment LineB;
         public double Distance;
