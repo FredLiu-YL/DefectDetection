@@ -1,24 +1,36 @@
 using AutoFocusMachine.Model;
 using AutoFocusMachine.Model.Recipe;
+using Cognex.VisionPro;
+using Cognex.VisionPro.Blob;
+using Cognex.VisionPro.Caliper;
+using Cognex.VisionPro.PMAlign;
+using Cognex.VisionPro.QuickBuild;
+using Cognex.VisionPro.ToolGroup;
+using CsvHelper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliCore;
 using YuanliCore.CameraLib;
 using YuanliCore.CameraLib.IDS;
+using YuanliCore.ImageProcess.Blob;
+using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 //using YuanliCore.Motion.Marzhauser;
 using YuanliCore.Views.CanvasShapes;
@@ -120,14 +132,15 @@ namespace AutoFocusMachine.ViewModel
             await taskRefresh1;
             await taskRefresh2;
             atfMachine.Dispose();
-
+            if (cogBlobWindow != null)
+                cogBlobWindow.Dispose();
+            if (cogMatchWindow != null)
+                cogMatchWindow.Dispose();
         });
         public ICommand ClosedCommand => new RelayCommand<string>(async key =>
         {
-            isRefresh = false;
-            await taskRefresh1;
-            await taskRefresh2;
-            atfMachine.Dispose();
+
+
 
         });
         public ICommand TabControlChangedCommand => new RelayCommand<string>(key =>
@@ -137,7 +150,66 @@ namespace AutoFocusMachine.ViewModel
            var c = i++;
 
        });
+        public ICommand TestingFlowStartCommand => new RelayCommand(async () =>
+        {
 
+            CogJob myjob = null;
+            try {
+                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.Filter = "Param Documents|*.vpp";
+                Nullable<bool> result = dlg.ShowDialog();
+                if (result == true) {
+                    Logger(" 流程開始");
+                    //讀取job檔
+                    myjob = (CogJob)CogSerializer.LoadObjectFromFile(dlg.FileName);
+                }
+                testResults.Clear();
+
+                CogToolGroup myTG = myjob.VisionTool as CogToolGroup;
+
+                CogPMAlignTool pmTool = myTG.Tools["CogPMTool"] as CogPMAlignTool;
+                CogFindLineTool findLineA = myTG.Tools["CogFindLineToolA"] as CogFindLineTool;
+                CogFindLineTool findLineB = myTG.Tools["CogFindLineToolB"] as CogFindLineTool;
+                CogBlobTool cogBlobTool = myTG.Tools["CogBlobTool1"] as CogBlobTool;
+                mainRecipe.LineAParam = findLineA.RunParams;
+                mainRecipe.LineBParam = findLineB.RunParams;
+                mainRecipe.PMParams = new PatmaxParams { RunParams = pmTool.RunParams, Pattern = pmTool.Pattern };
+                mainRecipe.DefectParam = new BlobParams { RunParams = cogBlobTool.RunParams, ROI = cogBlobTool.Region };
+
+
+                atfMachine.ResultEvent += DisplayResult;
+                atfMachine.processMessage += Logger;
+                atfMachine.RecordEvent += SaveCogResult;
+                atfMachine.SimilateDies = TargetDieList.Select(list => new Die { Index = new System.Drawing.Point((int)list.index.X, (int)list.index.Y), Position = list.pos }).ToArray();
+                int id1 = Thread.CurrentThread.ManagedThreadId;
+                await atfMachine.ProcessRun(mainRecipe);
+
+
+
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+                Logger(ex.Message);
+            }
+            finally {
+                if (myjob != null)
+                    myjob.Shutdown();
+
+
+
+                atfMachine.ResultEvent -= DisplayResult;
+                atfMachine.processMessage -= Logger;
+                atfMachine.RecordEvent -= SaveCogResult;
+                Logger(" 產生報表");
+                var writer = new StreamWriter("test.csv");
+                var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                csv.WriteRecords(testResults);
+                csv.Dispose();
+                Logger(" 流程結束");
+            }
+
+        });
 
 
         private void CameraLive()
@@ -185,7 +257,7 @@ namespace AutoFocusMachine.ViewModel
         protected void Logger(string message)
         {
 
-            MainLog ="Admin" +message;
+            MainLog = "Admin" + message;
             //string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //DateTime dateTime = DateTime.Now;
 

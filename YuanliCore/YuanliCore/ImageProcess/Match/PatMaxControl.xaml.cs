@@ -69,7 +69,7 @@ namespace YuanliCore.ImageProcess.Match
 
      //   public event EventHandler<PatmaxParamsEventArgs> PatternTrainedEvent;
 
-    //    public event EventHandler<PatmaxParamsEventArgs> ParameterChangedEvent;
+      //  public event EventHandler<PatmaxParamsEventArgs> ParameterChangedEvent;
 
         public ICogImage Image
         {

@@ -37,9 +37,9 @@ namespace YuanliCore.ImageProcess.Blob
             tool = new CogBlobTool();
             editor = new CogBlobEditV2();
 
-        //   PatmaxParam = PatmaxParams.Default(tool, 0);
+            BlobParam = BlobParams.Default(tool, 0);
 
-            tool.Changed += PatMaxTool_Changed;
+            tool.Changed += BlobTool_Changed;
 
             ((System.ComponentModel.ISupportInitialize)(editor)).BeginInit();
 
@@ -47,7 +47,7 @@ namespace YuanliCore.ImageProcess.Blob
 
             editor.AllowDrop = true;
             editor.Dock = System.Windows.Forms.DockStyle.Fill;
-            editor.Name = "PMAlignEditV2";
+            editor.Name = "BlobToolEditV2";
             editor.SuspendElectricRuns = false;
             editor.TabIndex = 0;
 
@@ -58,6 +58,7 @@ namespace YuanliCore.ImageProcess.Blob
             ((System.ComponentModel.ISupportInitialize)(editor)).EndInit();
 
             editor.Subject = tool;
+        
         }
 
         private void SearchRegion_Changed(object sender, CogChangedEventArgs e)
@@ -140,7 +141,7 @@ namespace YuanliCore.ImageProcess.Blob
             Trace.WriteLine($"RunParams_Changed => {flagName}");
         }
 
-        private void PatMaxTool_Changed(object sender, CogChangedEventArgs e)
+        private void BlobTool_Changed(object sender, CogChangedEventArgs e)
         {
             var flagName = e.GetStateFlagNames(sender);
             Trace.WriteLine($"PatMaxTool_Changed => {flagName}");
@@ -148,9 +149,9 @@ namespace YuanliCore.ImageProcess.Blob
 
         public void SetToParam()
         {
-    //        PatmaxParam.Pattern = tool.Pattern;
-    //        PatmaxParam.SearchRegion = tool.SearchRegion;
-     //       PatmaxParam.RunParams = tool.RunParams;
+
+            BlobParam.ROI = tool.Region;
+            BlobParam.RunParams = tool.RunParams;
         }
         #endregion
 
@@ -159,6 +160,9 @@ namespace YuanliCore.ImageProcess.Blob
             bool isVisible = (bool)e.NewValue;
 
             if (!isVisible) SetToParam();
+
+           
+           
         }
 
        

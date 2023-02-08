@@ -28,6 +28,7 @@ namespace YuanliCore.ImageProcess.Match
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
         private PatmaxParams patmaxParam = new PatmaxParams();
+        private bool isDispose = false;
 
         public CogMatchWindow(BitmapSource bitmap)
         {
@@ -55,10 +56,17 @@ namespace YuanliCore.ImageProcess.Match
         protected override void OnClosing(CancelEventArgs e)
         {
             e.Cancel = true;
+            if(isDispose) e.Cancel = false;
             this.Hide();
 
         }
+        public void Dispose()
+        {
+            isDispose = true;
+            Close();
 
+
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;

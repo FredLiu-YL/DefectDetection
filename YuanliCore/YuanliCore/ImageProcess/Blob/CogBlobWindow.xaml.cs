@@ -28,7 +28,7 @@ namespace YuanliCore.ImageProcess.Blob
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
         private BlobParams blobParam = new BlobParams();
-
+        private bool isDispose =false;
         public CogBlobWindow(BitmapSource bitmap)
         {
         
@@ -54,11 +54,21 @@ namespace YuanliCore.ImageProcess.Blob
 
         protected override void OnClosing(CancelEventArgs e)
         {
+    
             e.Cancel = true;
+
+            if (isDispose) e.Cancel = false;
             this.Hide();
 
-        }
 
+        }
+        public  void Dispose()
+        {
+            isDispose = true;
+            Close();
+           
+
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;

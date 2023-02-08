@@ -214,79 +214,21 @@ namespace AutoFocusMachine.ViewModel
         public ICommand EditCommand => new RelayCommand(async () =>
         {
 
-            if (cogBlobWindow == null)
+            if (cogBlobWindow == null) {
                 cogBlobWindow = new CogBlobWindow(MainImage);
-
-
-           // cogBlobWindow.PatmaxParam = new PatmaxParams();
-
+                cogBlobWindow.BlobParam = new BlobParams();
+            }
+           
 
             cogBlobWindow.ShowDialog();
 
 
-         //   cogMatcher.Patmaxparams = cogBlobWindow.PatmaxParam;
-        //    mainRecipe.PMParams = cogMatcher.Patmaxparams;
+            BlobParams ATest = cogBlobWindow.BlobParam;
+       
+
+            //    mainRecipe.PMParams = cogMatcher.Patmaxparams;
         });
-        public ICommand TestingFlowStartCommand => new RelayCommand(async () =>
-        {
 
-            CogJob myjob = null;
-            try {
-                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-                dlg.Filter = "Param Documents|*.vpp";
-                Nullable<bool> result = dlg.ShowDialog();
-                if (result == true) {
-                    Logger(" 流程開始");
-                    //讀取job檔
-                    myjob = (CogJob)CogSerializer.LoadObjectFromFile(dlg.FileName);
-                }
-                testResults.Clear();
-
-                CogToolGroup myTG = myjob.VisionTool as CogToolGroup;
-
-                CogPMAlignTool pmTool = myTG.Tools["CogPMTool"] as CogPMAlignTool;
-                CogFindLineTool findLineA = myTG.Tools["CogFindLineToolA"] as CogFindLineTool;
-                CogFindLineTool findLineB = myTG.Tools["CogFindLineToolB"] as CogFindLineTool;
-                CogBlobTool cogBlobTool = myTG.Tools["CogBlobTool1"] as CogBlobTool;
-                mainRecipe.LineAParam = findLineA.RunParams;
-                mainRecipe.LineBParam = findLineB.RunParams;
-                mainRecipe.PMParams = new PatmaxParams { RunParams = pmTool.RunParams, Pattern = pmTool.Pattern };
-                mainRecipe.DefectParam = new BlobParams { RunParams = cogBlobTool.RunParams, ROI = cogBlobTool.Region };
-
-
-                atfMachine.ResultEvent += DisplayResult;
-                atfMachine.processMessage += Logger;
-                atfMachine.RecordEvent += SaveCogResult;
-                atfMachine.SimilateDies = TargetDieList.Select(list => new Die { Index = new System.Drawing.Point((int)list.index.X, (int)list.index.Y), Position = list.pos }).ToArray();
-                int id1 = Thread.CurrentThread.ManagedThreadId;
-                await atfMachine.ProcessRun(mainRecipe);
-
-
-
-            }
-            catch (Exception ex) {
-
-                MessageBox.Show(ex.Message);
-                Logger(ex.Message);
-            }
-            finally {
-                if (myjob != null)
-                    myjob.Shutdown();
-
-
-
-                atfMachine.ResultEvent -= DisplayResult;
-                atfMachine.processMessage -= Logger;
-                atfMachine.RecordEvent -= SaveCogResult;
-                Logger(" 產生報表");
-                var writer = new StreamWriter("test.csv");
-                var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-                csv.WriteRecords(testResults);
-                csv.Dispose();
-                Logger(" 流程結束");
-            }
-
-        });
 
         public ICommand TestingFlowStopCommand => new RelayCommand(async () =>
         {

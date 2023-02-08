@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:YuanliCore.ImageProcess.Blob" 
   
         mc:Ignorable="d"
-        x:Name="PatMaxWindow"
+        x:Name="BlobWindow"
         Title="Window1" Height="600" Width="960">
-    <Grid   DataContext="{Binding ElementName=PatMaxWindow}"   >
+    <Grid   DataContext="{Binding ElementName=BlobWindow}"   >
 
         <local:CogBlobControl Image="{Binding CogImage}" BlobParam="{Binding BlobParam}"   />
     </Grid>
