@@ -51,7 +51,15 @@
     <Compile Include="CommonExtension\SystemDrawingEx.cs" />
     <Compile Include="Component\AutoFocus\AutoFocusSystem.cs" />
     <Compile Include="CommonExtension\CamerEX.cs" />
-    <Compile Include="ImageProcess\Blob\BlobParam.cs" />
+    <Compile Include="ImageProcess\Blob\BlobParams.cs" />
+    <Compile Include="ImageProcess\Blob\CogBlobControl.xaml.cs">
+      <DependentUpon>CogBlobControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageProcess\Blob\CogBlobWindow.xaml.cs">
+      <DependentUpon>CogBlobWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageProcess\Caliper\FindCircleParam.cs" />
+    <Compile Include="ImageProcess\Caliper\FindLineParam.cs" />
     <Compile Include="ImageProcess\CogDisplayer.xaml.cs">
       <DependentUpon>CogDisplayer.xaml</DependentUpon>
     </Compile>
@@ -402,6 +410,14 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ImageProcess\Blob\CogBlobControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ImageProcess\Blob\CogBlobWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ImageProcess\CogDisplayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -423,9 +439,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ImageProcess\Caliper\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\MaterialDesignThemes.4.5.0\build\MaterialDesignThemes.targets" Condition="Exists('..\..\packages\MaterialDesignThemes.4.5.0\build\MaterialDesignThemes.targets')" />
 </Project>

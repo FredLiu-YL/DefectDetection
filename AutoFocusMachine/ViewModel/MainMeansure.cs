@@ -38,8 +38,9 @@ namespace AutoFocusMachine.ViewModel
     public partial class MainViewModel
     {
         private CogMatchWindow cogMatchWindow;
+        private CogBlobWindow cogBlobWindow;
         private CogMatcher cogMatcher = new CogMatcher();
-        private double lineGap , inspArea;
+        private double lineGap, inspArea;
         private BitmapSource sampleImage;
         private CogRecordsDisplay cogRecordsDisplay = new CogRecordsDisplay();
         private ICogRecord meansurelastRecord;
@@ -64,8 +65,7 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand TestMeansureCommand => new RelayCommand(() =>
         {
-            try
-            {
+            try {
                 //讀取job檔
                 CogJob myjob = (CogJob)CogSerializer.LoadObjectFromFile("D:\\Fred\\Line_Finder0114.vpp");
 
@@ -106,8 +106,7 @@ namespace AutoFocusMachine.ViewModel
                 myjob.Shutdown();
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
 
                 MessageBox.Show(ex.ToString()); ;
             }
@@ -177,8 +176,7 @@ namespace AutoFocusMachine.ViewModel
         });
         public ICommand EditSampleCommand => new RelayCommand(async () =>
         {
-            try
-            {
+            try {
                 if (cogMatchWindow == null)
                     cogMatchWindow = new CogMatchWindow(MainImage);
 
@@ -203,8 +201,7 @@ namespace AutoFocusMachine.ViewModel
                 SampleImage = bip.ToBitmapSource();
                 //  cogMatchWindow.Close();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
             }
@@ -213,17 +210,32 @@ namespace AutoFocusMachine.ViewModel
 
         });
 
+
+        public ICommand EditCommand => new RelayCommand(async () =>
+        {
+
+            if (cogBlobWindow == null)
+                cogBlobWindow = new CogBlobWindow(MainImage);
+
+
+           // cogBlobWindow.PatmaxParam = new PatmaxParams();
+
+
+            cogBlobWindow.ShowDialog();
+
+
+         //   cogMatcher.Patmaxparams = cogBlobWindow.PatmaxParam;
+        //    mainRecipe.PMParams = cogMatcher.Patmaxparams;
+        });
         public ICommand TestingFlowStartCommand => new RelayCommand(async () =>
         {
 
             CogJob myjob = null;
-            try
-            {
+            try {
                 Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "Param Documents|*.vpp";
                 Nullable<bool> result = dlg.ShowDialog();
-                if (result == true)
-                {
+                if (result == true) {
                     Logger(" 流程開始");
                     //讀取job檔
                     myjob = (CogJob)CogSerializer.LoadObjectFromFile(dlg.FileName);
@@ -239,7 +251,7 @@ namespace AutoFocusMachine.ViewModel
                 mainRecipe.LineAParam = findLineA.RunParams;
                 mainRecipe.LineBParam = findLineB.RunParams;
                 mainRecipe.PMParams = new PatmaxParams { RunParams = pmTool.RunParams, Pattern = pmTool.Pattern };
-                mainRecipe.DefectParam = new BlobParam { RunParams = cogBlobTool.RunParams, ROI = cogBlobTool.Region };
+                mainRecipe.DefectParam = new BlobParams { RunParams = cogBlobTool.RunParams, ROI = cogBlobTool.Region };
 
 
                 atfMachine.ResultEvent += DisplayResult;
@@ -252,14 +264,12 @@ namespace AutoFocusMachine.ViewModel
 
 
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
                 Logger(ex.Message);
             }
-            finally
-            {
+            finally {
                 if (myjob != null)
                     myjob.Shutdown();
 
@@ -280,7 +290,7 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand TestingFlowStopCommand => new RelayCommand(async () =>
         {
-            
+
         });
 
         private void DisplayResult(CogProcessResult cogResult)
@@ -295,46 +305,45 @@ namespace AutoFocusMachine.ViewModel
                 InspArea = 0;
             LineGap = cogResult.Distance;
 
-            for (int i = 0; i < cogResult.DefectArea.Length; i++)
-            {
+            for (int i = 0; i < cogResult.DefectArea.Length; i++) {
 
-                testResults.Add(new TestResult { Index = cogResult.Index ,  Area = cogResult.DefectArea[i], Center = cogResult.DefectCenter[i] });
+                testResults.Add(new TestResult { Index = cogResult.Index, Area = cogResult.DefectArea[i], Center = cogResult.DefectCenter[i] });
 
-            } 
+            }
 
-           /* Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
-            {
+            /* Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+             {
 
-                //     CogDistanceSegmentSegmentTool findLine1 = myTG.Tools["CogDistanceSegmentSegmentTool1"] as CogDistanceSegmentSegmentTool;
-                //            var aa = new ROILine { X1 = cogResult.LineA.StartX, Y1 = cogResult.LineA.StartY, X2 = cogResult.LineA.EndX, Y2 = cogResult.LineA.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
-                //            var ab = new ROILine { X1 = cogResult.LineB.StartX, Y1 = cogResult.LineB.StartY, X2 = cogResult.LineB.EndX, Y2 = cogResult.LineB.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
+                 //     CogDistanceSegmentSegmentTool findLine1 = myTG.Tools["CogDistanceSegmentSegmentTool1"] as CogDistanceSegmentSegmentTool;
+                 //            var aa = new ROILine { X1 = cogResult.LineA.StartX, Y1 = cogResult.LineA.StartY, X2 = cogResult.LineA.EndX, Y2 = cogResult.LineA.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
+                 //            var ab = new ROILine { X1 = cogResult.LineB.StartX, Y1 = cogResult.LineB.StartY, X2 = cogResult.LineB.EndX, Y2 = cogResult.LineB.EndY, Stroke = System.Windows.Media.Brushes.Red, StrokeThickness = 3, IsInteractived = false, CenterCrossLength = 4 };
 
-                //            AddShapeAction.Execute(aa);
-                //           AddShapeAction.Execute(ab);
+                 //            AddShapeAction.Execute(aa);
+                 //           AddShapeAction.Execute(ab);
 
-            }));*/
-           
+             }));*/
+
 
 
 
         }
 
-       
+
 
         private void SaveCogResult(ICogRecord cogRecord)
-        { 
-         
+        {
+
             System.Drawing.Image runImg = null;
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
                 MeansureLastRecord = cogRecord;
-               
+
                 cogRecordsDisplay.Width = 2456;
                 cogRecordsDisplay.Height = 2054;
                 cogRecordsDisplay.Subject = cogRecord;
-                
+
             }));
-           runImg = cogRecordsDisplay.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
+            runImg = cogRecordsDisplay.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
 
 
             var bs = runImg.ToBitmapSource();

@@ -40,9 +40,7 @@ namespace AutoFocusMachine.Model
             var a1 = matrix2D.Transform(new System.Windows.Point());
             var a2 = matrix2D.Transform(new System.Windows.Point(5000, 0));
             var a3 = matrix2D.Transform(new System.Windows.Point(1500, 2100));*/
-          
-            
-            
+
             isSimulate = true;
             machineSetting = new MachineSetting();
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace YuanliCore.ImageProcess.Blob
 {
-    public class BlobParam
+    public class BlobParams
     {
 
         public ICogRegion ROI { get; set; }

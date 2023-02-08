@@ -30,7 +30,7 @@ namespace AutoFocusMachine.Model.Recipe
         public CogFindLine LineBParam { get; set; }
 
 
-        public BlobParam DefectParam { get; set; }
+        public BlobParams DefectParam { get; set; }
 
 
         /*    public static AFMachineRecipe Load(string filename)
