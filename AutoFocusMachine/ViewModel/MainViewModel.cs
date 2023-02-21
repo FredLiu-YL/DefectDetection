@@ -136,6 +136,9 @@ namespace AutoFocusMachine.ViewModel
                 cogBlobWindow.Dispose();
             if (cogMatchWindow != null)
                 cogMatchWindow.Dispose();
+            if (cogCaliperWindow != null)
+                cogCaliperWindow.Dispose();
+            
         });
         public ICommand ClosedCommand => new RelayCommand<string>(async key =>
         {

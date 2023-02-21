@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using YuanliCore.Interface;
 
 namespace YuanliCore.ImageProcess.Match
@@ -11,14 +12,34 @@ namespace YuanliCore.ImageProcess.Match
     public class CogMatcher : IMatcher
     {
         private CogPMAlignTool alignTool;
-
+        private CogMatchWindow cogMatchWindow;
         public CogMatcher()
         {
             alignTool = new CogPMAlignTool();
 
         }
 
-        public PatmaxParams Patmaxparams { get; set; }
+        public PatmaxParams Patmaxparams { get; set; } =new PatmaxParams();
+
+        public void EditParameter(BitmapSource image)
+        {
+            if (cogMatchWindow == null)
+                cogMatchWindow = new CogMatchWindow( image);
+
+
+            cogMatchWindow.PatmaxParam = Patmaxparams;
+            cogMatchWindow.ShowDialog();
+
+
+            PatmaxParams patmaxparams = cogMatchWindow.PatmaxParam;
+
+
+            var  sampleImage = cogMatchWindow.GetPatternImage();
+            if (sampleImage == null) return ;
+            cogMatchWindow.Dispose();
+
+            Patmaxparams= patmaxparams;
+        }
 
         public IEnumerable<MatchResult> Find()
         {

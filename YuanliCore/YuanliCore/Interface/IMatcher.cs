@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
+using YuanliCore.ImageProcess.Match;
 
 namespace YuanliCore.Interface
 {
     public interface IMatcher
     {
-
+        PatmaxParams Patmaxparams { get; set; }
         IEnumerable<MatchResult> Find();
+
+         void EditParameter(BitmapSource image);
+
 
     }
 

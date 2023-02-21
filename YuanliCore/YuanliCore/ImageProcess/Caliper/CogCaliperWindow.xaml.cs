@@ -18,64 +18,55 @@ using YuanliCore.Interface;
 using YuanliCore.CameraLib;
 
 
-namespace YuanliCore.ImageProcess.Match
+namespace YuanliCore.ImageProcess.Caliper
 {
     /// <summary>
     /// Window1.xaml 的互動邏輯
     /// </summary>
-    public partial class CogMatchWindow : Window, INotifyPropertyChanged
+    public partial class CogCaliperWindow : Window, INotifyPropertyChanged
     {
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
-        private PatmaxParams patmaxParam = new PatmaxParams();
-        private bool isDispose = false;
-
-        public CogMatchWindow(BitmapSource bitmap)
+        private CaliperParams caliperParam = new CaliperParams();
+        private bool isDispose =false;
+        public CogCaliperWindow(BitmapSource bitmap)
         {
-
+        
             InitializeComponent();
-
+          
             UpdateImage(bitmap);
-
+           
         }
 
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
-        public PatmaxParams PatmaxParam { get => patmaxParam; set => SetValue(ref patmaxParam, value); }
+        public CaliperParams CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
 
 
         public void UpdateImage(BitmapSource bitmap)
         {
             var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
             var frame = b.ToByteFrame();
-
+         
             CogImage = frame.ColorFrameToCogImage();
 
         }
 
-        public BitmapSource GetPatternImage()
-        {
-
-            ICogImage cogbip = PatmaxParam.Pattern.GetTrainedPatternImage();
-            if (cogbip == null) return null;
-            System.Drawing.Bitmap bip = cogbip.ToBitmap();
-            var sampleImage = bip.ToBitmapSource();
-
-            return sampleImage;
-        }
-
         protected override void OnClosing(CancelEventArgs e)
         {
+    
             e.Cancel = true;
+
             if (isDispose) e.Cancel = false;
             this.Hide();
 
+
         }
-        public void Dispose()
+        public  void Dispose()
         {
             isDispose = true;
             Close();
-
+           
 
         }
 

@@ -32,6 +32,7 @@ using CsvHelper;
 using System.IO;
 using System.Globalization;
 using System.Threading;
+using YuanliCore.ImageProcess.Caliper;
 
 namespace AutoFocusMachine.ViewModel
 {
@@ -39,6 +40,8 @@ namespace AutoFocusMachine.ViewModel
     {
         private CogMatchWindow cogMatchWindow;
         private CogBlobWindow cogBlobWindow;
+        private CogCaliperWindow cogCaliperWindow;
+        
         private CogMatcher cogMatcher = new CogMatcher();
         private double lineGap, inspArea;
         private BitmapSource sampleImage;
@@ -47,8 +50,8 @@ namespace AutoFocusMachine.ViewModel
         private ICogRecord inspLastRecord;
         private List<TestResult> testResults = new List<TestResult>();
         private double inspIndexX, inspIndexY;
-
-
+        private ObservableCollection<TestResult> methodCollection = new ObservableCollection<TestResult>();
+ 
         public BitmapSource SampleImage { get => sampleImage; set => SetValue(ref sampleImage, value); }
         public ICogRecord MeansureLastRecord { get => meansurelastRecord; set => SetValue(ref meansurelastRecord, value); }
         public ICogRecord InspLastRecord { get => inspLastRecord; set => SetValue(ref inspLastRecord, value); }
@@ -57,7 +60,8 @@ namespace AutoFocusMachine.ViewModel
         public double InspArea { get => inspArea; set => SetValue(ref inspArea, value); }
         public double InspIndexX { get => inspIndexX; set => SetValue(ref inspIndexX, value); }
         public double InspIndexY { get => inspIndexY; set => SetValue(ref inspIndexY, value); }
-
+        public ObservableCollection<TestResult> MethodCollection { get => methodCollection; set => SetValue(ref methodCollection, value); }
+       
         public ICommand TestCommand => new RelayCommand(async () =>
         {
             var result = cogMatcher.Find();
@@ -214,22 +218,28 @@ namespace AutoFocusMachine.ViewModel
         public ICommand EditCommand => new RelayCommand(async () =>
         {
 
-            if (cogBlobWindow == null) {
-                cogBlobWindow = new CogBlobWindow(MainImage);
-                cogBlobWindow.BlobParam = new BlobParams();
+            if (cogCaliperWindow == null) {
+                cogCaliperWindow = new CogCaliperWindow(MainImage);
+                cogCaliperWindow.CaliperParam = new CaliperParams();
             }
-           
-
-            cogBlobWindow.ShowDialog();
 
 
-            BlobParams ATest = cogBlobWindow.BlobParam;
+            cogCaliperWindow.ShowDialog();
+
+
+            CaliperParams ATest = cogCaliperWindow.CaliperParam;
        
 
             //    mainRecipe.PMParams = cogMatcher.Patmaxparams;
         });
 
+        public ICommand ReadTestCommand => new RelayCommand(async () =>
+        {
 
+            MethodCollection.Add(new TestResult {SN = $"{MethodCollection.Count + 1}" ,Name = $"T{MethodCollection.Count+1}" ,ResultName= $"R{MethodCollection.Count+1}" });
+
+
+        });
         public ICommand TestingFlowStopCommand => new RelayCommand(async () =>
         {
 
@@ -298,6 +308,17 @@ namespace AutoFocusMachine.ViewModel
         public double Distance { get; set; }
         public double Area { get; set; }
         public System.Windows.Point Center { get; set; }
+        
+        public string SN { get; set; }
+        public string Name { get; set; }
+        public string ResultName { get; set; }
+    }
+
+
+    public enum OutputData
+    {
+        Data,
+        Distance
 
     }
 }

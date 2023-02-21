@@ -363,6 +363,10 @@
       <Project>{f01cbe7b-7d00-4b70-b6ba-df8131272949}</Project>
       <Name>AutoFocusMachine.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\YuanliCore\YuanliApplication\YuanliApplication.csproj">
+      <Project>{5bd09fd4-09fa-46d7-a8ec-2d11e798012f}</Project>
+      <Name>YuanliApplication</Name>
+    </ProjectReference>
     <ProjectReference Include="..\YuanliCore\YuanliCore\YuanliCore.csproj">
       <Project>{afc5bb52-03a9-4833-8415-b52db3b34639}</Project>
       <Name>YuanliCore</Name>

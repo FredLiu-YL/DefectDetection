@@ -74,9 +74,10 @@ namespace YuanliCore.Interface
                 int i = 0;
                 isBusy = true;
                 await Task.Run(async () =>
-                {
-                    controller.MoveCommand(AxisID, distance);
+                { 
                     double postion = Position + distance;
+                    controller.MoveCommand(AxisID, distance);
+                   
                     while (Math.Abs(Position - postion) > 0.005 && !isStop)
                     {
                         i++;
