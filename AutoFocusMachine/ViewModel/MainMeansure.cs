@@ -64,7 +64,7 @@ namespace AutoFocusMachine.ViewModel
        
         public ICommand TestCommand => new RelayCommand(async () =>
         {
-            var result = cogMatcher.Find();
+            
         });
 
         public ICommand TestMeansureCommand => new RelayCommand(() =>
@@ -235,7 +235,8 @@ namespace AutoFocusMachine.ViewModel
 
         public ICommand ReadTestCommand => new RelayCommand(async () =>
         {
-
+            CogGapCaliper cogGapCaliper = new CogGapCaliper();
+            cogGapCaliper.EditParameter(MainImage);
             MethodCollection.Add(new TestResult {SN = $"{MethodCollection.Count + 1}" ,Name = $"T{MethodCollection.Count+1}" ,ResultName= $"R{MethodCollection.Count+1}" });
 
 

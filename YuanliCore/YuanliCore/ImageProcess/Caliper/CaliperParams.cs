@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace YuanliCore.ImageProcess.Caliper
 {
-    public class CaliperParams
+    public class CaliperParams : CogParameter
     {
         public CaliperParams(int id = 0)
         {
@@ -22,13 +22,17 @@ namespace YuanliCore.ImageProcess.Caliper
             //  (CogPMAlignRunParams)CogSerializer.LoadObjectFromFile("");
         }
 
-        /// <summary>
-        /// 取得或設定Patmax 的Id 預設為 = 0, 若一個料號有兩個以上的Patmax參數屬性, 請明確指定Id後再儲存
-        /// </summary>
-        public int Id { get; set; }
 
+        /// <summary>
+        /// 卡尺的位置與範圍
+        /// </summary>
         public CogRectangleAffine Region { get; set; }
+        /// <summary>
+        /// 搜尋參數
+        /// </summary>
         public CogCaliper RunParams { get; set; }
+
+
         public static CaliperParams Default(int id = 0)
         {
             CogCaliperTool tool = new CogCaliperTool();

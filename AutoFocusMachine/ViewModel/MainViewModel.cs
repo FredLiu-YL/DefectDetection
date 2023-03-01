@@ -138,7 +138,11 @@ namespace AutoFocusMachine.ViewModel
                 cogMatchWindow.Dispose();
             if (cogCaliperWindow != null)
                 cogCaliperWindow.Dispose();
+
+           
             
+
+
         });
         public ICommand ClosedCommand => new RelayCommand<string>(async key =>
         {

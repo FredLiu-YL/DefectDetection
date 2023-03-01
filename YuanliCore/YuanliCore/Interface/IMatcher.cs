@@ -11,7 +11,7 @@ namespace YuanliCore.Interface
     public interface IMatcher
     {
         PatmaxParams Patmaxparams { get; set; }
-        IEnumerable<MatchResult> Find();
+        IEnumerable<MatchResult> Find(Frame<byte[]> image);
 
          void EditParameter(BitmapSource image);
 

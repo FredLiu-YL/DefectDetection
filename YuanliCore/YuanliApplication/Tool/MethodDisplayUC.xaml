@@ -6,15 +6,15 @@
              xmlns:local="clr-namespace:YuanliApplication.Tool"
              mc:Ignorable="d" 
               x:Name="Method_UC"
-             d:DesignHeight="50" d:DesignWidth="400">
+             d:DesignHeight="50" d:DesignWidth="360">
     <Grid DataContext="{Binding ElementName=Method_UC}" Background="AntiqueWhite">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.4*"/>
-            <ColumnDefinition Width="1.0*" />
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="1.1*" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Label Content="{Binding SN}"   FontSize="24" BorderThickness="1.5" BorderBrush="Black" />
         <Label Content="{Binding MethodName}" FontSize="24"  BorderThickness="1.5" BorderBrush="Black"  Grid.Column="1" />
-        <Label Content="{Binding ResultName}" FontSize="24"  BorderThickness="1.5" BorderBrush="Black"  Grid.Column="2" />
+        <Label Content="{Binding ResultName}" FontSize="24"  BorderThickness="1.5" BorderBrush="Black"  Grid.Column="2" Margin="0,0,3,0" />
     </Grid>
 </UserControl>

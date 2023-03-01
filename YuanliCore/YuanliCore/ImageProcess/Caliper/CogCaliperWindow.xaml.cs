@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using YuanliCore.Interface;
 using YuanliCore.CameraLib;
-
+using GalaSoft.MvvmLight.Command;
 
 namespace YuanliCore.ImageProcess.Caliper
 {
@@ -29,6 +29,11 @@ namespace YuanliCore.ImageProcess.Caliper
         private ICogImage cogImage;
         private CaliperParams caliperParam = new CaliperParams();
         private bool isDispose =false;
+        private bool isFullSelect = true;
+        private bool isCenterSelect;
+        private bool isBeginSelect;
+        private bool isEndSelect;
+
         public CogCaliperWindow(BitmapSource bitmap)
         {
         
@@ -41,7 +46,49 @@ namespace YuanliCore.ImageProcess.Caliper
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
         public CaliperParams CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
+        public bool IsFullSelect
+        {
+            get => isFullSelect; set
+            {
+                SetValue(ref isFullSelect, value);
+                SetResultSelect();
+            }
+        }
+        public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
 
+        public bool IsBeginSelect { get => isBeginSelect; set { SetValue(ref isBeginSelect, value); SetResultSelect(); } }
+
+        public bool IsEndSelect { get => isEndSelect; set { SetValue(ref isEndSelect, value); SetResultSelect(); } }
+
+        public ICommand ClosingCommand => new RelayCommand(() =>
+        {
+
+        });
+
+        public ICommand OpenCommand => new RelayCommand(() =>
+        {
+            switch (CaliperParam.ResultOutput) {
+                case ResultSelect.Full:
+                    IsFullSelect = true;
+                    break;
+                case ResultSelect.Center:
+                    IsCenterSelect = true;
+                    break;
+                case ResultSelect.Begin:
+                    IsBeginSelect = true;
+                    break;
+                case ResultSelect.End:
+                    IsEndSelect = true;
+                    break;
+                default:
+                    break;
+            }
+
+
+
+           
+           
+        });
 
         public void UpdateImage(BitmapSource bitmap)
         {
@@ -51,7 +98,19 @@ namespace YuanliCore.ImageProcess.Caliper
             CogImage = frame.ColorFrameToCogImage();
 
         }
+        private void SetResultSelect()
+        {
+            if (IsFullSelect)
+                CaliperParam.ResultOutput = ResultSelect.Full;
+            else if (IsCenterSelect)
+                CaliperParam.ResultOutput = ResultSelect.Center;
+            else if (IsBeginSelect)
+                CaliperParam.ResultOutput = ResultSelect.Begin;
+            else if (IsEndSelect)
+                CaliperParam.ResultOutput = ResultSelect.End;
 
+
+        }
         protected override void OnClosing(CancelEventArgs e)
         {
     
