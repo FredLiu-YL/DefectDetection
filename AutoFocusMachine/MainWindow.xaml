@@ -8,7 +8,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight" 
-        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore" xmlns:autofocusmachine="clr-namespace:AutoFocusMachine;assembly=YuanliCore" xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore" xmlns:UserControls="clr-namespace:YuanliApplication.Tool;assembly=YuanliApplication" xmlns:application="clr-namespace:YuanliApplication.Application;assembly=YuanliApplication"
+        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" 
+       xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore"
+    xmlns:autofocusmachine="clr-namespace:AutoFocusMachine;assembly=YuanliCore" 
+    xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore"
+    xmlns:UserControls="clr-namespace:YuanliApplication.Tool;assembly=YuanliApplication"
+    xmlns:application="clr-namespace:YuanliApplication.Application;assembly=YuanliApplication"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+   
     mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -17,28 +24,18 @@
          WindowStartupLocation="CenterScreen"  Background="MintCream" >
 
     <Window.Resources>
-        <Style TargetType="{x:Type TextBlock}" x:Key="HorizontalExpanderContentTextBlock">
-            <Setter Property="Opacity" Value=".68"/>
-            <Setter Property="Text" Value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-        </Style>
-
-        <Style TargetType="{x:Type TextBlock}" x:Key="VerticalExpanderContentTextBlock" BasedOn="{StaticResource HorizontalExpanderContentTextBlock}">
-            <Setter Property="MaxWidth" Value="180"/>
-        </Style>
-
-        <Style TargetType="{x:Type Border}" x:Key="HorizontalDividerBorder">
-            <Setter Property="Background" Value="{DynamicResource MaterialDesignDivider}"/>
-            <Setter Property="UseLayoutRounding" Value="True"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="Height" Value="5"/>
-        </Style>
-
-        <Style TargetType="{x:Type Border}" x:Key="VerticalDividerBorder" BasedOn="{StaticResource HorizontalDividerBorder}">
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Height" Value="Auto"/>
-            <Setter Property="Width" Value="1"/>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TabControl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
+                <!-- throw in some extra colour for our floating action button -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Green.Named.Primary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
 
     </Window.Resources>
     <i:Interaction.Triggers>
@@ -686,145 +683,37 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <Button Height="50" Content="編輯"  Command="{Binding EditCommand}"  />
-                                <Button  Height="50" Content="測試"  Command="{Binding TestMeansureCommand}"   />
+                                <Button  Height="50" Content="測試"  Command="{Binding TestCommand}"   />
                             </StackPanel>
                         </Grid>
 
                     </GroupBox>
 
-                    <application:InspectUC  Image="{Binding MainImage}" Grid.Column="0"  Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="3"  />
-                    <!--<Grid Grid.Column="0"  Grid.Row="1" Grid.ColumnSpan="3"  Grid.RowSpan="3"  Background="AliceBlue" >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="0.5*" />
-                            <RowDefinition Height="1.0*" />
-                            <RowDefinition />
-                            <RowDefinition Height="0.2*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.6*"  />
-                            <ColumnDefinition  />
-                            <ColumnDefinition Width="2.0*" />
-                        </Grid.ColumnDefinitions>
-                        <Border BorderThickness="2" BorderBrush="Black" Grid.RowSpan="3" Grid.ColumnSpan="2" />
+                    <application:InspectUC  MatchParam="{Binding MatchParam}"   Image="{Binding MainImage}" MethodList="{Binding MethodList}" CombineCollection="{Binding CombineCollection}"  Grid.Column="0"  Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="3"  />
+                    <Grid  Grid.Row="1"  Grid.Column="2" >
 
-                        <GroupBox  Header="定位樣本" FontSize="30" Grid.ColumnSpan="1" >
-                            <Grid >
-                                <Grid.ColumnDefinitions >
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Image Grid.Column="0"  Source="{Binding SampleImage}" />
-                                <StackPanel Grid.Column="1">
-                                    <Button Height="50" Content="編輯"  Command="{Binding EditSampleCommand}"  />
-                                    <Button  Height="50" Content="測試"  Command="{Binding TestMeansureCommand}"   />
-                                </StackPanel>
-                            </Grid>
-
-                        </GroupBox>
-                        <GroupBox Margin="0,0,5,0"  Grid.Row="0" Grid.Column="1" Header="存讀檔案" FontSize="30" >
-                            <StackPanel Grid.Column="1">
-                                <Button Height="50" Content="存檔"  Command="{Binding EditSampleCommand}"  />
-                                <Button  Height="50" Content="讀檔"  Command="{Binding ReadTestCommand}"   />
-                            </StackPanel>
-                        </GroupBox>
-                        <GroupBox Header="演算法列表" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1" Margin="5,0,0,5" >
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="0.2*"/>
-                                    <RowDefinition />
-
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1.7*"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <UserControls:MethodDisplayUC  SN="序號"  MethodName="方法" ResultName="結果"  Margin="2,0,0,0" HorizontalAlignment="Left" Width="365" />
-
-                                <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding MethodCollection}"  >
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Label Content="{Binding SN}" Width="60"  FontSize="24" BorderThickness="1.5" BorderBrush="Black" />
-                                                <Label Content="{Binding Name}" FontSize="24" Width="150" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="1" />
-                                                <Label Content="{Binding ResultName}" FontSize="24" Width="150" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="2" />
-                                            </StackPanel>
-                                                --><!--<UserControls:MethodDisplayUC Width="100" Height="50" SN="1"  MethodName="{Binding Name}"  ResultName="{Binding ResultName}"  ></UserControls:MethodDisplayUC>--><!--
-                                      
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
+                        <!--<application:MeansureOutputUC  ResultCollection="{Binding FinalResultCollection}" />-->
+                        <!--<DataGrid  Grid.Row="1" ItemsSource="{Binding FinalResultCollection}"  Style="{StaticResource MaterialDesignDataGrid}"  CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectedIndex="{Binding CombineCollectionIndex}"   >
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="30" Header=" " Binding="{Binding Number}" />
+                                <DataGridTextColumn Width="70" Header="Ootput" Binding="{Binding Output}" />
+                                <DataGridTextColumn Width="70" Header="Distance" Binding="{Binding Distance}" />
+                                <DataGridTextColumn Width="70" Header="Angle" Binding="{Binding Angle}" />
+                                <DataGridTextColumn Width="70" Header="CenterX"  Binding="{Binding Center.X}" />
+                                <DataGridTextColumn Width="70" Header="CenterY"  Binding="{Binding Center.Y}"  />
+                                <DataGridTextColumn Width="70" Header="Score" Binding="{Binding Score}" />
+                             
+                            </DataGrid.Columns>
 
 
-                                </ListBox>
-                                <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-                                    <StackPanel Orientation="Horizontal">
-                                        <ComboBox Width="150">
-                                            <ComboBoxItem Content="尋邊" />
-                                            <ComboBoxItem Content="尋圓" />
-                                            <ComboBoxItem Content="量測" />
-                                            <ComboBoxItem Content="模板匹配" />
-
-                                        </ComboBox>
-                                        <Button Content="新增" Width="70"  Command="{Binding ReadTestCommand}"  />
-                                    </StackPanel>
-                                   
-                                            
-                          
-                                    <Button Content="刪除" />
-                                    <Button Content="清除" />
-                                </StackPanel>
-                            </Grid>
-                        </GroupBox>
-                   
-                      
-                        --><!--<ListBox x:Name="MyList" ItemsSource="{Binding MethodCollection}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <UserControls:MethodDisplayUC    />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>--><!--
-
-                        <GroupBox Header="結果輸出" Grid.Row="2"  Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,5,5"  >
-                            <Grid>
-                                
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal">
-                                    <ComboBox   Width="90" >
-                                        <ComboBoxItem Content="結果" />
-                                        <ComboBoxItem Content="距離" />
-                                    </ComboBox>
-                                    <ComboBox Grid.Column="0" FontSize="20" ItemsSource="{Binding MethodCollection}" Width="50" >
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding SN}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-
-                                    </ComboBox>
-                                    <ComboBox Grid.Column="0" FontSize="20" ItemsSource="{Binding MethodCollection}" Width="50" >
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding SN}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-
-                                    </ComboBox>
-                                    <Button  Content="新增"/>
-                                    <Button  Content="修改"/>
-                                </StackPanel>
-
-                                <ListBox  Margin="1,5,0,0" HorizontalAlignment="Left"  Width="380" Grid.Row="1" >
-                                   
-
-
-                                </ListBox>
-                            </Grid>
-                        
-                        </GroupBox>
-                    </Grid>-->
+                        </DataGrid>-->
+                       
+                    </Grid>
                 </Grid>
             </TabItem>
             <DataGrid Height="100" Width="100"/>

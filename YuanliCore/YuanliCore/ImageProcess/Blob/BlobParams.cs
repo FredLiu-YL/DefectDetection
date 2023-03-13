@@ -1,5 +1,6 @@
 ﻿using Cognex.VisionPro;
 using Cognex.VisionPro.Blob;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,26 +9,32 @@ using System.Threading.Tasks;
 
 namespace YuanliCore.ImageProcess.Blob
 {
-    public class BlobParams
+    public class BlobParams : CogParameter
     {
-        public BlobParams(int id = 0)
+
+        public int TestC { get; set; }
+        public BlobParams(int id = 0):base(id)
         {
             CogBlobTool tool = new CogBlobTool();
 
-            Id = id;
+         
        
             RunParams = tool.RunParams;
             ROI = tool.Region;
             //  (CogPMAlignRunParams)CogSerializer.LoadObjectFromFile("");
+            tool.Dispose();
         }
-
         /// <summary>
-        /// 取得或設定Patmax 的Id 預設為 = 0, 若一個料號有兩個以上的Patmax參數屬性, 請明確指定Id後再儲存
+        ///
         /// </summary>
-        public int Id { get; set; }
-
+        [JsonIgnore]//Vision pro 不能序列化  所以要忽略  不然就要用到JsonConvert
         public ICogRegion ROI { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore] //Vision pro 不能序列化  所以要忽略  不然就要用到JsonConvert
         public CogBlob RunParams { get; set; }
+
         public static BlobParams Default(int id = 0)
         {
             CogBlobTool tool = new CogBlobTool();
@@ -42,6 +49,16 @@ namespace YuanliCore.ImageProcess.Blob
                 RunParams = tool.RunParams,
                 ROI = tool.Region
             };
+        }
+
+        protected override void SaveCogRecipe(string recipeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void LoadRecipe(string directoryPath, int id)
+        {
+            throw new NotImplementedException();
         }
     }
 

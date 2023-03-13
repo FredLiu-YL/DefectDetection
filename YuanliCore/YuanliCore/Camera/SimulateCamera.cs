@@ -24,8 +24,9 @@ namespace YuanliCore.CameraLib
             bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
             bi.EndInit();
             // Set the image source.
-            tempFrames = bi.ToByteFrame();
-
+            var bmp = bi.FormatConvertTo(PixelFormats.Bgr24);
+          //  tempFrames = bi.ToByteFrame();
+            tempFrames = bmp.ToByteFrame();
 
 
         }

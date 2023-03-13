@@ -25,8 +25,8 @@ namespace YuanliCore.ImageProcess.Match
 
         }
 
-        public PatmaxParams Patmaxparams { get; set; } = new PatmaxParams();
-
+        public override CogParameter RunParams { get; set; } = new PatmaxParams(0);
+        public MatchResult[] MatchResults { get; internal set; }
 
         public override void Dispose()
         {
@@ -34,13 +34,13 @@ namespace YuanliCore.ImageProcess.Match
                 cogMatchWindow.Dispose();
         }
 
-        public void EditParameter(BitmapSource image)
+        public override void EditParameter(BitmapSource image)
         {
-          //  if (cogMatchWindow == null)
-             cogMatchWindow = new CogMatchWindow(image);
+            //  if (cogMatchWindow == null)
+            cogMatchWindow = new CogMatchWindow(image);
 
-
-            cogMatchWindow.PatmaxParam = Patmaxparams;
+          var param=  (PatmaxParams)RunParams;
+            cogMatchWindow.PatmaxParam = param;
             cogMatchWindow.ShowDialog();
 
 
@@ -48,10 +48,10 @@ namespace YuanliCore.ImageProcess.Match
 
 
             var sampleImage = cogMatchWindow.GetPatternImage();
-            
-            Patmaxparams = patmaxparams;
-            Patmaxparams.PatternImage = sampleImage;
-            
+
+            param = patmaxparams;
+            param.PatternImage = sampleImage;
+
 
             Dispose();
         }
@@ -63,10 +63,35 @@ namespace YuanliCore.ImageProcess.Match
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
 
+            return Find(cogImg1);
+
+
+        }
+        public LocateResult FindCogLocate(Frame<byte[]> image)
+        {
+
+            ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            //  cogImg = cogImg1;
+            //     cogRecordsDisplay = new CogRecordsDisplay();
+            var param = (PatmaxParams)RunParams;
             alignTool.InputImage = cogImg1;
-            alignTool.Pattern = Patmaxparams.Pattern;
-            alignTool.RunParams = Patmaxparams.RunParams;
-            alignTool.SearchRegion = Patmaxparams.SearchRegion;
+            alignTool.Pattern = param.Pattern;
+            alignTool.RunParams = param.RunParams;
+            alignTool.SearchRegion = param.SearchRegion;
+            alignTool.Run();
+            if (alignTool.Results.Count == 0) throw new Exception("Locate Fail");
+            CogTransform2DLinear linear = alignTool.Results[0].GetPose();
+
+            return new LocateResult { CogTransform = linear };
+        }
+
+        private IEnumerable<MatchResult> Find(ICogImage cogImage)
+        {
+            var param = (PatmaxParams)RunParams;
+            alignTool.InputImage = cogImage;
+            alignTool.Pattern = param.Pattern;
+            alignTool.RunParams = param.RunParams;
+            alignTool.SearchRegion = param.SearchRegion;
             alignTool.Run();
 
             List<MatchResult> matchings = new List<MatchResult>();
@@ -84,5 +109,18 @@ namespace YuanliCore.ImageProcess.Match
 
             return matchings;
         }
+        public override void Run()
+        {
+            MatchResults = Find(CogImage).ToArray();
+        }
+    }
+
+    public class LocateResult
+    {
+        /// <summary>
+        /// VisitionPro 定位轉換Transform
+        /// </summary>
+        public CogTransform2DLinear CogTransform { get; set; }
+
     }
 }

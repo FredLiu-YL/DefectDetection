@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using YuanliCore.Interface;
 using YuanliCore.CameraLib;
-
+using GalaSoft.MvvmLight.Command;
 
 namespace YuanliCore.ImageProcess.Blob
 {
@@ -29,6 +29,11 @@ namespace YuanliCore.ImageProcess.Blob
         private ICogImage cogImage;
         private BlobParams blobParam = new BlobParams();
         private bool isDispose =false;
+        private bool isFullSelect = true;
+        private bool isCenterSelect;
+        private bool isBeginSelect;
+        private bool isEndSelect;
+
         public CogBlobWindow(BitmapSource bitmap)
         {
         
@@ -41,7 +46,39 @@ namespace YuanliCore.ImageProcess.Blob
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
         public BlobParams BlobParam { get => blobParam; set => SetValue(ref blobParam, value); }
+        public bool IsFullSelect { get => isFullSelect; set { SetValue(ref isFullSelect, value); SetResultSelect(); } }
+        public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
 
+        public bool IsBeginSelect { get => isBeginSelect; set { SetValue(ref isBeginSelect, value); SetResultSelect(); } }
+
+        public bool IsEndSelect { get => isEndSelect; set { SetValue(ref isEndSelect, value); SetResultSelect(); } }
+
+
+        public ICommand ClosingCommand => new RelayCommand(() =>
+        {
+
+        });
+
+        public ICommand OpenCommand => new RelayCommand(() =>
+        {
+            switch (BlobParam.ResultOutput) {
+                case ResultSelect.Full:
+                    IsFullSelect = true;
+                    break;
+                case ResultSelect.Center:
+                    IsCenterSelect = true;
+                    break;
+                case ResultSelect.Begin:
+                    IsBeginSelect = true;
+                    break;
+                case ResultSelect.End:
+                    IsEndSelect = true;
+                    break;
+                default:
+                    break;
+            }
+
+        });
 
         public void UpdateImage(BitmapSource bitmap)
         {
@@ -59,6 +96,19 @@ namespace YuanliCore.ImageProcess.Blob
 
             if (isDispose) e.Cancel = false;
             this.Hide();
+
+
+        }
+        private void SetResultSelect()
+        {
+            if (IsFullSelect)
+                BlobParam.ResultOutput = ResultSelect.Full;
+            else if (IsCenterSelect)
+                BlobParam.ResultOutput = ResultSelect.Center;
+            else if (IsBeginSelect)
+                BlobParam.ResultOutput = ResultSelect.Begin;
+            else if (IsEndSelect)
+                BlobParam.ResultOutput = ResultSelect.End;
 
 
         }

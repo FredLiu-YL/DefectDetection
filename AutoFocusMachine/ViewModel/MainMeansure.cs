@@ -33,6 +33,7 @@ using System.IO;
 using System.Globalization;
 using System.Threading;
 using YuanliCore.ImageProcess.Caliper;
+using YuanliApplication.Common;
 
 namespace AutoFocusMachine.ViewModel
 {
@@ -41,7 +42,7 @@ namespace AutoFocusMachine.ViewModel
         private CogMatchWindow cogMatchWindow;
         private CogBlobWindow cogBlobWindow;
         private CogCaliperWindow cogCaliperWindow;
-        
+        private PatmaxParams matchParam =  new PatmaxParams(0);
         private CogMatcher cogMatcher = new CogMatcher();
         private double lineGap, inspArea;
         private BitmapSource sampleImage;
@@ -51,7 +52,11 @@ namespace AutoFocusMachine.ViewModel
         private List<TestResult> testResults = new List<TestResult>();
         private double inspIndexX, inspIndexY;
         private ObservableCollection<TestResult> methodCollection = new ObservableCollection<TestResult>();
- 
+        private ObservableCollection<FinalResult> finalResultCollection = new ObservableCollection<FinalResult>();
+        private List<CogMethod> methodList = new List<CogMethod>();
+        private ObservableCollection<CombineOptionOutput> combineCollection = new ObservableCollection<CombineOptionOutput>();
+
+
         public BitmapSource SampleImage { get => sampleImage; set => SetValue(ref sampleImage, value); }
         public ICogRecord MeansureLastRecord { get => meansurelastRecord; set => SetValue(ref meansurelastRecord, value); }
         public ICogRecord InspLastRecord { get => inspLastRecord; set => SetValue(ref inspLastRecord, value); }
@@ -61,11 +66,108 @@ namespace AutoFocusMachine.ViewModel
         public double InspIndexX { get => inspIndexX; set => SetValue(ref inspIndexX, value); }
         public double InspIndexY { get => inspIndexY; set => SetValue(ref inspIndexY, value); }
         public ObservableCollection<TestResult> MethodCollection { get => methodCollection; set => SetValue(ref methodCollection, value); }
-       
+        public ObservableCollection<FinalResult> FinalResultCollection { get => finalResultCollection; set => SetValue(ref finalResultCollection, value); }
+
+
+        public PatmaxParams MatchParam { get => matchParam; set => SetValue(ref matchParam, value); }
+        public List<CogMethod> MethodList { get => methodList; set => SetValue(ref methodList, value); }
+
+        public ObservableCollection<CombineOptionOutput> CombineCollection { get => combineCollection; set => SetValue(ref combineCollection, value); }
+
+
+
+
         public ICommand TestCommand => new RelayCommand(async () =>
         {
-            
+            try {
+
+                var frame = MainImage.ToByteFrame();
+
+                YuanliVision yuanliVision = new YuanliVision();
+                FinalResultCollection.Clear();
+                cogMatcher.RunParams = MatchParam;
+                var results = await yuanliVision.Run(frame, cogMatcher , MethodList, CombineCollection);
+
+                for (int i = 0; i < results.Length; i++) 
+                {
+
+                    switch (results[i].ResultOutput) {
+                        case OutputOption.Result:
+
+                            FinalResult[] vR = OptionResult(results[i]);
+                            vR[0].Number =$"{i + 1}";// 將第一筆資料 寫入SN
+                            foreach (var item in vR) {
+                                FinalResultCollection.Add(item);
+                            }
+                         
+                            break;
+                        case OutputOption.Distance:
+                            FinalResult result = new FinalResult();
+                            result.Number = $" { i + 1}";// 將第一筆資料 寫入SN
+                            result.Distance= results[i].Distance;
+                            FinalResultCollection.Add(result);
+                            break;
+                        case OutputOption.Angle:
+
+                            break;
+
+                        default:
+                            break;
+                    }
+
+
+                   
+
+                }
+
+
+
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
         });
+        private FinalResult[] OptionResult(VisionResult visionResult)
+        {
+            List<FinalResult> finalResults = new List<FinalResult>();
+            if (visionResult.MatchResult != null) {
+
+                foreach (var item in visionResult.MatchResult) {
+                    FinalResult result = new FinalResult();
+
+                    result.Center = item.Center;
+                    result.Score = item.Score;
+
+                    finalResults.Add(result);
+                }
+
+            }
+            else if (visionResult.CaliperResult != null) {
+                foreach (var item in visionResult.CaliperResult) {
+                    FinalResult result = new FinalResult();
+
+                    result.Center = item.CenterPoint;
+
+
+                    finalResults.Add(result);
+                }
+            }
+            else if (visionResult.BlobResult != null) {
+                foreach (var item in visionResult.BlobResult) {
+                    FinalResult result = new FinalResult();
+
+                    result.Center = item.CenterPoint;
+                  //  result.Area = item.Area;
+
+                    finalResults.Add(result);
+                }
+
+            }
+
+            return finalResults.ToArray();
+
+        }
 
         public ICommand TestMeansureCommand => new RelayCommand(() =>
         {
@@ -185,14 +287,14 @@ namespace AutoFocusMachine.ViewModel
                     cogMatchWindow = new CogMatchWindow(MainImage);
 
 
-                cogMatchWindow.PatmaxParam = new PatmaxParams();
+                cogMatchWindow.PatmaxParam = new PatmaxParams(0);
 
 
                 cogMatchWindow.ShowDialog();
 
 
-                cogMatcher.Patmaxparams = cogMatchWindow.PatmaxParam;
-                mainRecipe.PMParams = cogMatcher.Patmaxparams;
+                cogMatcher.RunParams = cogMatchWindow.PatmaxParam;
+                mainRecipe.PMParams = (PatmaxParams)cogMatcher.RunParams;
 
                 //    var aa = (CogRectangle)cogMatchWindow.PatmaxParam.Pattern.TrainRegion;
                 //    var ab = cogMatchWindow.PatmaxParam.Pattern.Origin;
@@ -220,7 +322,7 @@ namespace AutoFocusMachine.ViewModel
 
             if (cogCaliperWindow == null) {
                 cogCaliperWindow = new CogCaliperWindow(MainImage);
-                cogCaliperWindow.CaliperParam = new CaliperParams();
+                cogCaliperWindow.CaliperParam = new CaliperParams(0);
             }
 
 
@@ -228,7 +330,7 @@ namespace AutoFocusMachine.ViewModel
 
 
             CaliperParams ATest = cogCaliperWindow.CaliperParam;
-       
+
 
             //    mainRecipe.PMParams = cogMatcher.Patmaxparams;
         });
@@ -237,7 +339,7 @@ namespace AutoFocusMachine.ViewModel
         {
             CogGapCaliper cogGapCaliper = new CogGapCaliper();
             cogGapCaliper.EditParameter(MainImage);
-            MethodCollection.Add(new TestResult {SN = $"{MethodCollection.Count + 1}" ,Name = $"T{MethodCollection.Count+1}" ,ResultName= $"R{MethodCollection.Count+1}" });
+            MethodCollection.Add(new TestResult { SN = $"{MethodCollection.Count + 1}", Name = $"T{MethodCollection.Count + 1}", ResultName = $"R{MethodCollection.Count + 1}" });
 
 
         });
@@ -309,17 +411,12 @@ namespace AutoFocusMachine.ViewModel
         public double Distance { get; set; }
         public double Area { get; set; }
         public System.Windows.Point Center { get; set; }
-        
+
         public string SN { get; set; }
         public string Name { get; set; }
         public string ResultName { get; set; }
     }
 
 
-    public enum OutputData
-    {
-        Data,
-        Distance
-
-    }
+   
 }

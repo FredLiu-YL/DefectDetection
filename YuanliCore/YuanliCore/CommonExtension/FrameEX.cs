@@ -132,7 +132,9 @@ namespace YuanliCore.CameraLib
         {
             try {
 
-                using (System.Drawing.Bitmap bmp = frame.ToBitmap()) {
+                using (System.Drawing.Bitmap bmp = frame.ToBitmap()) 
+                    {
+                  
                     CogImage24PlanarColor cogImage = new CogImage24PlanarColor(bmp);
 
                     using (CogImageConvertTool tool = new CogImageConvertTool()) {

@@ -1,6 +1,5 @@
 ﻿using Cognex.VisionPro;
 using Cognex.VisionPro.Caliper;
-using Cognex.VisionPro.Caliper;
 using Cognex.VisionPro.PMAlign;
 using System;
 using System.Collections.Generic;

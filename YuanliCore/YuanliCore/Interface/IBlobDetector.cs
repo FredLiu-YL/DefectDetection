@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using YuanliCore.ImageProcess;
 
 namespace YuanliCore.Interface
 {
@@ -16,10 +17,15 @@ namespace YuanliCore.Interface
 
     }
 
-    public struct BlobDetectorResult
+    public class BlobDetectorResult 
     {
+        public BlobDetectorResult(Point center, double area)
+        {
+            CenterPoint = center;
+            Area = area;
+        }
+        public double Area { get; }
 
-        public Point[] Points { get; set; }
-
+        public Point CenterPoint { get;  set; }
     }
 }

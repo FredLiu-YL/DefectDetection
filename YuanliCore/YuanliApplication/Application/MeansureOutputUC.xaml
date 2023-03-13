@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="YuanliApplication.Application.MeansureOutputUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YuanliApplication.Application" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+               xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+              x:Name="OutputControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="500">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        <!--<ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TabControl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
+                --><!-- throw in some extra colour for our floating action button --><!--
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Green.Named.Primary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>-->
+    </UserControl.Resources>
+    <Grid   DataContext="{Binding ElementName=OutputControl}"   >
+
+        <DataGrid  Grid.Row="1" ItemsSource="{Binding ResultCollection}"  Style="{StaticResource MaterialDesignDataGrid}"  CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectedIndex="{Binding CombineCollectionIndex}"   >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="30" Header=" " Binding="{Binding Number}" />
+                    <DataGridTextColumn Width="70" Header="Ootput" Binding="{Binding Output}" />
+                    <DataGridTextColumn Width="70" Header="Distance" Binding="{Binding Distance}" />
+                    <DataGridTextColumn Width="70" Header="Angle" Binding="{Binding Angle}" />
+                    <DataGridTextColumn Width="70" Header="CenterX"  Binding="{Binding Center.X}" />
+                    <DataGridTextColumn Width="70" Header="CenterY"  Binding="{Binding Center.Y}"  />
+                    <DataGridTextColumn Width="70" Header="Score" Binding="{Binding Score}" />
+
+                </DataGrid.Columns>
+
+
+            </DataGrid>
+
+    </Grid>
+</UserControl>

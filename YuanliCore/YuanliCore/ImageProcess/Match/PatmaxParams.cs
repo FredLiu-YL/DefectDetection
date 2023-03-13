@@ -13,14 +13,14 @@ namespace YuanliCore.ImageProcess.Match
 {
     public class PatmaxParams : CogParameter
     {
-        public PatmaxParams(int id = 0)
+        public PatmaxParams(int id ):base(id)
         {
             CogPMAlignTool tool = new CogPMAlignTool();
 
-            Id = id;
             Pattern = tool.Pattern;
             RunParams = tool.RunParams;
             SearchRegion = tool.SearchRegion;
+            tool.Dispose();
           //  (CogPMAlignRunParams)CogSerializer.LoadObjectFromFile("");
         }
 
@@ -62,12 +62,22 @@ namespace YuanliCore.ImageProcess.Match
 
         internal static PatmaxParams Default(CogPMAlignTool tool, int id)
         {
-            return new PatmaxParams()
+            return new PatmaxParams(0)
             {
                 Pattern = tool.Pattern,
                 RunParams = tool.RunParams,
                 SearchRegion = tool.SearchRegion
             };
+        }
+
+        protected override void LoadRecipe(string directoryPath, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void SaveCogRecipe(string recipeName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

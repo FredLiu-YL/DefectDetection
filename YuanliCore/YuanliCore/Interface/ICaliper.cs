@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using YuanliCore.ImageProcess;
 
 namespace YuanliCore.Interface
 {
@@ -26,10 +27,19 @@ namespace YuanliCore.Interface
 
     }
 
-    public struct CaliperResult
+    public class CaliperResult  
     {
+        public CaliperResult(Point beginPoint , Point centerPoint, Point endPoint)
+        {
+            BeginPoint = beginPoint;
+            CenterPoint = centerPoint;
+            EndPoint = endPoint;
+        }
 
-        public Point[] Points { get; set; }
-
+        public Point EndPoint { get; }
+        public Point BeginPoint { get; }
+        public Point CenterPoint { get;  set; }
     }
+     
+
 }

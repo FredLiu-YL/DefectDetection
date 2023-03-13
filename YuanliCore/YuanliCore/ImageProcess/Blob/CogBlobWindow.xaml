@@ -3,13 +3,52 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:YuanliCore.ImageProcess.Blob" 
-  
+        xmlns:local="clr-namespace:YuanliCore.ImageProcess.Blob" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
         x:Name="BlobWindow"
         Title="BlobWindow" Height="600" Width="960">
-    <Grid   DataContext="{Binding ElementName=BlobWindow}"   >
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <!-- throw in some extra colour for our floating action button -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Green.Named.Primary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid   DataContext="{Binding ElementName=BlobWindow}"   >
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Loaded">
+                <i:InvokeCommandAction Command="{Binding OpenCommand}"/>
+            </i:EventTrigger>
+            <i:EventTrigger EventName="Unloaded">
+                <i:InvokeCommandAction Command="{Binding ClosingCommand}"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3.0*"/>
+            <RowDefinition Height="0.3*"/>
+        </Grid.RowDefinitions>
         <local:CogBlobControl Image="{Binding CogImage}" BlobParam="{Binding BlobParam}"   />
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.4*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label  Content="Result Output :" FontSize="28"/>
+            <RadioButton Grid.Column="1" Width="130" FontSize="30"  Content="Full"    GroupName="GroupChoice"  Background="Coral"   IsChecked="{Binding IsFullSelect}"    Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
+            <RadioButton Grid.Column="2" Width="130" FontSize="30"  Content="Center"  GroupName="GroupChoice"  Background="Coral"   IsChecked="{Binding IsCenterSelect}"  Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
+            <RadioButton Grid.Column="3" Width="130" FontSize="30"  Content="Begin"   GroupName="GroupChoice"  Background="Coral"   IsChecked="{Binding IsBeginSelect}"   Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
+            <RadioButton Grid.Column="4" Width="130" FontSize="30"  Content="End"     GroupName="GroupChoice"  Background="Coral"   IsChecked="{Binding IsEndSelect}"     Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
+        </Grid>
     </Grid>
 </Window>

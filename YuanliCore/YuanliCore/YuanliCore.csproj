@@ -68,12 +68,14 @@
       <DependentUpon>CogCaliperControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImageProcess\Caliper\Circle\FindCircleParam.cs" />
+    <Compile Include="ImageProcess\Caliper\Line\CogLineCaliper.cs" />
     <Compile Include="ImageProcess\Caliper\Line\FindLineParam.cs" />
     <Compile Include="ImageProcess\CogCommon.cs" />
     <Compile Include="ImageProcess\CogDisplayer.xaml.cs">
       <DependentUpon>CogDisplayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImageProcess\CogFixture.cs" />
+    <Compile Include="ImageProcess\CogFixtureLocate.cs" />
     <Compile Include="ImageProcess\CogLineSearch.cs" />
     <Compile Include="ImageProcess\CogMethod.cs" />
     <Compile Include="ImageProcess\Match\CogMatcher.cs" />
@@ -85,6 +87,7 @@
       <DependentUpon>CogMatchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImageProcess\CogProcess.cs" />
+    <Compile Include="ImageProcess\YuanliVision.cs" />
     <Compile Include="Interface\AbstractRecipe.cs" />
     <Compile Include="Interface\IBlobDetector.cs" />
     <Compile Include="Interface\ICaliper.cs" />
@@ -135,7 +138,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.FieldCalibrationApplication.Plugin.dll</HintPath>
     </Reference>
-    <Reference Include="Cognex.VisionPro, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505" />
+    <Reference Include="Cognex.VisionPro, Version=73.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.dll</HintPath>
+    </Reference>
     <Reference Include="Cognex.VisionPro.ApplicationWizard.Core, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.ApplicationWizard.Core.dll</HintPath>
@@ -224,8 +230,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.CompositeColorMatch.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Cognex.VisionPro.Controls, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505" />
-    <Reference Include="Cognex.VisionPro.Core, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505" />
+    <Reference Include="Cognex.VisionPro.Controls, Version=73.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Core, Version=73.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Cognex.VisionPro.CorePlus, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.CorePlus.dll</HintPath>

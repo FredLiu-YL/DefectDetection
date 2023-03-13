@@ -27,7 +27,7 @@ namespace YuanliCore.ImageProcess.Match
     {
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
-        private PatmaxParams patmaxParam = new PatmaxParams();
+        private PatmaxParams patmaxParam = new PatmaxParams(0);
         private bool isDispose = false;
         private bool isFullSelect = true;
         private bool isCenterSelect  ;
