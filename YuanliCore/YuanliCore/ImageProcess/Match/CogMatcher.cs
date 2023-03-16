@@ -24,7 +24,12 @@ namespace YuanliCore.ImageProcess.Match
             alignTool = new CogPMAlignTool();
 
         }
+        public CogMatcher(CogParameter matcherParams)
+        {
 
+            alignTool = new CogPMAlignTool();
+            RunParams = matcherParams;
+        }
         public override CogParameter RunParams { get; set; } = new PatmaxParams(0);
         public MatchResult[] MatchResults { get; internal set; }
 
@@ -36,24 +41,35 @@ namespace YuanliCore.ImageProcess.Match
 
         public override void EditParameter(BitmapSource image)
         {
-            //  if (cogMatchWindow == null)
-            cogMatchWindow = new CogMatchWindow(image);
+            try {
 
-          var param=  (PatmaxParams)RunParams;
-            cogMatchWindow.PatmaxParam = param;
-            cogMatchWindow.ShowDialog();
+                if (image == null) throw new Exception("Image is null");
 
+                cogMatchWindow = new CogMatchWindow(image);
 
-            PatmaxParams patmaxparams = cogMatchWindow.PatmaxParam;
-
-
-            var sampleImage = cogMatchWindow.GetPatternImage();
-
-            param = patmaxparams;
-            param.PatternImage = sampleImage;
+                var param = (PatmaxParams)RunParams;
+                cogMatchWindow.PatmaxParam = param;
+                cogMatchWindow.ShowDialog();
 
 
-            Dispose();
+                PatmaxParams patmaxparams = cogMatchWindow.PatmaxParam;
+
+
+                var sampleImage = cogMatchWindow.GetPatternImage();
+
+                param = patmaxparams;
+                param.PatternImage = sampleImage.ToByteFrame();
+                Dispose();
+
+            }
+            catch (Exception ex) {
+
+                throw ex;
+            }
+            finally {
+              
+            }
+
         }
 
         public IEnumerable<MatchResult> Find(Frame<byte[]> image)

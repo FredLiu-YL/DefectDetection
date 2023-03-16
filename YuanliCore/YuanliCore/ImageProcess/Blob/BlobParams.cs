@@ -56,7 +56,7 @@ namespace YuanliCore.ImageProcess.Blob
             throw new NotImplementedException();
         }
 
-        protected override void LoadRecipe(string directoryPath, int id)
+        protected override void LoadCogRecipe(string directoryPath, int id)
         {
             throw new NotImplementedException();
         }

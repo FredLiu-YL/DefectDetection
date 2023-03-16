@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using YuanliCore.Interface;
 
 namespace YuanliCore.ImageProcess.Match
 {
     public class PatmaxParams : CogParameter
     {
-        public PatmaxParams(int id ):base(id)
+        public PatmaxParams(int id) : base(id)
         {
             CogPMAlignTool tool = new CogPMAlignTool();
 
@@ -21,14 +22,14 @@ namespace YuanliCore.ImageProcess.Match
             RunParams = tool.RunParams;
             SearchRegion = tool.SearchRegion;
             tool.Dispose();
-          //  (CogPMAlignRunParams)CogSerializer.LoadObjectFromFile("");
+            //  (CogPMAlignRunParams)CogSerializer.LoadObjectFromFile("");
         }
 
-        
+
         /// <summary>
         /// 樣本圖片 
         /// </summary>
-        public BitmapSource PatternImage { get; set; }
+        public Frame<byte[]> PatternImage { get; set; }
 
         [JsonIgnore]
         ///搜尋的參數
@@ -49,7 +50,7 @@ namespace YuanliCore.ImageProcess.Match
         /// </summary>
         public Rect? SearchROI
         {
-            get;set;
+            get; set;
         }
 
         public object Tag { get; set; }
@@ -70,14 +71,34 @@ namespace YuanliCore.ImageProcess.Match
             };
         }
 
-        protected override void LoadRecipe(string directoryPath, int id)
+        protected override void SaveCogRecipe(string directoryPath)
         {
-            throw new NotImplementedException();
+
+            // var path = CreateFolder(recipeName);
+
+            //還需要補上 cognex 序列化方法
+            CogPMAlignTool tool = new CogPMAlignTool();
+            tool.RunParams = RunParams;
+            tool.SearchRegion = SearchRegion;
+            tool.Pattern = Pattern;
+
+            CogSerializer.SaveObjectToFile(tool, $"{directoryPath}\\VsTool_{Id}.tool");
+
+
+            tool.Dispose();
+            //   CogSerializer.SaveObjectToFile(CogToolBlock1, @"E:\ToolBlock2.vpp");
+            //  string fileName = path + $"\\Commom{Id}.json";
+            //  Save(fileName);
         }
 
-        protected override void SaveCogRecipe(string recipeName)
+        protected override void LoadCogRecipe(string directoryPath, int id)
         {
-            throw new NotImplementedException();
+
+            CogPMAlignTool tool = (CogPMAlignTool)CogSerializer.LoadObjectFromFile($"{directoryPath}\\VsTool_{id}.tool");
+            RunParams = tool.RunParams;
+            SearchRegion = tool.SearchRegion;
+            Pattern = tool.Pattern;
+            tool.Dispose();
         }
     }
 }

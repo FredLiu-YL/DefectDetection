@@ -82,11 +82,11 @@
                 <Button Margin="100,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding RunCommand}"
                         ToolTip="Run">
-                    <materialDesign:PackIcon  Width="30"  Height="30" Kind="ArrowLeftDropCircleOutline" />
+                    <materialDesign:PackIcon  Width="50"  Height="50" Kind="ArrowLeftDropCircleOutline" />
 
                 </Button>
             </StackPanel>
-            <application:InspectUC Grid.Column="1" Grid.Row="1"  MatchParam="{Binding MatchParam}"   Image="{Binding MainImage}" MethodList="{Binding MethodList}" CombineCollection="{Binding CombineCollection}"    />
+            <application:InspectUC Grid.Column="1" Grid.Row="1"     Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"   IsEnabled="{Binding IsInspectEnabled}"     />
 
         </Grid>
         

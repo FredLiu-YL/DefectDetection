@@ -224,6 +224,7 @@ namespace YuanliCore.CameraLib
 
         public static BitmapSource FormatConvertTo(this BitmapSource image, PixelFormat format)
         {
+            if (image == null) return null;
             ThrowIfFormatIsIndexed(format);
 
             FormatConvertedBitmap fcbmp = new FormatConvertedBitmap();

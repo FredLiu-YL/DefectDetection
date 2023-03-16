@@ -31,20 +31,22 @@ namespace YuanliApplication.Application
     {
         private BitmapSource sampleImage;
         private ObservableCollection<DisplayMethod> methodDispCollection = new ObservableCollection<DisplayMethod>();
-
+        private PatmaxParams matchParam = new PatmaxParams(0);
         private int methodSelectIndex, methodCollectIndex, combineCollectionIndex;
         private OutputOption combineOptionSelected;
         //定位用樣本
         private IMatcher matcher = new CogMatcher(); //使用Vision pro 實體
+        private ObservableCollection<CombineOptionOutput> combineCollection = new ObservableCollection<CombineOptionOutput>();
+        private List<CogMethod> methodList = new List<CogMethod>();
 
         private static readonly DependencyProperty ImageProperty = DependencyProperty.Register(nameof(Image), typeof(WriteableBitmap), typeof(InspectUC), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        private static readonly DependencyProperty MatchParamProperty = DependencyProperty.Register(nameof(MatchParam), typeof(PatmaxParams), typeof(InspectUC), new FrameworkPropertyMetadata(new PatmaxParams(0), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        private static readonly DependencyProperty MethodListProperty = DependencyProperty.Register(nameof(MethodList), typeof(List<CogMethod>), typeof(InspectUC), new FrameworkPropertyMetadata(new List<CogMethod>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        private static readonly DependencyProperty CombineCollectionProperty = DependencyProperty.Register(nameof(CombineCollection), typeof(ObservableCollection<CombineOptionOutput>), typeof(InspectUC), new FrameworkPropertyMetadata(new ObservableCollection<CombineOptionOutput>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        private static readonly DependencyProperty RecipeProperty = DependencyProperty.Register(nameof(Recipe), typeof(MeansureRecipe), typeof(InspectUC), new FrameworkPropertyMetadata(new MeansureRecipe(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+    //    private static readonly DependencyProperty MatchParamProperty = DependencyProperty.Register(nameof(MatchParam), typeof(PatmaxParams), typeof(InspectUC), new FrameworkPropertyMetadata(new PatmaxParams(0), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+    //   private static readonly DependencyProperty MethodListProperty = DependencyProperty.Register(nameof(MethodList), typeof(List<CogMethod>), typeof(InspectUC), new FrameworkPropertyMetadata(new List<CogMethod>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+    //    private static readonly DependencyProperty CombineCollectionProperty = DependencyProperty.Register(nameof(CombineCollection), typeof(ObservableCollection<CombineOptionOutput>), typeof(InspectUC), new FrameworkPropertyMetadata(new ObservableCollection<CombineOptionOutput>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        private static readonly DependencyProperty RecipeProperty = DependencyProperty.Register(nameof(Recipe), typeof(MeansureRecipe), typeof(InspectUC), new FrameworkPropertyMetadata(new MeansureRecipe(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnRecipeChanged)));
 
 
-        
+
         private bool isCombineSecEnabled;
         private string combineOption;
         private int cB_CmbineSelectedIndexSN1, cB_CmbineSelectedIndexSN2 = -1;
@@ -61,37 +63,39 @@ namespace YuanliApplication.Application
             get => (WriteableBitmap)GetValue(ImageProperty);
             set => SetValue(ImageProperty, value);
         }
-
-        public PatmaxParams MatchParam
-        {
-            get => (PatmaxParams)GetValue(MatchParamProperty);
-            set => SetValue(MatchParamProperty, value);
-        }
+        /// <summary>
+        /// 定位參數
+        /// </summary>
+        public PatmaxParams MatchParam { get => matchParam; set => SetValue(ref matchParam, value); }
+        //{
+        //    get => (PatmaxParams)GetValue(MatchParamProperty);
+        //    set => SetValue(MatchParamProperty, value);
+        //}
         /// <summary>
         /// 演算法集合 
         /// </summary>
-        public List<CogMethod> MethodList
-        {
-            get => (List<CogMethod>)GetValue(MethodListProperty);
-            set => SetValue(MethodListProperty, value);
-        }
+        public List<CogMethod> MethodList { get => methodList; set => SetValue(ref methodList, value); }
+        //{
+        //    get => (List<CogMethod>)GetValue(MethodListProperty);
+        //    set => SetValue(MethodListProperty, value);
+        //}
+      
+        
         public MeansureRecipe Recipe
         {
             get => (MeansureRecipe)GetValue(RecipeProperty);
             set => SetValue(RecipeProperty, value);
 
         }
-        
-
-
+       
         /// <summary>
         /// 最終使用者需求的結果輸出
         /// </summary>
-        public ObservableCollection<CombineOptionOutput> CombineCollection
-        {
-            get => (ObservableCollection<CombineOptionOutput>)GetValue(CombineCollectionProperty);
-            set => SetValue(CombineCollectionProperty, value);
-        }
+        public ObservableCollection<CombineOptionOutput> CombineCollection  { get => combineCollection; set => SetValue(ref combineCollection, value); }
+        //{
+        //    get => (ObservableCollection<CombineOptionOutput>)GetValue(CombineCollectionProperty);
+        //    set => SetValue(CombineCollectionProperty, value);
+        //}
         /// <summary>
         /// 顯示定位樣本圖
         /// </summary>
@@ -239,7 +243,7 @@ namespace YuanliApplication.Application
                 MessageBox.Show(ex.Message);
             }
 
-
+            UpdateRecipe();
 
         });
 
@@ -257,22 +261,26 @@ namespace YuanliApplication.Application
             int i = CombineCollectionIndex;
             CombineCollection.RemoveAt(i);
             CombineCollection.Insert(i, new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2 });
-
+            UpdateRecipe();
         });
 
         public ICommand AddMethodCommand => new RelayCommand(async () =>
         {
-
+            int sn = MethodList.Count + 1;
             switch ((MethodName)MethodSelectIndex) {
                 case MethodName.PatternMatch:
-
-                    MethodDispCollection.Add(new DisplayMethod { SN = $"{MethodList.Count + 1}", Name = MethodName.PatternMatch, ResultName = $"{ResultSelect.Full}" });
-                    MethodList.Add(new CogMatcher { MethodName = MethodName.PatternMatch, });
+                   
+                    MethodDispCollection.Add(new DisplayMethod { SN = $"{sn}", Name = MethodName.PatternMatch, ResultName = $"{ResultSelect.Full}" });
+                    var cogM = new CogMatcher { MethodName = MethodName.PatternMatch, };
+                    cogM.RunParams.Id = sn;
+                    MethodList.Add(cogM);
 
                     break;
                 case MethodName.GapMeansure:
-                    MethodDispCollection.Add(new DisplayMethod { SN = $"{MethodList.Count + 1}", Name = MethodName.GapMeansure, ResultName = $"{ResultSelect.Full}" });
-                    MethodList.Add(new CogGapCaliper { MethodName = MethodName.GapMeansure });
+                    MethodDispCollection.Add(new DisplayMethod { SN = $"{sn}", Name = MethodName.GapMeansure, ResultName = $"{ResultSelect.Full}" });
+                    var cogGM = new CogGapCaliper { MethodName = MethodName.GapMeansure };
+                    cogGM.RunParams.Id = sn;
+                    MethodList.Add(cogGM);
 
                     break;
 
@@ -297,25 +305,35 @@ namespace YuanliApplication.Application
             }
 
 
+            UpdateRecipe(); 
         });
         public ICommand DeleteMethodCommand => new RelayCommand(async () =>
         {
-            if (MethodCollectIndex < 0) return;
+            try {
+                if (MethodCollectIndex < 0) return;
+                int index = MethodCollectIndex;
+                MethodDispCollection.RemoveAt(index);
+                MethodList.RemoveAt(index);
 
-            MethodDispCollection.RemoveAt(MethodCollectIndex);
-            MethodList.RemoveAt(MethodCollectIndex);
-            for (int i = 0; i < MethodDispCollection.Count; i++) 
-            {
-                MethodDispCollection[i].SN = $"{i + 1}";
-              
+                for (int i = 0; i < MethodDispCollection.Count; i++) {
+                    MethodDispCollection[i].SN = $"{i + 1}";
+                    MethodList[i].RunParams.Id = i + 1;
+                }
+                UpdateRecipe();
             }
+            catch (Exception ex) 
+            {
 
+                MessageBox.Show(ex.Message);
+            }
+           
         });
         public ICommand ClearMethodCommand => new RelayCommand(async () =>
         {
             MethodDispCollection.Clear();
             CombineCollection.Clear();
             MethodList.Clear();
+            UpdateRecipe();
         });
         public ICommand TestMethodCommand => new RelayCommand(async () =>
         {
@@ -344,8 +362,9 @@ namespace YuanliApplication.Application
                 matcher.EditParameter(Image);
 
                 MatchParam = (PatmaxParams)matcher.RunParams;
-                SampleImage = MatchParam.PatternImage;
+                SampleImage = MatchParam.PatternImage.ToBitmapSource();
 
+                UpdateRecipe();
 
             }
             catch (Exception ex) {
@@ -358,12 +377,16 @@ namespace YuanliApplication.Application
         });
         public ICommand LOADCommand => new RelayCommand(async () =>
         {
-            try {
+            try 
+            {
+                foreach (CogParameter item in Recipe.MethodParams) 
+                {
+            //        item = CogParameter.Load("123-1", 0);
 
-                CogParameter temp =  CogParameter.Load("123-1",0);
-
-                MethodList.Add(new CogGapCaliper(temp));
-                MethodDispCollection.Add(new DisplayMethod { Name = temp.Methodname, ResultName = temp.ResultOutput.ToString()});
+           //         MethodList.Add(new CogGapCaliper(temp));
+           //         MethodDispCollection.Add(new DisplayMethod { Name = temp.Methodname, ResultName = temp.ResultOutput.ToString() });
+                }
+           
 
             }
             catch (Exception ex) {
@@ -392,8 +415,55 @@ namespace YuanliApplication.Application
 
 
         });
+        private void UpdateRecipe()
+        {
+
+            Recipe.LocateParams = MatchParam;
+            Recipe.MethodParams = MethodList.Select(param=>param.RunParams).ToList();
+            Recipe.CombineOptionOutputs = CombineCollection.ToList();
+            
+
+        }
 
 
+        private static void OnRecipeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var dp = d as InspectUC;
+            dp.SetMethodParams();
+        }
+        private void SetMethodParams()
+        {
+            MethodList.Clear();
+            MethodDispCollection.Clear();
+            CombineCollection.Clear();
+            MatchParam = Recipe.LocateParams;
+            if(MatchParam.PatternImage !=null)
+                SampleImage = MatchParam.PatternImage.ToBitmapSource();
+            CombineCollection = new ObservableCollection<CombineOptionOutput>(Recipe.CombineOptionOutputs);
+
+
+            int i = 0;
+            foreach (CogParameter item in Recipe.MethodParams) 
+            {
+                //        item = CogParameter.Load("123-1", 0);
+                switch (item.Methodname) {
+                    case MethodName.PatternMatch:
+                        MethodList.Add(new CogMatcher(item));
+                        break;
+                    case MethodName.GapMeansure:
+                        MethodList.Add(new CogGapCaliper(item));
+                        break;
+                    case MethodName.LineMeansure:
+                        break;
+                    case MethodName.CircleMeansure:
+                        break;
+                    default:
+                        break;
+                }
+                i++;
+                MethodDispCollection.Add(new DisplayMethod { SN = i.ToString(), Name = item.Methodname, ResultName = item.ResultOutput.ToString() }) ;
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

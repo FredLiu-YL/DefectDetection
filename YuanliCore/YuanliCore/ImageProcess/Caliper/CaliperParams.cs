@@ -74,7 +74,7 @@ namespace YuanliCore.ImageProcess.Caliper
             //  Save(fileName);
         }
 
-        protected override void LoadRecipe(string directoryPath, int id)
+        protected override void LoadCogRecipe(string directoryPath, int id)
         {
            
             CogCaliperTool tool = (CogCaliperTool)CogSerializer.LoadObjectFromFile($"{directoryPath}\\VsTool_{id}.tool");

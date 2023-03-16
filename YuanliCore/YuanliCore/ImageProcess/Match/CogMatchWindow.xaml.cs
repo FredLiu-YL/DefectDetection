@@ -33,7 +33,7 @@ namespace YuanliCore.ImageProcess.Match
         private bool isCenterSelect  ;
         public CogMatchWindow(BitmapSource bitmap)
         {
-
+           
             InitializeComponent();
 
             UpdateImage(bitmap);
@@ -51,6 +51,7 @@ namespace YuanliCore.ImageProcess.Match
 
         public void UpdateImage(BitmapSource bitmap)
         {
+            if (bitmap == null) throw new Exception("Image is null");
             var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
             var frame = b.ToByteFrame();
 

@@ -42,7 +42,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
         public override void EditParameter(BitmapSource image)
         {
-            // if (cogCaliperWindow == null)
+            if (image == null) throw new Exception("Image is null");
             cogCaliperWindow = new CogCaliperWindow(image);
 
 

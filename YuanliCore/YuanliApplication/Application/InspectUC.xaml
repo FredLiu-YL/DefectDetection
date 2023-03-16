@@ -57,8 +57,8 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button  Content="編輯"  Command="{Binding EditSampleCommand}"  />
                     <Button   Content="測試"  Command="{Binding TestMatchCommand}"   />
-                    <Button   Content="存"  Command="{Binding SAVECommand}"   />
-                    <Button   Content="讀"  Command="{Binding LOADCommand}"   />
+                    <!--<Button   Content="存"  Command="{Binding SAVECommand}"   />
+                    <Button   Content="讀"  Command="{Binding LOADCommand}"   />-->
 
                 
 

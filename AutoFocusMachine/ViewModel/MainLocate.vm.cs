@@ -274,7 +274,7 @@ namespace AutoFocusMachine.ViewModel
         Nullable<bool> result = dlg.ShowDialog();
         if (result == true)
         {
-            targetLocate = LocateData.Load<LocateData>(dlg.FileName);
+            targetLocate = AbstractRecipe.Load<LocateData>(dlg.FileName);
 
             TargetPosX1 = targetLocate.FiducialMarkPos[0].X;
             TargetPosY1 = targetLocate.FiducialMarkPos[0].Y;

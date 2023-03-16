@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,7 +15,7 @@ namespace YuanliCore.ImageProcess
 {
     public abstract class CogParameter
     {
-        public CogParameter(int id  )
+        public CogParameter(int id)
         {
             Id = id;
 
@@ -53,21 +54,21 @@ namespace YuanliCore.ImageProcess
         public MethodName Methodname { get; set; }
 
         /// <summary>
-        /// 由指定的檔案路徑載入 Recipe。
+        /// 由指定的檔案路徑資料夾載入 Recipe。 
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
 
-        public static CogParameter Load (string recipeName,int id)
+        public static CogParameter Load(string drectoryPath, int id)
         {
-           
-            string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string path = $"{systemPath}\\Recipe\\{recipeName}";
 
-            string filename = path + $"\\Commom{id}.json";
+            // string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);          
+            // string path = $"{systemPath}\\Recipe\\{recipeName}";
+            //一包 Cognex的檔案裏面  包含  Commom.json  與 vpp檔
+            string filename = drectoryPath + $"\\Commom{id}.json";
 
-          //  string fileFullPath = Path.GetFullPath(filename);
-          //  string dirFullPath = Path.GetDirectoryName(fileFullPath);
+            //  string fileFullPath = Path.GetFullPath(filename);
+            //  string dirFullPath = Path.GetDirectoryName(fileFullPath);
 
 
             string extension = Path.GetExtension(filename);
@@ -88,7 +89,8 @@ namespace YuanliCore.ImageProcess
                     var recipe = serializer.Deserialize<CogParameter>(jr);
                     recipe.FilePath = filename;
                     recipe.BeenSaved = true;
-                    recipe.LoadRecipe(path, id);
+                    //  recipe.LoadRecipe(path, id);
+                    recipe.LoadCogRecipe(drectoryPath, id);
                     return recipe;
                 }
             }
@@ -96,13 +98,17 @@ namespace YuanliCore.ImageProcess
                 throw;
             }
         }
-
-        public void Save(string recipeName, IList<JsonConverter> converters)
+        /// <summary>
+        /// 存檔分成 Commom 檔 (一般參數)跟 Vision檔( cognex的檔案不能用json方式序列化)
+        /// </summary>
+        /// <param name="recipeName"></param>
+        /// <param name="converters"></param>
+        public void Save(string drectoryPath, IList<JsonConverter> converters)
         {
             try {
 
-                string fileName = CreateFolder(recipeName) + $"\\Commom{Id}.json";
-
+                //string fileName = CreateFolder(recipeName) + $"\\Commom{Id}.json";
+                string fileName = drectoryPath + $"\\Commom{Id}.json";
                 string fileFullPath = Path.GetFullPath(fileName);
                 string dirFullPath = Path.GetDirectoryName(fileFullPath);
 
@@ -137,15 +143,15 @@ namespace YuanliCore.ImageProcess
                 throw new InvalidOperationException($"Save recipe failed.", ex);
             }
         }
-     
-       
+
+
 
         /// <summary>
         /// 儲存當前 Recpie 內容至指定路徑。
         /// </summary>
         /// <param name="fileName"></param>
         public void Save(string fileName) => Save(fileName, null);
-       
+
         /// <summary>
         /// 在我的文件夾裡面 創造Recipe 的資料夾  再以Recipe名稱創建資料夾  將recipe的檔案集中在裡面
         /// </summary>
@@ -154,22 +160,31 @@ namespace YuanliCore.ImageProcess
         protected string CreateFolder(string folderName)
         {
             string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        
+
 
             string path = $"{systemPath}\\Recipe\\{folderName}";
-            if (!Directory.Exists(path))  Directory.CreateDirectory(path);
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
             return path;
         }
-
+       
+        /// <summary>
+        /// 儲存 cognex 檔案
+        /// </summary>
+        /// <param name="directoryPath"></param>
         protected abstract void SaveCogRecipe(string directoryPath);
 
-        protected abstract void LoadRecipe(string directoryPath, int id) ;
+        /// <summary>
+        /// 讀取 cognex 檔案
+        /// </summary>
+        /// <param name="directoryPath"></param>
+        /// <param name="id"></param>
+        protected abstract void LoadCogRecipe(string directoryPath, int id);
     }
 
     public class VisionResult
     {
-        public OutputOption ResultOutput { get; set; }  
+        public OutputOption ResultOutput { get; set; }
 
         /// <summary>
         /// 距離
@@ -217,15 +232,88 @@ namespace YuanliCore.ImageProcess
     }
 
 
-    public class MeansureRecipe 
+    public class MeansureRecipe : AbstractRecipe, INotifyPropertyChanged
     {
+        /// <summary>
+        /// 定位用參數
+        /// </summary>
+        [JsonIgnore]
         public PatmaxParams LocateParams { get; set; } = new PatmaxParams(0);
 
+        /// <summary>
+        /// 量測演算法集合
+        /// </summary>
+        [JsonIgnore]
         public List<CogParameter> MethodParams { get; set; } = new List<CogParameter>();
 
+        /// <summary>
+        /// 輸出搭配設定
+        /// </summary>
         public List<CombineOptionOutput> CombineOptionOutputs { get; set; } = new List<CombineOptionOutput>();
 
+        /// <summary>
+        /// 因某些元件無法被正常序列化 所以另外做存檔功能
+        /// </summary>
+        /// <param name="Path"></param>
+        public new void Save(string path)
+        {
+            //刪除所有Vistiontool 的檔案避免 id重複 寫錯，或是 原先檔案數量5個  後來變更成3個  讀檔會錯誤
+            string[] files = Directory.GetFiles(path, "*VsTool_*");
+            foreach (string file in files) {
+                if (file.Contains("VsTool")) // 如果文件名包含 "VSP"
+                {
+                    File.Delete(file); // 删除该文件
+                }
+            }
 
-    
+            LocateParams.Save(path);
+            foreach (var param in MethodParams) {
+                param.Save(path);
+            }
+            base.Save(path + "\\Recipe.json");
+        }
+        /// <summary>
+        /// 因某些元件無法被正常序列化 所以另外做讀檔功能
+        /// </summary>
+        /// <param name="Path"></param>
+        public  void Load(string path)
+        {
+            
+            MethodParams.Clear();
+            CombineOptionOutputs.Clear();
+            //想不到好方法做序列化 ， 如果需要修改 就要用JsonConvert 把不能序列化的屬性都改掉  這樣就能正常做load
+            var mRecipe =AbstractRecipe.Load<MeansureRecipe>($"{path}\\Recipe.json");
+            CombineOptionOutputs = mRecipe.CombineOptionOutputs; //未來新增不同屬性  這裡都要不斷新增
+
+
+            
+            LocateParams = CogParameter.Load(path, 0) as PatmaxParams;
+            string[] files = Directory.GetFiles(path, "*VsTool_*");
+
+            foreach (var file in files) {
+                string fileName = Path.GetFileName(file);
+
+                string[] id = fileName.Split(new string[] { "VsTool_", ".tool" }, StringSplitOptions.RemoveEmptyEntries);
+                if (id[0] == "0") continue; // 0 是定位用的樣本 所以排除
+                var param = CogParameter.Load(path, Convert.ToInt32( id[0]));
+                MethodParams.Add(param);
+
+            }
+
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return;
+            T oldValue = field;
+            field = value;
+            OnPropertyChanged(propertyName, oldValue, value);
+        }
+        protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
+        {
+            // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

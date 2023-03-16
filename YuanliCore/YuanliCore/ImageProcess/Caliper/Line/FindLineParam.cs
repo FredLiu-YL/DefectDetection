@@ -46,7 +46,7 @@ namespace YuanliCore.ImageProcess.Caliper
             };
         }
 
-        protected override void LoadRecipe(string directoryPath, int id)
+        protected override void LoadCogRecipe(string directoryPath, int id)
         {
             throw new NotImplementedException();
         }
