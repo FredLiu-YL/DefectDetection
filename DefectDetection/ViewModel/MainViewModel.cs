@@ -202,11 +202,13 @@ namespace DefectDetection.ViewModel
 
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
 
+                //得到量測結果後 轉換到FinalResult 以便UI印出結果
                 List<FinalResult> finalResult = new List<FinalResult>();
                 foreach (VisionResult item in results_) {
 
                     switch (item.ResultOutput) {
                         case OutputOption.Result:
+                           
                             if (item.MatchResult != null) {
 
                                 for (int i = 0; i < item.MatchResult.Length; i++) {
@@ -227,12 +229,11 @@ namespace DefectDetection.ViewModel
                             else if (item.CaliperResult != null) {
 
                                 foreach (var caliper in item.CaliperResult) {
-                                    System.Windows.Vector d = caliper.BeginPoint - caliper.EndPoint;
-
+               
                                     FinalResult finalCaliper = new FinalResult
                                     {
                                         Number = "1",
-                                        Distance = d.Length,
+                                        Distance = caliper.Distance,
                                         //    Angle = item.Angle,
                                         BeginPoint = caliper.BeginPoint,
                                         EndPoint = caliper.EndPoint,
@@ -242,6 +243,20 @@ namespace DefectDetection.ViewModel
                                     finalResult.Add(finalCaliper);
                                 }
 
+                            }
+                            else if (item.LineResult != null) 
+                            {
+                                FinalResult finalCaliper = new FinalResult
+                                {
+                                    Number = "1",
+                                    Distance = item.LineResult.Distance,
+                                    //    Angle = item.Angle,
+                                    BeginPoint = item.LineResult.BeginPoint,
+                                    EndPoint = item.LineResult.EndPoint,
+                                    Output = item.ResultOutput,
+
+                                };
+                                finalResult.Add(finalCaliper);
                             }
                             break;
                         case OutputOption.Distance:
@@ -267,6 +282,7 @@ namespace DefectDetection.ViewModel
 
 
                 }
+                //印出結果
                 foreach (FinalResult result in finalResult) {
                     if (OutputOption.Result == result.Output && result.Center.HasValue) {
                         var center = new ROICross

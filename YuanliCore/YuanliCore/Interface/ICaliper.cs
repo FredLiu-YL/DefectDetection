@@ -34,12 +34,29 @@ namespace YuanliCore.Interface
             BeginPoint = beginPoint;
             CenterPoint = centerPoint;
             EndPoint = endPoint;
+            Vector v =  EndPoint - BeginPoint;
+            Distance = v.Length;
         }
 
         public Point EndPoint { get; }
         public Point BeginPoint { get; }
-        public Point CenterPoint { get;  set; }
+        public Point CenterPoint { get;  }
+        public double Distance { get; }
     }
-     
+    public class LineCaliperResult
+    {
+        public LineCaliperResult(Point beginPoint, Point endPoint, Point centerPoint ,double line)
+        {
+            BeginPoint = beginPoint;          
+            EndPoint = endPoint;
+            Distance = line;
+            CenterPoint = centerPoint;
+        }
+
+        public Point EndPoint { get; }
+        public Point BeginPoint { get; }
+        public Point CenterPoint { get; }
+        public double Distance { get; }
+    }
 
 }

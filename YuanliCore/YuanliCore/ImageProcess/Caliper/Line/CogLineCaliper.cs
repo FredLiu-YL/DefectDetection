@@ -34,7 +34,7 @@ namespace YuanliCore.ImageProcess.Caliper
         }
 
         public override CogParameter RunParams { get; set; }
-        public CaliperResult[] CaliperResults { get; private set; }
+        public LineCaliperResult CaliperResults { get; private set; }
         public override void Dispose()
         {
             if (cogCaliperWindow != null)
@@ -65,7 +65,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
             cogCaliperWindow.CaliperParam = (FindLineParam)RunParams;
             cogCaliperWindow.CaliperParam.RunParams.ExpectedLineSegment.SelectedSpaceName = "@\\Fixture";
-          //  cogCaliperWindow.CaliperParam.Region.SelectedSpaceName = "@\\Fixture";
+            //  cogCaliperWindow.CaliperParam.Region.SelectedSpaceName = "@\\Fixture";
 
 
             cogCaliperWindow.ShowDialog();
@@ -78,7 +78,7 @@ namespace YuanliCore.ImageProcess.Caliper
         }
 
 
-        public IEnumerable<CaliperResult> Find(Frame<byte[]> image)
+        public LineCaliperResult Find(Frame<byte[]> image)
         {
 
             ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
@@ -88,34 +88,26 @@ namespace YuanliCore.ImageProcess.Caliper
 
 
         }
-        private IEnumerable<CaliperResult> Find(ICogImage cogImage)
+        private LineCaliperResult Find(ICogImage cogImage)
         {
             linecaliperTool.InputImage = (CogImage8Grey)cogImage;
             var param = (FindLineParam)RunParams;
             linecaliperTool.RunParams = param.RunParams;
-         //   caliperTool.Region = param.Region;
+            //   caliperTool.Region = param.Region;
             linecaliperTool.Run();
 
-            List<CaliperResult> results = new List<CaliperResult>();
+            List<LineCaliperResult> results = new List<LineCaliperResult>();
+            CogLineSegment segment = linecaliperTool.Results.GetLineSegment();
+            double sX = segment.StartX;
+            double sY = segment.StartY;
+            double eX = segment.EndX;
+            double eY = segment.EndY;
+            double mX = segment.MidpointX;
+            double mY = segment.MidpointY;
+            double distance = segment.Length;
 
-            for (int i = 0; i < linecaliperTool.Results.Count; i++) 
-                {
-            
-               /* CogCaliperEdge edge0 = linecaliperTool.Results[i].Edge0;
-                CogCaliperEdge edge1 = linecaliperTool.Results[i].Edge1;
 
-                double x1 = edge0.PositionX;
-                double y1 = edge0.PositionY;
-                double cX = linecaliperTool.Results[i].PositionX;
-                double cY = linecaliperTool.Results[i].PositionY;
-                double x2 = edge1.PositionX;
-                double y2 = edge1.PositionY;
-              
-                results.Add(new CaliperResult(new Point(x1, y1), new Point(cX, cY), new Point(x2, y2))); 
-               */
-            }
-
-            return results;
+            return new LineCaliperResult(new Point(sX, sY), new Point(eX, eY), new Point(mX, mY), distance);
         }
 
         //public  void Run(Frame<byte[]> image)
@@ -126,7 +118,7 @@ namespace YuanliCore.ImageProcess.Caliper
         public override void Run()
         {
             if (CogFixtureImage == null) throw new Exception("Image does not exist");
-            CaliperResults = Find(CogFixtureImage).ToArray();
+            CaliperResults = Find(CogFixtureImage);
         }
     }
 

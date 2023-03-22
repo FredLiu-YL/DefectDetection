@@ -42,8 +42,8 @@ namespace YuanliCore.ImageProcess
             }
             CogMethods.Clear();
 
-            LocateMatcher.RunParams = locateParams;
-            CogMethods = SetMethodParams(cogParameters).ToList();
+            LocateMatcher.RunParams = locateParams; //創建 定位功能
+            CogMethods = SetMethodParams(cogParameters).ToList(); //創建演算法列表
 
             int tid1 = System.Threading.Thread.CurrentThread.ManagedThreadId;
  
@@ -64,7 +64,7 @@ namespace YuanliCore.ImageProcess
 
 
                  //依照 選擇輸出模式  回傳結果
-                 foreach (var option in combineOutputs) {
+                 foreach (CombineOptionOutput option in combineOutputs) {
                      VisionResult visionResult = new VisionResult();
                      switch (option.Option) {
                          case OutputOption.Result:
@@ -173,7 +173,7 @@ namespace YuanliCore.ImageProcess
             }
             else if (cogMethod is CogLineCaliper) {
                 CogLineCaliper cogLineCaliper = cogMethod as CogLineCaliper;
-
+                visionResults.LineResult = cogLineCaliper.CaliperResults;
             }
             return visionResults;
         }
@@ -235,6 +235,7 @@ namespace YuanliCore.ImageProcess
                         cogMethods.Add(new CogGapCaliper(item));
                         break;
                     case MethodName.LineMeansure:
+                        cogMethods.Add(new CogLineCaliper(item));
                         break;
                     case MethodName.CircleMeansure:
                         break;

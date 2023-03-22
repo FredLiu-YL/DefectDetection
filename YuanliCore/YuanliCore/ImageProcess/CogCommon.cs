@@ -198,6 +198,7 @@ namespace YuanliCore.ImageProcess
         public BlobDetectorResult[] BlobResult { get; set; } = null;
         public CaliperResult[] CaliperResult { get; set; } = null;
         public MatchResult[] MatchResult { get; set; } = null;
+        public LineCaliperResult LineResult { get; set; } = null;
     }
 
     public class CombineOptionOutput

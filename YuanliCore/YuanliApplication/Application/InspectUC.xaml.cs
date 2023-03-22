@@ -433,7 +433,7 @@ namespace YuanliApplication.Application
 
 
        });
-        public ICommand SAVECommand => new RelayCommand(async () =>
+        public ICommand SAVECommand => new RelayCommand(  () =>
         {
             try {
                 foreach (var item in yuanliVision.CogMethods) {

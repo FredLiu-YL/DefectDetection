@@ -12,8 +12,7 @@ namespace YuanliCore.Motion.Marzhauser
 {
     public class TangoController : IMotionController
     {
-
-        private double axisXPos, axisYPos, axisZPos, axisAPos;
+  
         private string comPort;
         private int baudRate = 57600;
 

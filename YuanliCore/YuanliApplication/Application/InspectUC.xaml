@@ -177,7 +177,8 @@
                     <Button  Content="Edit" Margin="0,0,10,0" Command="{Binding EditCombineCommand}"   />
                     <Button Content="Delect" Margin="0,0,10,0" Grid.Column="2" Command="{Binding DeleteCombineCommand}" />
                 </StackPanel>
-                <DataGrid  Grid.Row="1" ItemsSource="{Binding CombineCollection}"  CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectedIndex="{Binding CombineCollectionIndex}"   >
+                <DataGrid  Grid.Row="1" ItemsSource="{Binding CombineCollection}"  CanUserSortColumns="False" IsReadOnly="True" 
+                           AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding CombineCollectionIndex}"   >
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
                             <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>

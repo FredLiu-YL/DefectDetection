@@ -12,7 +12,7 @@ namespace YuanliCore.CameraLib
 {
     public class SimulateCamera : ICamera
     {
-        private BitmapSource simpleImage;
+    
         private Frame<byte[]> tempFrames;
         private Subject<Frame<byte[]>> frames = new Subject<Frame<byte[]>>();
         private bool freshImage;

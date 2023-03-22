@@ -77,7 +77,7 @@ namespace AutoFocusMachine.ViewModel
 
 
 
-        public ICommand TestCommand => new RelayCommand(async () =>
+        public ICommand TestCommand => new RelayCommand(  () =>
         {
             try {
 /*
@@ -280,7 +280,7 @@ namespace AutoFocusMachine.ViewModel
             cogProcess.Dispose();
             */
         });
-        public ICommand EditSampleCommand => new RelayCommand(async () =>
+        public ICommand EditSampleCommand => new RelayCommand(  () =>
         {
             try {
                 if (cogMatchWindow == null)
@@ -317,7 +317,7 @@ namespace AutoFocusMachine.ViewModel
         });
 
 
-        public ICommand EditCommand => new RelayCommand(async () =>
+        public ICommand EditCommand => new RelayCommand(  () =>
         {
 
             if (cogCaliperWindow == null) {
@@ -335,7 +335,7 @@ namespace AutoFocusMachine.ViewModel
             //    mainRecipe.PMParams = cogMatcher.Patmaxparams;
         });
 
-        public ICommand ReadTestCommand => new RelayCommand(async () =>
+        public ICommand ReadTestCommand => new RelayCommand(  () =>
         {
             CogGapCaliper cogGapCaliper = new CogGapCaliper();
             cogGapCaliper.EditParameter(MainImage);
@@ -343,7 +343,7 @@ namespace AutoFocusMachine.ViewModel
 
 
         });
-        public ICommand TestingFlowStopCommand => new RelayCommand(async () =>
+        public ICommand TestingFlowStopCommand => new RelayCommand(  () =>
         {
 
         });

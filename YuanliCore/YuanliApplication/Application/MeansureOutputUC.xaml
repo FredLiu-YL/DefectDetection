@@ -18,22 +18,12 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-        <!--<ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TabControl.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
-                --><!-- throw in some extra colour for our floating action button --><!--
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Green.Named.Primary.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>-->
+
     </UserControl.Resources>
     <Grid   DataContext="{Binding ElementName=OutputControl}"   >
 
-        <DataGrid  Grid.Row="1" ItemsSource="{Binding ResultCollection}"  Style="{StaticResource MaterialDesignDataGrid}"  CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectedIndex="{Binding CombineCollectionIndex}"   >
+        <DataGrid  Grid.Row="1" ItemsSource="{Binding ResultCollection}"  Style="{StaticResource MaterialDesignDataGrid}"   
+                   CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectionUnit="FullRow"   SelectedIndex="{Binding CombineCollectionIndex}"   >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDoubleClick">
                         <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
