@@ -32,6 +32,7 @@ namespace YuanliCore.ImageProcess.Caliper
             caliperTool = new CogCaliperTool();
             RunParams = caliperParams;
         }
+
         public  override CogParameter RunParams { get; set; }
         public CaliperResult[] CaliperResults { get; private set; }
         public override void Dispose()
@@ -55,7 +56,25 @@ namespace YuanliCore.ImageProcess.Caliper
 
             Dispose();
         }
+        public  void CogEditParameter()
+        {
+            if (CogFixtureImage == null) throw new Exception("locate is not yet complete");
+           
+            cogCaliperWindow = new CogCaliperWindow(CogFixtureImage);
 
+
+            cogCaliperWindow.CaliperParam = (CaliperParams)RunParams;
+            cogCaliperWindow.CaliperParam.Region.SelectedSpaceName = "@\\Fixture";
+
+
+            cogCaliperWindow.ShowDialog();
+
+
+            RunParams = cogCaliperWindow.CaliperParam;
+
+
+            Dispose();
+        }
 
 
         public IEnumerable<CaliperResult> Find(Frame<byte[]> image)
@@ -80,7 +99,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
             for (int i = 0; i < caliperTool.Results.Count; i++) {
                 CogCaliperEdge edge0 = caliperTool.Results[i].Edge0;
-                CogCaliperEdge edge1 = caliperTool.Results[i].Edge0;
+                CogCaliperEdge edge1 = caliperTool.Results[i].Edge1;
 
                 double x1 = edge0.PositionX;
                 double y1 = edge0.PositionY;
@@ -102,8 +121,8 @@ namespace YuanliCore.ImageProcess.Caliper
 
         public override void Run()
         {
-            if (CogImage == null) throw new Exception("Image does not exist");
-            CaliperResults = Find(CogImage).ToArray();
+            if (CogFixtureImage == null) throw new Exception("Image does not exist");
+            CaliperResults = Find(CogFixtureImage).ToArray();
         }
     }
 

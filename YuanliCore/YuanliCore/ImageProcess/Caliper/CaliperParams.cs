@@ -13,8 +13,7 @@ namespace YuanliCore.ImageProcess.Caliper
 {
     public class CaliperParams : CogParameter
     {
-
-        public int TestC { get; set; }
+   
         public CaliperParams(int id) : base(id)
         {
             CogCaliperTool tool = new CogCaliperTool();

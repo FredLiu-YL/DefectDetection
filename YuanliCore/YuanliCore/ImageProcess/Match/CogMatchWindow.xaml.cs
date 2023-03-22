@@ -39,8 +39,22 @@ namespace YuanliCore.ImageProcess.Match
             UpdateImage(bitmap);
 
         }
+        /// <summary>
+        /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
+        /// </summary>
+        /// <param name="cogImage"></param>
+        public CogMatchWindow(ICogImage cogImage)
+        {
 
+            InitializeComponent();
+
+            CogImage = cogImage;
+
+        }
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
+        /// <summary>
+        ///  影像 Binding
+        /// </summary>
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
         public PatmaxParams PatmaxParam { get=> patmaxParam; set => SetValue(ref patmaxParam, value); }
         public bool IsFullSelect { get => isFullSelect; set 

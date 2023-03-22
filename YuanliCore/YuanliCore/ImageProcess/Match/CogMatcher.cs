@@ -58,7 +58,8 @@ namespace YuanliCore.ImageProcess.Match
                 var sampleImage = cogMatchWindow.GetPatternImage();
 
                 param = patmaxparams;
-                param.PatternImage = sampleImage.ToByteFrame();
+                if(sampleImage!=null)
+                    param.PatternImage = sampleImage.ToByteFrame();
                 Dispose();
 
             }
@@ -71,7 +72,43 @@ namespace YuanliCore.ImageProcess.Match
             }
 
         }
+        /// <summary>
+        /// 已經定位過的影像作編輯
+        /// </summary>
+        public  void CogEditParameter()
+        {
+            try {
 
+                if (CogFixtureImage == null) throw new Exception("locate is not yet complete");
+
+                cogMatchWindow = new CogMatchWindow(CogFixtureImage);
+
+                PatmaxParams param = (PatmaxParams)RunParams;
+                param.Pattern.TrainRegion.SelectedSpaceName  = "@\\Fixture";
+                cogMatchWindow.PatmaxParam = param;
+           
+                cogMatchWindow.ShowDialog();
+
+
+                PatmaxParams patmaxparams = cogMatchWindow.PatmaxParam;
+
+
+                var sampleImage = cogMatchWindow.GetPatternImage();
+
+                param = patmaxparams;
+                param.PatternImage = sampleImage.ToByteFrame();
+                Dispose();
+
+            }
+            catch (Exception ex) {
+
+                throw ex;
+            }
+            finally {
+
+            }
+
+        }
         public IEnumerable<MatchResult> Find(Frame<byte[]> image)
         {
 
@@ -95,10 +132,11 @@ namespace YuanliCore.ImageProcess.Match
             alignTool.RunParams = param.RunParams;
             alignTool.SearchRegion = param.SearchRegion;
             alignTool.Run();
+         
             if (alignTool.Results.Count == 0) throw new Exception("Locate Fail");
             CogTransform2DLinear linear = alignTool.Results[0].GetPose();
-
-            return new LocateResult { CogTransform = linear };
+             Record = alignTool.CreateLastRunRecord().SubRecords[0];
+            return new LocateResult { LocateCogImg= cogImg1 , CogTransform = linear };
         }
 
         private IEnumerable<MatchResult> Find(ICogImage cogImage)
@@ -109,7 +147,7 @@ namespace YuanliCore.ImageProcess.Match
             alignTool.RunParams = param.RunParams;
             alignTool.SearchRegion = param.SearchRegion;
             alignTool.Run();
-
+            Record = alignTool.CreateLastRunRecord().SubRecords[0];
             List<MatchResult> matchings = new List<MatchResult>();
 
             for (int i = 0; i < alignTool.Results.Count; i++) {
@@ -127,7 +165,7 @@ namespace YuanliCore.ImageProcess.Match
         }
         public override void Run()
         {
-            MatchResults = Find(CogImage).ToArray();
+            MatchResults = Find(CogFixtureImage).ToArray();
         }
     }
 
@@ -137,6 +175,9 @@ namespace YuanliCore.ImageProcess.Match
         /// VisitionPro 定位轉換Transform
         /// </summary>
         public CogTransform2DLinear CogTransform { get; set; }
+
+
+        public ICogImage LocateCogImg { get; set; }
 
     }
 }

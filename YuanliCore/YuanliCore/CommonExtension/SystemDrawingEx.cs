@@ -96,6 +96,8 @@ namespace System.Drawing
                 format = System.Drawing.Imaging.PixelFormat.Format32bppRgb;
             else if (frame.Format == System.Windows.Media.PixelFormats.Indexed8 || frame.Format == System.Windows.Media.PixelFormats.Gray8)
                 format = System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
+            else if (frame.Format == System.Windows.Media.PixelFormats.Bgr32)
+                format = System.Drawing.Imaging.PixelFormat.Format32bppRgb;
             else
                 throw new NotSupportedException($"ToBitmap extension function not pxielformat value [{frame.Format}] support");
 

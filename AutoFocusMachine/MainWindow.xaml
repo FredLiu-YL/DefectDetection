@@ -10,12 +10,12 @@
         xmlns:command="http://www.galasoft.ch/mvvmlight" 
         xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" 
        xmlns:match="clr-namespace:YuanliCore.ImageProcess.Match;assembly=YuanliCore"
-    xmlns:autofocusmachine="clr-namespace:AutoFocusMachine;assembly=YuanliCore" 
+   
     xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore"
     xmlns:UserControls="clr-namespace:YuanliApplication.Tool;assembly=YuanliApplication"
     xmlns:application="clr-namespace:YuanliApplication.Application;assembly=YuanliApplication"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-   
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+    xmlns:imageprocess="clr-namespace:YuanliCore.ImageProcess;assembly=YuanliCore"
     mc:Ignorable="d"
       
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -195,7 +195,7 @@
                                         <ColumnDefinition Width="2.5*"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <autofocusmachine:CogDisplayer Grid.Column="0"  Record="{Binding MeansureLastRecord}"    />
+                                    <imageprocess:CogDisplayer Grid.Column="0"  Record="{Binding MeansureLastRecord}"    />
                                     <Grid Grid.Column="1">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="0.2*"/>
@@ -227,7 +227,7 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
 
-                                    <autofocusmachine:CogDisplayer Grid.Column="0" Record="{Binding InspLastRecord}"     />
+                                    <imageprocess:CogDisplayer Grid.Column="0" Record="{Binding InspLastRecord}"   />
 
                                     <Grid Grid.Column="1">
                                         <Grid.RowDefinitions>
@@ -689,7 +689,7 @@
 
                     </GroupBox>
 
-                    <application:InspectUC  MatchParam="{Binding MatchParam}"   Image="{Binding MainImage}" MethodList="{Binding MethodList}" CombineCollection="{Binding CombineCollection}"  Grid.Column="0"  Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="3"  />
+                    <application:InspectUC  MatchParam="{Binding MatchParam}"   Image="{Binding MainImage}"  CombineCollection="{Binding CombineCollection}"  Grid.Column="0"  Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="3"  />
                     <Grid  Grid.Row="1"  Grid.Column="2" >
 
                         <!--<application:MeansureOutputUC  ResultCollection="{Binding FinalResultCollection}" />-->

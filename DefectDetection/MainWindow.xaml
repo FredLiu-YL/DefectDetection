@@ -6,17 +6,18 @@
         xmlns:local="clr-namespace:DefectDetection" 
         xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" 
         xmlns:application="clr-namespace:YuanliApplication.Application;assembly=YuanliApplication" 
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-       x:Name="DefectDetection"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:imageprocess="clr-namespace:YuanliCore.ImageProcess;assembly=YuanliCore"
+        x:Name="DefectDetection"
         mc:Ignorable="d"
            DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="DefectDetection" Height="850" Width="1200">
+        Title="Yuanli  DefectDetection" Height="850" Width="1200">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -37,17 +38,18 @@
 
             <materialDesign:Card>
                 <TabControl  materialDesign:ColorZoneAssist.Mode="SecondaryLight" 
-                             materialDesign:ColorZoneAssist.Background="LawnGreen "
+                             materialDesign:ColorZoneAssist.Background="Gray"
                              materialDesign:ColorZoneAssist.Foreground="Black"
                          
                              Style="{StaticResource MaterialDesignFilledTabControl}">
                     <TabItem  Header="Live"  >
 
-                        <views:VirtualCanvas Grid.Column="0" Grid.Row="1" Margin="3" ImageSource="{Binding MainImage}" ItemsSource="{Binding Drawings}" ControlCenterX="{Binding ControlCenterX}" 
-                             ControlCenterY="{Binding ControlCenterY}" MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" ClearShapeAction="{Binding ClearShapeAction}" />
+                        <views:VirtualCanvas Grid.Column="0" Grid.Row="1" Margin="3" ImageSource="{Binding MainImage}" ItemsSource="{Binding Drawings}"
+                                             MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" 
+                                             ClearShapeAction="{Binding ClearShapeAction}" IsEnabled="{Binding IsTriggerProtecte}"   />
                     </TabItem>
                     <TabItem  Header="Result"  >
-                        <TextBlock  Margin="8" Text="PrimaryMid Tab 2" />
+                        <imageprocess:CogDisplayer Grid.Column="0" Width="0" Record="{Binding  LastRecord}"   />
                     </TabItem>
                 </TabControl>
             </materialDesign:Card>
@@ -79,14 +81,22 @@
                     <materialDesign:PackIcon  Width="30"  Height="30" Kind="FileDownload" />
 
                 </Button>
-                <Button Margin="100,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
+                <Button Margin="50,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding RunCommand}"
                         ToolTip="Run">
                     <materialDesign:PackIcon  Width="50"  Height="50" Kind="ArrowLeftDropCircleOutline" />
 
                 </Button>
+                <Button Margin="50,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
+                        Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding MultRunCommand}"
+                        ToolTip="Run">
+                    <materialDesign:PackIcon  Width="50"  Height="50" Kind="AnimationPlay" />
+
+                </Button>
+
+                <Image  Margin="50,5,10,5" Source="YuanLi.ico" />
             </StackPanel>
-            <application:InspectUC Grid.Column="1" Grid.Row="1"     Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"   IsEnabled="{Binding IsInspectEnabled}"     />
+            <application:InspectUC Grid.Column="1" Grid.Row="1"     Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}"     />
 
         </Grid>
         

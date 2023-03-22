@@ -8,7 +8,7 @@
                xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
               x:Name="OutputControl"
              mc:Ignorable="d" 
-             d:DesignHeight="350" d:DesignWidth="500">
+             d:DesignHeight="350" d:DesignWidth="580">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,15 +40,15 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Width="30" Header=" " Binding="{Binding Number}" />
-                    <DataGridTextColumn Width="70" Header="Ootput" Binding="{Binding Output}" />
-                    <DataGridTextColumn Width="70" Header="Distance" Binding="{Binding Distance}" />
+                    <DataGridTextColumn Width="50" Header=" " Binding="{Binding Number}" />
+                    <DataGridTextColumn Width="80" Header="Ootput" Binding="{Binding Output}" />
+                    <DataGridTextColumn Width="70" Header="Dist" Binding="{Binding Distance}" />
                     <DataGridTextColumn Width="70" Header="Angle" Binding="{Binding Angle}" />
-                    <DataGridTextColumn Width="70" Header="CenterX"  Binding="{Binding Center.X}" />
-                    <DataGridTextColumn Width="70" Header="CenterY"  Binding="{Binding Center.Y}"  />
-                    <DataGridTextColumn Width="70" Header="Score" Binding="{Binding Score}" />
-
-                </DataGrid.Columns>
+                    <DataGridTextColumn Width="100" Header="X"  Binding="{Binding Center.X}" />
+                    <DataGridTextColumn Width="100" Header="Y"  Binding="{Binding Center.Y}"  />
+                    <DataGridTextColumn Width="75" Header="Judge"  Binding="{Binding Judge}"  />
+                
+            </DataGrid.Columns>
 
 
             </DataGrid>

@@ -80,7 +80,7 @@ namespace YuanliCore.ImageProcess.Blob
         }
         public override void Run()
         {
-            DetectorResults = Find(CogImage).ToArray();
+            DetectorResults = Find(CogFixtureImage).ToArray();
         }
     }
 }

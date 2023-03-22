@@ -17,7 +17,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Grey.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -46,7 +46,7 @@
         </Grid.ColumnDefinitions>
         <Border BorderThickness="2" BorderBrush="Black" Grid.RowSpan="4" Grid.ColumnSpan="2" />
 
-        <GroupBox  Header="定位樣本" FontSize="24" Grid.ColumnSpan="2" Grid.RowSpan="2" >
+        <GroupBox  Header="Locate Pattern" FontSize="24" Grid.ColumnSpan="2" Grid.RowSpan="2" >
             <Grid >
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition />
@@ -54,20 +54,20 @@
                     <ColumnDefinition Width="0.5*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0"  Source="{Binding SampleImage}" />
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button  Content="編輯"  Command="{Binding EditSampleCommand}"  />
-                    <Button   Content="測試"  Command="{Binding TestMatchCommand}"   />
-                    <!--<Button   Content="存"  Command="{Binding SAVECommand}"   />
-                    <Button   Content="讀"  Command="{Binding LOADCommand}"   />-->
-
-                
-
-                </StackPanel>
+                <Grid  Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="Edit"  Command="{Binding EditSampleCommand}"  />
+                    <Button Grid.Column="1"   Content="Locate"  Command="{Binding LocateSampleCommand}"   />
+                </Grid>
+               
             </Grid>
 
         </GroupBox>
-       
-        <GroupBox Header="演算法列表" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" Margin="5,0,5,5"  FontSize="24"  >
+
+        <GroupBox Header="Algorithm List" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" Margin="5,0,5,5"  FontSize="24"  >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.3*"/>
@@ -79,7 +79,7 @@
                     <ColumnDefinition Width="2.0*"/>
                     <ColumnDefinition Width="0.35*"/>
                 </Grid.ColumnDefinitions>
-                <UserControls:MethodDisplayUC  Grid.Row="1" SN="序號"  MethodName="方法" ResultName="結果"  Margin="2,0,2,2"   />
+                <UserControls:MethodDisplayUC  Grid.Row="1" SN="SN"  MethodName="Name" ResultName="Output"  Margin="2,0,2,2"   />
 
                 <ListBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding MethodDispCollection}"  SelectedIndex="{Binding MethodCollectIndex}"  >
                     <i:Interaction.Triggers>
@@ -111,17 +111,16 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox  Margin="0,0,10,0" Grid.Column="0" SelectedIndex="{Binding MethodSelectIndex}"   >
-                        <ComboBoxItem Content="模板匹配" />
-                        <ComboBoxItem Content="量測" />
-                        <ComboBoxItem Content="尋邊" />
-                        <ComboBoxItem Content="尋圓" />
-
+                        <ComboBoxItem Content="Gap" />
+                        <ComboBoxItem Content="Line" />
+                        <ComboBoxItem Content="Circle" />
+                        <ComboBoxItem Content="模板匹配"  IsEnabled="False" />
 
 
                     </ComboBox>
-                    <Button Content="新增" Margin="0,0,10,0" Grid.Column="1" Command="{Binding AddMethodCommand}"  />
-                    <Button Content="刪除" Margin="0,0,10,0" Grid.Column="2" Command="{Binding DeleteMethodCommand}"     />
-                    <Button Content="清除" Margin="0,0,10,0" Grid.Column="3"   Command="{Binding ClearMethodCommand}"    />
+                    <Button Content="Add" Margin="0,0,10,0" Grid.Column="1" Command="{Binding AddMethodCommand}"  />
+                    <Button Content="Delect" Margin="0,0,10,0" Grid.Column="2" Command="{Binding DeleteMethodCommand}"     />
+                    <Button Content="Clear" Margin="0,0,10,0" Grid.Column="3"   Command="{Binding ClearMethodCommand}"    />
                 </Grid>
 
 
@@ -138,7 +137,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>-->
 
-        <GroupBox Header="結果輸出" Grid.Row="3"  Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,5,5"  FontSize="24"  >
+        <GroupBox Header="Output Type" Grid.Row="3"  Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,5,5"  FontSize="24"  >
             <Grid>
 
                 <Grid.RowDefinitions>
@@ -147,9 +146,9 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox   Width="130"  Margin="0,0,5,0"   FontSize="24"    SelectedIndex ="{Binding CombineOptionSelected, Converter={StaticResource CvrOption}}"    >
-                        <Label Content="結果"/>
-                        <Label Content="距離"/>
-                        <Label Content="角度"/>
+                        <Label Content="None"/>
+                        <Label Content="Distane"/>
+                        <Label Content="Angle"/>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
                                 <i:InvokeCommandAction Command="{Binding ResultSelectionChangedCommand}"/>
@@ -174,8 +173,9 @@
                         </ComboBox.ItemTemplate>
 
                     </ComboBox>
-                    <Button  Content="新增" Margin="0,0,10,0" Command="{Binding AddCombineCommand}"   />
-                    <Button  Content="修改" Margin="0,0,10,0" Command="{Binding EditCombineCommand}"   />
+                    <Button  Content="Add" Margin="0,0,10,0" Command="{Binding AddCombineCommand}"   />
+                    <Button  Content="Edit" Margin="0,0,10,0" Command="{Binding EditCombineCommand}"   />
+                    <Button Content="Delect" Margin="0,0,10,0" Grid.Column="2" Command="{Binding DeleteCombineCommand}" />
                 </StackPanel>
                 <DataGrid  Grid.Row="1" ItemsSource="{Binding CombineCollection}"  CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectedIndex="{Binding CombineCollectionIndex}"   >
                     <i:Interaction.Triggers>

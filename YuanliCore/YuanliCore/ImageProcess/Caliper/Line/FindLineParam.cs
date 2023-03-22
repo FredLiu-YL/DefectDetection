@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cognex.VisionPro;
 using Cognex.VisionPro.CalibFix;
 using Cognex.VisionPro.Caliper;
+using Newtonsoft.Json;
 
 namespace YuanliCore.ImageProcess.Caliper
 {
@@ -27,33 +28,52 @@ namespace YuanliCore.ImageProcess.Caliper
         /// <summary>
         /// 搜尋參數
         /// </summary>
+        [JsonIgnore]//Vision pro 不能序列化  所以要忽略  不然就要用到JsonConvert
         public CogFindLine RunParams { get; set; }
 
 
-        public static CaliperParams Default(int id = 0)
+        public static FindLineParam Default(int id = 0)
         {
-            CogCaliperTool tool = new CogCaliperTool();
+            CogFindLineTool tool = new CogFindLineTool();
             return Default(tool, id);
         }
 
-        internal static CaliperParams Default(CogCaliperTool tool, int id)
+        internal static FindLineParam Default(CogFindLineTool tool, int id)
         {
-            return new CaliperParams(0)
+            return new FindLineParam(0)
             {
 
                 RunParams = tool.RunParams,
-                Region = tool.Region
+               // Region = tool.Region
             };
+        }
+
+        protected override void SaveCogRecipe(string directoryPath)
+        {
+
+            // var path = CreateFolder(recipeName);
+
+            //還需要補上 cognex 序列化方法
+            CogFindLineTool tool = new CogFindLineTool();
+            tool.RunParams = RunParams;
+           // tool.Region = Region;
+
+            CogSerializer.SaveObjectToFile(tool, $"{directoryPath}\\VsTool_{Id}.tool");
+
+
+            tool.Dispose();
+            //   CogSerializer.SaveObjectToFile(CogToolBlock1, @"E:\ToolBlock2.vpp");
+            //  string fileName = path + $"\\Commom{Id}.json";
+            //  Save(fileName);
         }
 
         protected override void LoadCogRecipe(string directoryPath, int id)
         {
-            throw new NotImplementedException();
-        }
 
-        protected override void SaveCogRecipe(string recipeName)
-        {
-            throw new NotImplementedException();
+            CogFindLineTool tool = (CogFindLineTool)CogSerializer.LoadObjectFromFile($"{directoryPath}\\VsTool_{id}.tool");
+            RunParams = tool.RunParams;
+          //  Region = tool.Region;
+            tool.Dispose();
         }
     }
 

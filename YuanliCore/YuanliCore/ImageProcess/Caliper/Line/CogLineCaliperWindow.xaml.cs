@@ -23,18 +23,18 @@ namespace YuanliCore.ImageProcess.Caliper
     /// <summary>
     /// Window1.xaml 的互動邏輯
     /// </summary>
-    public partial class CogCaliperWindow : Window, INotifyPropertyChanged
+    public partial class CogLineCaliperWindow : Window, INotifyPropertyChanged
     {
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
-        private CaliperParams caliperParam = new CaliperParams(0);
+        private FindLineParam caliperParam = new FindLineParam(0);
         private bool isDispose =false;
         private bool isFullSelect = true;
         private bool isCenterSelect;
         private bool isBeginSelect;
         private bool isEndSelect;
 
-        public CogCaliperWindow(BitmapSource bitmap)
+        public CogLineCaliperWindow(BitmapSource bitmap)
         {
         
             InitializeComponent();
@@ -46,7 +46,7 @@ namespace YuanliCore.ImageProcess.Caliper
         /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
         /// </summary>
         /// <param name="cogImage"></param>
-        public CogCaliperWindow(ICogImage cogImage)
+        public CogLineCaliperWindow(ICogImage cogImage)
         {
 
             InitializeComponent();
@@ -56,7 +56,7 @@ namespace YuanliCore.ImageProcess.Caliper
         }
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
-        public CaliperParams CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
+        public FindLineParam CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
         public bool IsFullSelect   {  get => isFullSelect; set {  SetValue(ref isFullSelect, value);  SetResultSelect(); }  }
         public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
 

@@ -68,6 +68,12 @@
       <DependentUpon>CogCaliperControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImageProcess\Caliper\Circle\FindCircleParam.cs" />
+    <Compile Include="ImageProcess\Caliper\Line\CogLineCaliperControl.xaml.cs">
+      <DependentUpon>CogLineCaliperControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageProcess\Caliper\Line\CogLineCaliperWindow.xaml.cs">
+      <DependentUpon>CogLineCaliperWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImageProcess\Caliper\Line\CogLineCaliper.cs" />
     <Compile Include="ImageProcess\Caliper\Line\FindLineParam.cs" />
     <Compile Include="ImageProcess\CogCommon.cs" />
@@ -78,6 +84,7 @@
     <Compile Include="ImageProcess\CogFixtureLocate.cs" />
     <Compile Include="ImageProcess\CogLineSearch.cs" />
     <Compile Include="ImageProcess\CogMethod.cs" />
+    <Compile Include="ImageProcess\CogParamEditor.cs" />
     <Compile Include="ImageProcess\Match\CogMatcher.cs" />
     <Compile Include="ImageProcess\Match\PatmaxParams.cs" />
     <Compile Include="ImageProcess\Match\PatMaxControl.xaml.cs">
@@ -448,6 +455,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ImageProcess\Caliper\CogCaliperControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ImageProcess\Caliper\Line\CogLineCaliperControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ImageProcess\Caliper\Line\CogLineCaliperWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

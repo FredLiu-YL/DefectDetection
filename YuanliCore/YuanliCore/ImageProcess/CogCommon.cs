@@ -218,10 +218,11 @@ namespace YuanliCore.ImageProcess
     }
     public enum MethodName
     {
-        PatternMatch,
+     
         GapMeansure,
         LineMeansure,
-        CircleMeansure
+        CircleMeansure  ,
+        PatternMatch,
     }
 
     public enum OutputOption

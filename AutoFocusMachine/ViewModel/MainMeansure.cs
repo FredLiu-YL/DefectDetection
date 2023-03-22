@@ -80,7 +80,7 @@ namespace AutoFocusMachine.ViewModel
         public ICommand TestCommand => new RelayCommand(async () =>
         {
             try {
-
+/*
                 var frame = MainImage.ToByteFrame();
 
                 YuanliVision yuanliVision = new YuanliVision();
@@ -120,7 +120,7 @@ namespace AutoFocusMachine.ViewModel
 
                 }
 
-
+                */
 
             }
             catch (Exception ex) {
