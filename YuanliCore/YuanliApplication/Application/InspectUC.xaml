@@ -190,8 +190,8 @@
                         <DataGridTextColumn Width="120"  Header="Result" Binding="{Binding Option}" />
                         <DataGridTextColumn  Width="70"  Header="SN1"  Binding="{Binding SN1}" />
                         <DataGridTextColumn  Width="70"  Header="SN2"  Binding="{Binding SN2}"  />
-                        <DataGridTextColumn  Width="60"   Header="Min"  Binding="{Binding ThresholdMin}"  />
-                        <DataGridTextColumn  Width="60"   Header="Max"  Binding="{Binding ThresholdMax}"  />
+                        <DataGridTextColumn  Width="70"   Header="Min"  Binding="{Binding ThresholdMin}"  />
+                        <DataGridTextColumn  Width="70"   Header="Max"  Binding="{Binding ThresholdMax}"  />
                     </DataGrid.Columns>
                     
                     

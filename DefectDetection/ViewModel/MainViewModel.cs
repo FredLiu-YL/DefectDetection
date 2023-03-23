@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -209,9 +210,9 @@ namespace DefectDetection.ViewModel
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
 
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                var finalResult = CreateResult(results_);
-                
-                //印出結果
+                var finalResult = CreateResult(results_,1);
+
+                //畫面畫出結果
                 DrawResult(finalResult);
 
 
@@ -224,12 +225,71 @@ namespace DefectDetection.ViewModel
         });
 
 
-        public ICommand MultRunCommand => new RelayCommand(() =>
+        public ICommand MultRunCommand => new RelayCommand(async () =>
        {
+           using (var dialog = new FolderBrowserDialog()) {
 
+               dialog.Description = "選擇文件夾";
+               dialog.ShowNewFolderButton = false;
+               // dialog.RootFolder = Environment.SpecialFolder.MyComputer;
+               //  dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
+               //dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+               if (dialog.ShowDialog() == DialogResult.OK) {
+                   // 获取所选文件夹的完整路径
+                   string path = dialog.SelectedPath;
+
+                   // 获取所选文件夹的名称
+                   string name = new DirectoryInfo(path).Name;
+                   List<BitmapSource> bmpSources = new List<BitmapSource>();
+                   string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".bmp", ".gif" }; // 支持的图片文件扩展名
+
+                   // 获取指定文件夹中的所有文件
+                   string[] files = Directory.GetFiles(path);
+
+                   // 筛选出所有的图片文件
+                   List<string> imageFiles = new List<string>();
+                   foreach (string file in files) {
+                       string extension = Path.GetExtension(file).ToLower();
+                       if (imageExtensions.Contains(extension))
+                           imageFiles.Add(file);
+
+
+                   }
+                   FinalResultCollection.Clear();
+                   foreach (var fileName in imageFiles) 
+                   {
+
+                       int round = imageFiles.IndexOf(fileName) + 1;
+                       BitmapImage bitmapImage = new BitmapImage();
+                       bitmapImage.BeginInit();
+                       bitmapImage.UriSource = new Uri(fileName);
+                       bitmapImage.EndInit();
+
+                       // 將圖片轉換為 BitmapSource
+                       BitmapSource bitmapSource = bitmapImage;
+                       MainImage = new WriteableBitmap(bitmapSource);
+                       Frame<byte[]> frame = bitmapSource.ToByteFrame();
+                      VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
+                       //得到量測結果後 轉換到FinalResult 以便UI印出結果
+                       List<FinalResult> finalResult = CreateResult(results_ , round);
+                       foreach (var item in finalResult) {
+                           FinalResultCollection.Add(item);
+                       }
+                      
+
+                       await Task.Delay(2000);
+                   }
+          
+
+
+
+               }
+
+
+           }
        });
 
-        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults)
+        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults ,int round)
         {
             List<FinalResult> finalResult = new List<FinalResult>();
             foreach (VisionResult item in visionResults) {
@@ -242,13 +302,13 @@ namespace DefectDetection.ViewModel
                             for (int i = 0; i < item.MatchResult.Length; i++) {
                                 FinalResult matchfinal = new FinalResult
                                 {
-                                    Number = "1",
+                                    Number = $"{round}",
                                     //    Distance = item.Distance,
                                     //    Angle = item.Angle,
                                     Center = item.MatchResult[i].Center,
                                     Score = item.MatchResult[i].Score,
                                     Output = item.ResultOutput,
-                                    Judge= item.Judge
+                                    Judge = item.Judge
                                 };
 
                                 finalResult.Add(matchfinal);
@@ -256,26 +316,26 @@ namespace DefectDetection.ViewModel
                         }
                         else if (item.CaliperResult != null) {
 
-                         
 
-                                FinalResult finalCaliper = new FinalResult
-                                {
-                                    Number = "1",
-                                    Distance = item.CaliperResult.Distance,
-                                    //    Angle = item.Angle,
-                                    BeginPoint = item.CaliperResult.BeginPoint,
-                                    EndPoint = item.CaliperResult.EndPoint,
-                                    Output = item.ResultOutput,
-                                    Judge = item.Judge
-                                };
-                                finalResult.Add(finalCaliper);
-                          
+
+                            FinalResult finalCaliper = new FinalResult
+                            {
+                                Number = $"{round}",
+                                Distance = item.CaliperResult.Distance,
+                                //    Angle = item.Angle,
+                                BeginPoint = item.CaliperResult.BeginPoint,
+                                EndPoint = item.CaliperResult.EndPoint,
+                                Output = item.ResultOutput,
+                                Judge = item.Judge
+                            };
+                            finalResult.Add(finalCaliper);
+
 
                         }
                         else if (item.LineResult != null) {
                             FinalResult finalCaliper = new FinalResult
                             {
-                                Number = "1",
+                                Number = $"{round}",
                                 Distance = item.LineResult.Distance,
                                 //    Angle = item.Angle,
                                 BeginPoint = item.LineResult.BeginPoint,
@@ -289,7 +349,7 @@ namespace DefectDetection.ViewModel
                     case OutputOption.Distance:
                         FinalResult finalDistance = new FinalResult
                         {
-                            Number = "1",
+                            Number = $"{round}",
                             Distance = item.Distance,
                             //    Angle = item.Angle,
 

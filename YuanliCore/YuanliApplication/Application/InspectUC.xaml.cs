@@ -327,10 +327,10 @@ namespace YuanliApplication.Application
                    break;
            }
 
-
+           AddCombine(Convert.ToString(yuanliVision.CogMethods.Count)); 
            UpdateRecipe();
 
-           AddCombine(Convert.ToString(yuanliVision.CogMethods.Count)); 
+          
        });
         public ICommand DeleteMethodCommand => new RelayCommand(() =>
        {
@@ -508,8 +508,7 @@ namespace YuanliApplication.Application
             if (MethodDispCollection.Count == 0) return;
             //選出要組合的結果 0:直接輸出  1: 計算距離
             string option = $"{CombineOptionSelected}";
-
-          
+  
 
             string sn2 = "";
             if (CombineOptionSelected == OutputOption.None)
