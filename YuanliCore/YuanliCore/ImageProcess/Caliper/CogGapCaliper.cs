@@ -34,7 +34,7 @@ namespace YuanliCore.ImageProcess.Caliper
         }
 
         public  override CogParameter RunParams { get; set; }
-        public CaliperResult[] CaliperResults { get; private set; }
+        public CaliperResult  CaliperResults { get; private set; }
         public override void Dispose()
         {
             if (cogCaliperWindow != null)
@@ -77,7 +77,7 @@ namespace YuanliCore.ImageProcess.Caliper
         }
 
 
-        public IEnumerable<CaliperResult> Find(Frame<byte[]> image)
+        public  CaliperResult Find(Frame<byte[]> image)
         {
 
             ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
@@ -87,7 +87,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
 
         }
-        private IEnumerable<CaliperResult> Find(ICogImage cogImage)
+        private  CaliperResult Find(ICogImage cogImage)
         {
             caliperTool.InputImage = cogImage;
             var param  = (CaliperParams)RunParams;
@@ -110,8 +110,8 @@ namespace YuanliCore.ImageProcess.Caliper
 
                 results.Add(new CaliperResult(new Point(x1, y1), new Point(cX, cY), new Point(x2, y2)));
             }
-        
-            return results;
+            //複製貼上錯誤 懶得改 ， 其實只會有一筆資料  ，直接改後段拿第一筆資料
+            return results.FirstOrDefault();
         }
 
         //public  void Run(Frame<byte[]> image)
@@ -122,7 +122,7 @@ namespace YuanliCore.ImageProcess.Caliper
         public override void Run()
         {
             if (CogFixtureImage == null) throw new Exception("Image does not exist");
-            CaliperResults = Find(CogFixtureImage).ToArray();
+            CaliperResults = Find(CogFixtureImage);
         }
     }
 

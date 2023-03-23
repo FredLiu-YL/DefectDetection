@@ -11,7 +11,7 @@
         x:Name="DefectDetection"
         mc:Ignorable="d"
            DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="Yuanli  DefectDetection" Height="850" Width="1200">
+        Title="{Binding Version}" Height="850" Width="1200">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,7 +33,7 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.Resources>
-              
+
             </Grid.Resources>
 
             <materialDesign:Card>
@@ -54,7 +54,7 @@
                 </TabControl>
             </materialDesign:Card>
 
-            <application:MeansureOutputUC  Grid.Row="1" ResultCollection="{Binding FinalResultCollection}" />
+            <application:MeansureOutputUC  Grid.Row="1" ResultCollection="{Binding FinalResultCollection}" SelectIndex="{Binding FinalResultCollectionSelect}"   />
         </Grid>
 
         <Grid  Grid.Column="1">
@@ -67,7 +67,7 @@
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding OpenImageCommand}"
                         ToolTip="Open Image">
                     <materialDesign:PackIcon  Width="30"  Height="30" Kind="FolderOpenOutline" />
-                  
+
                 </Button>
                 <Button   Margin="10,0,10,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding SaveRecipeCommand}"
@@ -93,12 +93,12 @@
                     <materialDesign:PackIcon  Width="50"  Height="50" Kind="AnimationPlay" />
 
                 </Button>
-
+                <TextBlock Text="{Binding FinalResultCollectionSelect}" />
                 <Image  Margin="50,5,10,5" Source="YuanLi.ico" />
             </StackPanel>
-            <application:InspectUC Grid.Column="1" Grid.Row="1"     Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}"     />
+            <application:InspectUC Grid.Row="1"     Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}" Margin="0,5,0,-5"     />
 
         </Grid>
-        
+
     </Grid>
 </Window>

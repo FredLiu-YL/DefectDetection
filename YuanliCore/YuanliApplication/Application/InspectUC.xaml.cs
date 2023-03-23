@@ -54,6 +54,7 @@ namespace YuanliApplication.Application
         private bool isCombineSecEnabled;
         private string combineOption;
         private int cB_CmbineSelectedIndexSN1, cB_CmbineSelectedIndexSN2 = -1;
+        private double thresholdMin, thresholdMax;
         private bool isLocated;
         public InspectUC()
         {
@@ -116,7 +117,8 @@ namespace YuanliApplication.Application
         public string CombineOption { get => combineOption; set => SetValue(ref combineOption, value); }
         public int CB_CmbineSelectedIndexSN1 { get => cB_CmbineSelectedIndexSN1; set => SetValue(ref cB_CmbineSelectedIndexSN1, value); }
         public int CB_CmbineSelectedIndexSN2 { get => cB_CmbineSelectedIndexSN2; set => SetValue(ref cB_CmbineSelectedIndexSN2, value); }
-
+        public double ThresholdMin { get => thresholdMin; set => SetValue(ref thresholdMin, value); }
+        public double ThresholdMax { get => thresholdMax; set => SetValue(ref thresholdMax, value); }
         public bool IsCombineSecEnabled { get => isCombineSecEnabled; set => SetValue(ref isCombineSecEnabled, value); }
 
       
@@ -196,7 +198,7 @@ namespace YuanliApplication.Application
             //   CombineOptionSelectedIndex = CombineOptionList.ToList().IndexOf(selectData.Option);
 
             switch (selectData.Option) {
-               case OutputOption.Result:
+               case OutputOption.None:
                    CB_CmbineSelectedIndexSN1 = MethodDispCollection.Select(m => m.SN).ToList().IndexOf(selectData.SN1);
                    CB_CmbineSelectedIndexSN2 = -1;
                    break;
@@ -210,14 +212,15 @@ namespace YuanliApplication.Application
                    break;
            }
 
-
+           ThresholdMax = selectData.ThresholdMax;
+           ThresholdMin = selectData.ThresholdMin;
 
        });
         public ICommand ResultSelectionChangedCommand => new RelayCommand(() =>
        {
            switch (CombineOptionSelected) {
 
-               case OutputOption.Result:
+               case OutputOption.None:
                    CB_CmbineSelectedIndexSN2 = -1;
                    IsCombineSecEnabled = false;
                    break;
@@ -265,7 +268,7 @@ namespace YuanliApplication.Application
 
            int i = CombineCollectionIndex;
            CombineCollection.RemoveAt(i);
-           CombineCollection.Insert(i, new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2 });
+           CombineCollection.Insert(i, new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2, ThresholdMax = ThresholdMax, ThresholdMin = ThresholdMin });
            UpdateRecipe();
        });
         public ICommand DeleteCombineCommand => new RelayCommand(() =>
@@ -509,7 +512,7 @@ namespace YuanliApplication.Application
           
 
             string sn2 = "";
-            if (CombineOptionSelected == OutputOption.Result)
+            if (CombineOptionSelected == OutputOption.None)
                 sn2 = "null";
             else
                 sn2 = MethodDispCollection[CB_CmbineSelectedIndexSN2].SN;
@@ -526,7 +529,7 @@ namespace YuanliApplication.Application
                     throw new Exception("This action cannot be selected");
             }
 
-            CombineCollection.Add(new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2 });
+            CombineCollection.Add(new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2 ,ThresholdMax = ThresholdMax ,ThresholdMin= ThresholdMin });
 
         }
 

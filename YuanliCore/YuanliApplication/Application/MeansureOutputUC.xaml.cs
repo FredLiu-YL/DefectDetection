@@ -27,6 +27,7 @@ namespace YuanliApplication.Application
 
 
        private static readonly DependencyProperty ResultCollectionProperty = DependencyProperty.Register(nameof(ResultCollection), typeof(ObservableCollection<FinalResult>), typeof(MeansureOutputUC), new FrameworkPropertyMetadata(new ObservableCollection<FinalResult>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        private static readonly DependencyProperty SelectIndexProperty = DependencyProperty.Register(nameof(SelectIndex), typeof(int), typeof(MeansureOutputUC), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
         public MeansureOutputUC()
@@ -34,9 +35,11 @@ namespace YuanliApplication.Application
             InitializeComponent();
         }
 
-
-
-
+      public int  SelectIndex
+        {
+            get => (int)GetValue(SelectIndexProperty);
+            set => SetValue(SelectIndexProperty, value);
+        }
 
         public ObservableCollection<FinalResult> ResultCollection
         {

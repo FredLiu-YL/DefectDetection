@@ -42,6 +42,8 @@ namespace DefectDetection.ViewModel
         private ObservableCollection<FinalResult> finalResultCollection = new ObservableCollection<FinalResult>();
         private YuanliVision yuanliVision = new YuanliVision();
         private bool isLocate, isTriggerProtecte = true;
+        private int finalResultCollectionSelect;
+        private string version;
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -55,9 +57,11 @@ namespace DefectDetection.ViewModel
             ////{
             ////    // Code runs "for real"
             ////}
+            ///
+            Version = $"Yuanli  DefectDetection  Ver : {System.Windows.Forms.Application.ProductVersion}";
         }
 
-
+        public string Version { get => version; set => SetValue(ref version, value); }
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
 
@@ -83,7 +87,7 @@ namespace DefectDetection.ViewModel
         /// </summary>
         public bool IsTriggerProtecte { get => isTriggerProtecte; set => SetValue(ref isTriggerProtecte, value); }
         public ObservableCollection<FinalResult> FinalResultCollection { get => finalResultCollection; set => SetValue(ref finalResultCollection, value); }
-
+        public int FinalResultCollectionSelect { get => finalResultCollectionSelect; set => SetValue(ref finalResultCollectionSelect, value); }
         public ICommand TestCommand => new RelayCommand(() =>
        {
            string ipAddress = "127.0.0.1";
@@ -94,17 +98,17 @@ namespace DefectDetection.ViewModel
                TcpClient client = new TcpClient(ipAddress, port);
                System.Console.WriteLine("連線成功");
                var stream = client.GetStream();
-                //將字串轉 byte 陣列，使用 ASCII 編碼
-                Byte[] myBytes = Encoding.UTF8.GetBytes("\\v1\\protocol\\current");
+               //將字串轉 byte 陣列，使用 ASCII 編碼
+               Byte[] myBytes = Encoding.UTF8.GetBytes("\\v1\\protocol\\current");
                stream.Write(myBytes, 0, myBytes.Length);
 
 
-                //從網路資料流讀取資料
-                int bufferSize = client.ReceiveBufferSize;
+               //從網路資料流讀取資料
+               int bufferSize = client.ReceiveBufferSize;
                byte[] myBufferBytes = new byte[bufferSize];
                stream.Read(myBufferBytes, 0, bufferSize);
-                //取得資料並且解碼文字
-                Console.WriteLine(Encoding.UTF8.GetString(myBufferBytes, 0, bufferSize));
+               //取得資料並且解碼文字
+               Console.WriteLine(Encoding.UTF8.GetString(myBufferBytes, 0, bufferSize));
 
 
            }
@@ -115,29 +119,31 @@ namespace DefectDetection.ViewModel
        });
         public ICommand OpenImageCommand => new RelayCommand(() =>
        {
-       IsTriggerProtecte = false;
-       Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-         
-       dlg.Filter = "BMP files (*.bmp)|*.bmp|JPG files (*.jpg)|*.jpg|PNG files (*.png)|*.png";
-       Nullable<bool> result = dlg.ShowDialog();
-       if (result == true) {// 載入圖片
+           IsTriggerProtecte = false;
+           Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-           BitmapImage bitmapImage = new BitmapImage();
-           bitmapImage.BeginInit();
-           bitmapImage.UriSource = new Uri(dlg.FileName);
-           bitmapImage.EndInit();
+           dlg.Filter = "BMP files (*.bmp)|*.bmp|JPG files (*.jpg)|*.jpg|PNG files (*.png)|*.png";
+           Nullable<bool> result = dlg.ShowDialog();
+           if (result == true) {// 載入圖片
 
-           // 將圖片轉換為 BitmapSource
-           BitmapSource bitmapSource = bitmapImage;
-           MainImage = new WriteableBitmap(bitmapSource);
-           IsLocate = false;
-       }
-           Task.Run(() => {
+               BitmapImage bitmapImage = new BitmapImage();
+               bitmapImage.BeginInit();
+               bitmapImage.UriSource = new Uri(dlg.FileName);
+               bitmapImage.EndInit();
+
+               // 將圖片轉換為 BitmapSource
+               BitmapSource bitmapSource = bitmapImage;
+               MainImage = new WriteableBitmap(bitmapSource);
+               IsLocate = false;
+           }
+           Task.Run(() =>
+           {
                Task.Delay(3000).Wait();
-              IsTriggerProtecte = true; }); //避掉讀取圖片 會移動到影像 canvas的BUG
+               IsTriggerProtecte = true;
+           }); //避掉讀取圖片 會移動到影像 canvas的BUG
 
-          IsInspectEnabled = true;
-           
+           IsInspectEnabled = true;
+
        });
         public ICommand SaveRecipeCommand => new RelayCommand(() =>
        {
@@ -145,19 +151,19 @@ namespace DefectDetection.ViewModel
            using (var dialog = new FolderBrowserDialog()) {
 
                dialog.Description = "選擇文件夾";
-                dialog.ShowNewFolderButton = false;
-                dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
+               dialog.ShowNewFolderButton = false;
+               dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
 
                if (dialog.ShowDialog() == DialogResult.OK) {
-                    // 获取所选文件夹的完整路径
-                    string path = dialog.SelectedPath;
+                   // 获取所选文件夹的完整路径
+                   string path = dialog.SelectedPath;
 
-                    // 获取所选文件夹的名称
-                    string name = new DirectoryInfo(path).Name;
+                   // 获取所选文件夹的名称
+                   string name = new DirectoryInfo(path).Name;
 
-                    //  string dirFullPath = Path.GetDirectoryName(fileFullPath);
-                    //  CreateFolder("");
-                    MainRecipe.Save(path);
+                   //  string dirFullPath = Path.GetDirectoryName(fileFullPath);
+                   //  CreateFolder("");
+                   MainRecipe.Save(path);
 
                }
            }
@@ -169,19 +175,19 @@ namespace DefectDetection.ViewModel
 
                dialog.Description = "選擇文件夾";
                dialog.ShowNewFolderButton = false;
-                // dialog.RootFolder = Environment.SpecialFolder.MyComputer;
-                dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
-                //dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                if (dialog.ShowDialog() == DialogResult.OK) {
-                    // 获取所选文件夹的完整路径
-                    string path = dialog.SelectedPath;
+               // dialog.RootFolder = Environment.SpecialFolder.MyComputer;
+               dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
+               //dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+               if (dialog.ShowDialog() == DialogResult.OK) {
+                   // 获取所选文件夹的完整路径
+                   string path = dialog.SelectedPath;
 
-                    // 获取所选文件夹的名称
-                    string name = new DirectoryInfo(path).Name;
+                   // 获取所选文件夹的名称
+                   string name = new DirectoryInfo(path).Name;
 
-                    //  string dirFullPath = Path.GetDirectoryName(fileFullPath);
-                    //  CreateFolder("");
-                    MeansureRecipe meansureRecipe = new MeansureRecipe();
+                   //  string dirFullPath = Path.GetDirectoryName(fileFullPath);
+                   //  CreateFolder("");
+                   MeansureRecipe meansureRecipe = new MeansureRecipe();
                    meansureRecipe.Load(path);
 
                    MainRecipe = meansureRecipe;
@@ -203,129 +209,10 @@ namespace DefectDetection.ViewModel
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
 
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                List<FinalResult> finalResult = new List<FinalResult>();
-                foreach (VisionResult item in results_) {
-
-                    switch (item.ResultOutput) {
-                        case OutputOption.Result:
-                           
-                            if (item.MatchResult != null) {
-
-                                for (int i = 0; i < item.MatchResult.Length; i++) {
-                                    FinalResult matchfinal = new FinalResult
-                                    {
-                                        Number = "1",
-                                        //    Distance = item.Distance,
-                                        //    Angle = item.Angle,
-                                        Center = item.MatchResult[i].Center,
-                                        Score = item.MatchResult[i].Score,
-                                        Output = item.ResultOutput,
-
-                                    };
-
-                                    finalResult.Add(matchfinal);
-                                }
-                            }
-                            else if (item.CaliperResult != null) {
-
-                                foreach (var caliper in item.CaliperResult) {
-               
-                                    FinalResult finalCaliper = new FinalResult
-                                    {
-                                        Number = "1",
-                                        Distance = caliper.Distance,
-                                        //    Angle = item.Angle,
-                                        BeginPoint = caliper.BeginPoint,
-                                        EndPoint = caliper.EndPoint,
-                                        Output = item.ResultOutput,
-
-                                    };
-                                    finalResult.Add(finalCaliper);
-                                }
-
-                            }
-                            else if (item.LineResult != null) 
-                            {
-                                FinalResult finalCaliper = new FinalResult
-                                {
-                                    Number = "1",
-                                    Distance = item.LineResult.Distance,
-                                    //    Angle = item.Angle,
-                                    BeginPoint = item.LineResult.BeginPoint,
-                                    EndPoint = item.LineResult.EndPoint,
-                                    Output = item.ResultOutput,
-
-                                };
-                                finalResult.Add(finalCaliper);
-                            }
-                            break;
-                        case OutputOption.Distance:
-                            FinalResult finalDistance = new FinalResult
-                            {
-                                Number = "1",
-                                Distance = item.Distance,
-                                //    Angle = item.Angle,
-
-                                Output = item.ResultOutput,
-                            };
-                            finalResult.Add(finalDistance);
-
-                            break;
-                        case OutputOption.Angle:
-
-                            break;
-                        default:
-                            break;
-                    }
-
-
-
-
-                }
+                var finalResult = CreateResult(results_);
+                
                 //印出結果
-                foreach (FinalResult result in finalResult) {
-                    if (OutputOption.Result == result.Output && result.Center.HasValue) {
-                        var center = new ROICross
-                        {
-                            X = result.Center.Value.X,
-                            Y = result.Center.Value.Y,
-                            Size = 35,
-                            StrokeThickness = 2,
-                            Stroke = Brushes.Red
-                        };
-                        AddShapeAction.Execute(center);
-
-                    }
-                    else if (OutputOption.Result == result.Output && result.Distance.HasValue) {
-                        var line = new ROILine
-                        {
-                            X1 = result.BeginPoint.X,
-                            Y1 = result.BeginPoint.Y,
-                            X2 = result.EndPoint.X,
-                            Y2 = result.EndPoint.Y,
-                            Stroke = Brushes.Red,
-                            StrokeThickness = 3,
-                            IsInteractived = false,
-                            CenterCrossLength = 4
-                        };
-                        AddShapeAction.Execute(line);
-                    }
-                    if (OutputOption.Distance == result.Output && result.Distance.HasValue) {
-
-                        var line = new ROILine
-                        {
-                            X1 = result.BeginPoint.X,
-                            Y1 = result.BeginPoint.Y,
-                            X2 = result.EndPoint.X,
-                            Y2 = result.EndPoint.Y,
-                            Stroke = Brushes.Red,
-                            StrokeThickness = 3,
-                            IsInteractived = false,
-                            CenterCrossLength = 4
-                        };
-                        AddShapeAction.Execute(line);
-                    }
-                }
+                DrawResult(finalResult);
 
 
                 FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
@@ -342,9 +229,138 @@ namespace DefectDetection.ViewModel
 
        });
 
+        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults)
+        {
+            List<FinalResult> finalResult = new List<FinalResult>();
+            foreach (VisionResult item in visionResults) {
+
+                switch (item.ResultOutput) {
+                    case OutputOption.None:
+
+                        if (item.MatchResult != null) {
+
+                            for (int i = 0; i < item.MatchResult.Length; i++) {
+                                FinalResult matchfinal = new FinalResult
+                                {
+                                    Number = "1",
+                                    //    Distance = item.Distance,
+                                    //    Angle = item.Angle,
+                                    Center = item.MatchResult[i].Center,
+                                    Score = item.MatchResult[i].Score,
+                                    Output = item.ResultOutput,
+                                    Judge= item.Judge
+                                };
+
+                                finalResult.Add(matchfinal);
+                            }
+                        }
+                        else if (item.CaliperResult != null) {
+
+                         
+
+                                FinalResult finalCaliper = new FinalResult
+                                {
+                                    Number = "1",
+                                    Distance = item.CaliperResult.Distance,
+                                    //    Angle = item.Angle,
+                                    BeginPoint = item.CaliperResult.BeginPoint,
+                                    EndPoint = item.CaliperResult.EndPoint,
+                                    Output = item.ResultOutput,
+                                    Judge = item.Judge
+                                };
+                                finalResult.Add(finalCaliper);
+                          
+
+                        }
+                        else if (item.LineResult != null) {
+                            FinalResult finalCaliper = new FinalResult
+                            {
+                                Number = "1",
+                                Distance = item.LineResult.Distance,
+                                //    Angle = item.Angle,
+                                BeginPoint = item.LineResult.BeginPoint,
+                                EndPoint = item.LineResult.EndPoint,
+                                Output = item.ResultOutput,
+                                Judge = item.Judge
+                            };
+                            finalResult.Add(finalCaliper);
+                        }
+                        break;
+                    case OutputOption.Distance:
+                        FinalResult finalDistance = new FinalResult
+                        {
+                            Number = "1",
+                            Distance = item.Distance,
+                            //    Angle = item.Angle,
+
+                            Output = item.ResultOutput,
+                            Judge = item.Judge
+                        };
+                        finalResult.Add(finalDistance);
+
+                        break;
+                    case OutputOption.Angle:
+
+                        break;
+                    default:
+                        break;
+                }
+
+
+            }
+
+            return finalResult;
+        }
+
+        private void DrawResult(IEnumerable<FinalResult> finalResult)
+        {
+            foreach (FinalResult result in finalResult) {
+                if (OutputOption.None == result.Output && result.Center.HasValue) {
+                    var center = new ROICross
+                    {
+                        X = result.Center.Value.X,
+                        Y = result.Center.Value.Y,
+                        Size = 35,
+                        StrokeThickness = 2,
+                        Stroke = Brushes.Red
+                    };
+                    AddShapeAction.Execute(center);
+
+                }
+                else if (OutputOption.None == result.Output && result.Distance.HasValue) {
+                    var line = new ROILine
+                    {
+                        X1 = result.BeginPoint.X,
+                        Y1 = result.BeginPoint.Y,
+                        X2 = result.EndPoint.X,
+                        Y2 = result.EndPoint.Y,
+                        Stroke = Brushes.Red,
+                        StrokeThickness = 3,
+                        IsInteractived = false,
+                        CenterCrossLength = 4
+                    };
+                    AddShapeAction.Execute(line);
+                }
+                if (OutputOption.Distance == result.Output && result.Distance.HasValue) {
+
+                    var line = new ROILine
+                    {
+                        X1 = result.BeginPoint.X,
+                        Y1 = result.BeginPoint.Y,
+                        X2 = result.EndPoint.X,
+                        Y2 = result.EndPoint.Y,
+                        Stroke = Brushes.Red,
+                        StrokeThickness = 3,
+                        IsInteractived = false,
+                        CenterCrossLength = 4
+                    };
+                    AddShapeAction.Execute(line);
+                }
+            }
 
 
 
+        }
 
 
         /// <summary>

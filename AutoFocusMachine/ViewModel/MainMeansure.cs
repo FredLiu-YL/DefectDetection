@@ -144,14 +144,13 @@ namespace AutoFocusMachine.ViewModel
 
             }
             else if (visionResult.CaliperResult != null) {
-                foreach (var item in visionResult.CaliperResult) {
+               
                     FinalResult result = new FinalResult();
 
-                    result.Center = item.CenterPoint;
-
+                    result.Center = visionResult.CaliperResult.CenterPoint;
 
                     finalResults.Add(result);
-                }
+               
             }
             else if (visionResult.BlobResult != null) {
                 foreach (var item in visionResult.BlobResult) {

@@ -23,7 +23,7 @@
     <Grid   DataContext="{Binding ElementName=OutputControl}"   >
 
         <DataGrid  Grid.Row="1" ItemsSource="{Binding ResultCollection}"  Style="{StaticResource MaterialDesignDataGrid}"   
-                   CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectionUnit="FullRow"   SelectedIndex="{Binding CombineCollectionIndex}"   >
+                   CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectionUnit="FullRow"   SelectedIndex="{Binding SelectIndex}"   >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDoubleClick">
                         <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
@@ -36,7 +36,7 @@
                     <DataGridTextColumn Width="70" Header="Angle" Binding="{Binding Angle}" />
                     <DataGridTextColumn Width="100" Header="X"  Binding="{Binding Center.X}" />
                     <DataGridTextColumn Width="100" Header="Y"  Binding="{Binding Center.Y}"  />
-                    <DataGridTextColumn Width="75" Header="Judge"  Binding="{Binding Judge}"  />
+                    <DataGridTextColumn Width="75" Header="Judge"  Binding="{Binding Judge}"  Foreground="DarkRed" />
                 
             </DataGrid.Columns>
 

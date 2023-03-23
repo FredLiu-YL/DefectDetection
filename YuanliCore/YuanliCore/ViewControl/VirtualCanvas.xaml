@@ -53,9 +53,9 @@
                 <StackPanel Orientation="Horizontal" Width="auto" >
                     <Button Content="{material:PackIcon Kind=ArrowExpandAll}" Command="{Binding ZoomFitCommand}"/>
                     <Button Content="{material:PackIcon Kind=BorderInside}" Command="{Binding CenterlineCommand}"/>
-                    <Button Content="{material:PackIcon Kind=Ruler}" Command="{Binding RulerCommand}"/>
+                    <!--<Button Content="{material:PackIcon Kind=Ruler}" Command="{Binding RulerCommand}"/>-->
                     <Button Content="{material:PackIcon Kind=ContentSave}" Command="{Binding SaveCommand}"/>
-                    <Button Content="{material:PackIcon Kind=Clear}" Command="{Binding ClearCommand}" Visibility="{Binding IsShowClear, Converter={StaticResource VisibilityConvert}}"/>
+                    <!--<Button Content="{material:PackIcon Kind=Clear}" Command="{Binding ClearCommand}" Visibility="{Binding IsShowClear, Converter={StaticResource VisibilityConvert}}"/>-->
                 </StackPanel>
                 <Viewbox Grid.Row="1" Stretch="Fill">
                     <Grid>

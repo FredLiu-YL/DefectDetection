@@ -196,9 +196,11 @@ namespace YuanliCore.ImageProcess
         /// </summary>
         public double Angle { get; set; }
         public BlobDetectorResult[] BlobResult { get; set; } = null;
-        public CaliperResult[] CaliperResult { get; set; } = null;
+        public CaliperResult  CaliperResult { get; set; } = null;
         public MatchResult[] MatchResult { get; set; } = null;
         public LineCaliperResult LineResult { get; set; } = null;
+
+        public bool Judge { get; set; }
     }
 
     public class CombineOptionOutput
@@ -207,7 +209,8 @@ namespace YuanliCore.ImageProcess
 
         public string SN1 { get; set; }
         public string SN2 { get; set; }
-
+        public double ThresholdMin { get; set; }
+        public double ThresholdMax { get; set; }
     }
 
     public enum ResultSelect
@@ -228,7 +231,7 @@ namespace YuanliCore.ImageProcess
 
     public enum OutputOption
     {
-        Result,
+        None,
         Distance,
         Angle,
     }
