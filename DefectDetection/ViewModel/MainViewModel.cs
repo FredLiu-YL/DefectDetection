@@ -118,6 +118,8 @@ namespace DefectDetection.ViewModel
                return;
            }
        });
+
+
         public ICommand OpenImageCommand => new RelayCommand(() =>
        {
            IsTriggerProtecte = false;
@@ -127,14 +129,10 @@ namespace DefectDetection.ViewModel
            Nullable<bool> result = dlg.ShowDialog();
            if (result == true) {// 載入圖片
 
-               BitmapImage bitmapImage = new BitmapImage();
-               bitmapImage.BeginInit();
-               bitmapImage.UriSource = new Uri(dlg.FileName);
-               bitmapImage.EndInit();
 
-               // 將圖片轉換為 BitmapSource
-               BitmapSource bitmapSource = bitmapImage;
-               MainImage = new WriteableBitmap(bitmapSource);
+               var bms = CreateBmp(dlg.FileName);
+               MainImage = new WriteableBitmap(bms);
+               //MainImage.WritePixels(frame);
                IsLocate = false;
            }
            Task.Run(() =>
@@ -208,9 +206,9 @@ namespace DefectDetection.ViewModel
                 Frame<byte[]> frame = MainImage.ToByteFrame();
 
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
-
+                if (results_ == null) throw new Exception("Locate Fail");
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                var finalResult = CreateResult(results_,1);
+                var finalResult = CreateResult(results_, 1);
 
                 //畫面畫出結果
                 DrawResult(finalResult);
@@ -256,30 +254,28 @@ namespace DefectDetection.ViewModel
 
                    }
                    FinalResultCollection.Clear();
-                   foreach (var fileName in imageFiles) 
-                   {
+                   foreach (var fileName in imageFiles) {
 
-                       int round = imageFiles.IndexOf(fileName) + 1;
-                       BitmapImage bitmapImage = new BitmapImage();
-                       bitmapImage.BeginInit();
-                       bitmapImage.UriSource = new Uri(fileName);
-                       bitmapImage.EndInit();
+                       int round = imageFiles.IndexOf(fileName) + 1; //找出是陣列中第幾張圖片
 
-                       // 將圖片轉換為 BitmapSource
-                       BitmapSource bitmapSource = bitmapImage;
+                       var bitmapSource = CreateBmp(fileName);
+                      
                        MainImage = new WriteableBitmap(bitmapSource);
                        Frame<byte[]> frame = bitmapSource.ToByteFrame();
-                      VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
+                       VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
+
+                       if (results_ == null) continue;
+                       
                        //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                       List<FinalResult> finalResult = CreateResult(results_ , round);
+                       List<FinalResult> finalResult = CreateResult(results_, round);
                        foreach (var item in finalResult) {
                            FinalResultCollection.Add(item);
                        }
-                      
+
 
                        await Task.Delay(10);
                    }
-          
+
 
 
 
@@ -289,7 +285,7 @@ namespace DefectDetection.ViewModel
            }
        });
 
-        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults ,int round)
+        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults, int round)
         {
             List<FinalResult> finalResult = new List<FinalResult>();
             foreach (VisionResult item in visionResults) {
@@ -421,7 +417,20 @@ namespace DefectDetection.ViewModel
 
 
         }
+        private BitmapSource CreateBmp(string path)
+        {
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.UriSource = new Uri(path);
+            bitmapImage.EndInit();
 
+            // 將圖片轉換為 BitmapSource
+            BitmapSource bitmapSource = bitmapImage;
+            //不知道原因  有些圖片資訊會丟失  所以先轉成frame  再轉回 BitmapSource
+            var frame = bitmapSource.ToByteFrame();
+            var bms = frame.ToBitmapSource();
+            return bms;
+        }
 
         /// <summary>
         /// 在我的文件夾裡面 創造Recipe 的資料夾  再以Recipe名稱創建資料夾  將recipe的檔案集中在裡面

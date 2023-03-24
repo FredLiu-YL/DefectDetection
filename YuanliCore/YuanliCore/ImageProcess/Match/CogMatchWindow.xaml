@@ -47,7 +47,7 @@
             </Grid.ColumnDefinitions>
             <Label  Content="Result Output :" FontSize="28"/>
             <RadioButton Grid.Column="1" Width="130" FontSize="30" Content="Full"  GroupName="GroupChoice"  Background="Coral"   IsChecked="{Binding IsFullSelect}"   Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
-            <RadioButton Grid.Column="2" Width="130" FontSize="30"  Content="Center"  GroupName="GroupChoice"   Background="Coral"    IsChecked="{Binding IsCenterSelect}"     Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
+            <RadioButton Grid.Column="2" Width="130" FontSize="30" IsEnabled="False" Content="Center"  GroupName="GroupChoice"   Background="Coral"    IsChecked="{Binding IsCenterSelect}"     Style="{StaticResource MaterialDesignChoiceChipOutlineRadioButton}" />
         </Grid>
     </Grid>
 </Window>

@@ -34,68 +34,80 @@ namespace YuanliCore.ImageProcess
         /// </summary>
         public List<CogMethod> CogMethods { get; set; } = new List<CogMethod>();
 
-        public async Task< VisionResult[]> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters, IEnumerable<CombineOptionOutput> combineOutputs)
+        public async Task<VisionResult[]> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters, IEnumerable<CombineOptionOutput> combineOutputs)
         {
-            //釋放資源 Cog元件實體化以後  不釋放會無法正常關閉程式
-            foreach (var method in CogMethods) {
-                method.Dispose();
-            }
-            CogMethods.Clear();
 
-            LocateMatcher.RunParams = locateParams; //創建 定位功能
-            CogMethods = SetMethodParams(cogParameters).ToList(); //創建演算法列表
+            try {
 
-            int tid1 = System.Threading.Thread.CurrentThread.ManagedThreadId;
- 
-            List<VisionResult> visionResultList = new List<VisionResult>();
+                List<VisionResult> visionResultList = new List<VisionResult>();
+                //釋放資源 Cog元件實體化以後  不釋放會無法正常關閉程式
+                foreach (var method in CogMethods) {
+                    method.Dispose();
+                }
+                CogMethods.Clear();
 
-            await Task.Run(() =>
-             {
-                 LocateResult cogLocateResult = LocateMatcher.FindCogLocate(frame);
+                LocateMatcher.RunParams = locateParams; //創建 定位功能
+                CogMethods = SetMethodParams(cogParameters).ToList(); //創建演算法列表
 
-                 Cognex.VisionPro.ICogImage cogImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
-                 int tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                int tid1 = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-                 //將所有演算法跑過一遍 得出結果
-                 foreach (var item in CogMethods) {
-                     item.CogFixtureImage = cogImg;
-                     item.Run();
-                 }
+                await Task.Run(() =>
+                 {
+                     LocateResult cogLocateResult = LocateMatcher.FindCogLocate(frame);
+                     if (cogLocateResult == null) return ;
+                     Cognex.VisionPro.ICogImage cogImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
+                     int tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-
-                 //依照 選擇輸出模式  回傳結果
-                 foreach (CombineOptionOutput option in combineOutputs) {
-                     VisionResult visionResult = new VisionResult();
-                     switch (option.Option) {
-                         case OutputOption.None:
-                             CogMethod resultMethod = CogMethods[Convert.ToInt32(option.SN1) - 1];
-                             visionResult = GetMethodFull(resultMethod , option.ThresholdMin, option.ThresholdMax);
-                             break;
-                         case OutputOption.Distance:
-                             CogMethod distanceMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1];
-                             CogMethod distanceMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1];
-
-                             visionResult = GetDistance(distanceMethod1, distanceMethod2, option.ThresholdMin, option.ThresholdMax);
-
-                             break;
-                         case OutputOption.Angle:
-
-                             break;
-                         default:
-                             break;
+                     //將所有演算法跑過一遍 得出結果
+                     foreach (var item in CogMethods) {
+                         item.CogFixtureImage = cogImg;
+                         item.Run();
                      }
 
 
-                     visionResultList.Add(visionResult);
-                 }
+                     //依照 選擇輸出模式  回傳結果
+                     foreach (CombineOptionOutput option in combineOutputs) {
+                         VisionResult visionResult = new VisionResult();
+                         switch (option.Option) {
+                             case OutputOption.None:
+                                 CogMethod resultMethod = CogMethods[Convert.ToInt32(option.SN1) - 1];
+                                 visionResult = GetMethodFull(resultMethod, option.ThresholdMin, option.ThresholdMax);
+                                 break;
+                             case OutputOption.Distance:
+                                 CogMethod distanceMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1];
+                                 CogMethod distanceMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1];
+
+                                 visionResult = GetDistance(distanceMethod1, distanceMethod2, option.ThresholdMin, option.ThresholdMax);
+
+                                 break;
+                             case OutputOption.Angle:
+
+                                 break;
+                             default:
+                                 break;
+                         }
 
 
-             });
+                         visionResultList.Add(visionResult);
+                     }
 
-            return visionResultList.ToArray();
+
+                 });
+                return visionResultList.ToArray();
+            }
+            catch (Exception ex) {
+
+                throw ex;
+            }
+
+
+
+
+
+
         }
 
-        private VisionResult GetDistance(CogMethod cogMethod1, CogMethod cogMethod2,  double thresholdMin, double thresholdMax)
+        private VisionResult GetDistance(CogMethod cogMethod1, CogMethod cogMethod2, double thresholdMin, double thresholdMax)
         {
             VisionResult visionResults = new VisionResult();
 
@@ -159,12 +171,12 @@ namespace YuanliCore.ImageProcess
         /// </summary>
         /// <param name="cogMethod"></param>
         /// <returns></returns>
-        private VisionResult GetMethodFull(CogMethod cogMethod ,double thresholdMin, double thresholdMax)
+        private VisionResult GetMethodFull(CogMethod cogMethod, double thresholdMin, double thresholdMax)
         {
             VisionResult visionResults = new VisionResult();
             visionResults.ResultOutput = OutputOption.None;
             if (cogMethod is CogMatcher) {
-                 CogMatcher cogMatcher = cogMethod as CogMatcher;
+                CogMatcher cogMatcher = cogMethod as CogMatcher;
                 visionResults.MatchResult = cogMatcher.MatchResults;
             }
             else if (cogMethod is CogBlobDetector) {
@@ -197,6 +209,7 @@ namespace YuanliCore.ImageProcess
                 var b = bitmapSource.FormatConvertTo(PixelFormats.Bgr24);
                 Frame<byte[]> frame = b.ToByteFrame();
                 LocateResult cogLocateResult = locateMatcher.FindCogLocate(frame);
+                if (cogLocateResult == null) throw new Exception("Locate Fail");
                 //定位後資訊都在圖片裡 ，  直接拿去後面方法使用就自動帶入affine transform
                 cogLocatedImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
             }

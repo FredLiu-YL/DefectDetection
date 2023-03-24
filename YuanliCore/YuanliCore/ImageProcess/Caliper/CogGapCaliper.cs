@@ -1,5 +1,6 @@
 ﻿using Cognex.VisionPro;
 using Cognex.VisionPro.Caliper;
+using Cognex.VisionPro.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using YuanliCore.CameraLib;
 using YuanliCore.Interface;
 
@@ -19,7 +21,7 @@ namespace YuanliCore.ImageProcess.Caliper
     {
         private CogCaliperTool caliperTool;
         private CogCaliperWindow cogCaliperWindow;
-
+        private CogRecordsDisplay cogRecordsDisplay;
         public CogGapCaliper()
         {
 
@@ -33,8 +35,8 @@ namespace YuanliCore.ImageProcess.Caliper
             RunParams = caliperParams;
         }
 
-        public  override CogParameter RunParams { get; set; }
-        public CaliperResult  CaliperResults { get; private set; }
+        public override CogParameter RunParams { get; set; }
+        public CaliperResult CaliperResults { get; private set; }
         public override void Dispose()
         {
             if (cogCaliperWindow != null)
@@ -56,10 +58,10 @@ namespace YuanliCore.ImageProcess.Caliper
 
             Dispose();
         }
-        public  void CogEditParameter()
+        public void CogEditParameter()
         {
             if (CogFixtureImage == null) throw new Exception("locate is not yet complete");
-           
+
             cogCaliperWindow = new CogCaliperWindow(CogFixtureImage);
 
 
@@ -77,20 +79,24 @@ namespace YuanliCore.ImageProcess.Caliper
         }
 
 
-        public  CaliperResult Find(Frame<byte[]> image)
+        public CaliperResult Find(Frame<byte[]> image)
         {
+            ICogImage cogImg1 = null;
 
-            ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
+                cogImg1 = image.GrayFrameToCogImage();
+            else
+                cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
-          return  Find(cogImg1);
+            return Find(cogImg1);
 
 
         }
-        private  CaliperResult Find(ICogImage cogImage)
+        private CaliperResult Find(ICogImage cogImage)
         {
             caliperTool.InputImage = cogImage;
-            var param  = (CaliperParams)RunParams;
+            var param = (CaliperParams)RunParams;
             caliperTool.RunParams = param.RunParams;
             caliperTool.Region = param.Region;
             caliperTool.Run();
@@ -110,6 +116,22 @@ namespace YuanliCore.ImageProcess.Caliper
 
                 results.Add(new CaliperResult(new Point(x1, y1), new Point(cX, cY), new Point(x2, y2)));
             }
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+           {
+               /*
+               cogRecordsDisplay = new CogRecordsDisplay();
+               cogRecordsDisplay.Size = new System.Drawing.Size(cogImage.Width, cogImage.Height);
+               Record = caliperTool.CreateLastRunRecord();
+               cogRecordsDisplay.Subject = Record;
+               System.Drawing.Image runImg = cogRecordsDisplay.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
+               var bs = runImg.ToBitmapSource();
+               bs.Save("D:\\CaliperResult");
+               cogRecordsDisplay.Dispose();
+               */
+
+           }));
+
+
             //複製貼上錯誤 懶得改 ， 其實只會有一筆資料  ，直接改後段拿第一筆資料
             return results.FirstOrDefault();
         }

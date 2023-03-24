@@ -23,10 +23,14 @@ namespace YuanliCore.ImageProcess
         /// <returns></returns>
         public ICogImage RunFixture(Frame<byte[]> image, CogTransform2DLinear linea)
         {
-           
-        
 
-            ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            ICogImage cogImg1 = null;
+            if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
+                cogImg1 = image.GrayFrameToCogImage();
+            else
+                cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+
+        //    ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
              ICogImage fixtureImg;
             CogFixtureTool cogFixtureTool = new CogFixtureTool();
 
