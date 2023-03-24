@@ -115,6 +115,7 @@
     <Compile Include="Motion\Marzhauser\TangoController.cs" />
     <Compile Include="Motion\Marzhauser\TangoEX.cs" />
     <Compile Include="Motion\SimulateMotionControllor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewControl\Shapes\AngleShape.cs" />
     <Compile Include="ViewControl\Shapes\ImageCanvas.cs" />
     <Compile Include="ViewControl\Shapes\RectShape.cs" />
