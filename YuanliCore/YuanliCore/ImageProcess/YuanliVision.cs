@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,7 +55,7 @@ namespace YuanliCore.ImageProcess
                 await Task.Run(() =>
                  {
                      LocateResult cogLocateResult = LocateMatcher.FindCogLocate(frame);
-                     if (cogLocateResult == null) return ;
+                     if (cogLocateResult == null) return;
                      Cognex.VisionPro.ICogImage cogImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
                      int tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
@@ -74,14 +75,37 @@ namespace YuanliCore.ImageProcess
                                  visionResult = GetMethodFull(resultMethod, option.ThresholdMin, option.ThresholdMax);
                                  break;
                              case OutputOption.Distance:
-                                 CogMethod distanceMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1];
-                                 CogMethod distanceMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1];
+                                 //  CogMethod distanceMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1];
+                                 //  CogMethod distanceMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1];
+                                 var distanceMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1].MethodResult;
+                                 var distanceMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1].MethodResult;
+                                 //  visionResult = GetDistance(distanceMethod1, distanceMethod2, option.ThresholdMin, option.ThresholdMax);
+                                 Vector disVec = distanceMethod1.CenterPoint - distanceMethod2.CenterPoint;
+                                 double dis = disVec.Length;
+                                 bool judge = (dis >= option.ThresholdMin && dis <= option.ThresholdMax) ? true : false;
 
-                                 visionResult = GetDistance(distanceMethod1, distanceMethod2, option.ThresholdMin, option.ThresholdMax);
-
+                                 visionResult = new VisionResult
+                                 {
+                                     BeginPoint = distanceMethod1.CenterPoint,
+                                     EndPoint = distanceMethod2.CenterPoint,
+                                     ResultOutput = option.Option,
+                                     Distance = dis,
+                                     Judge = judge
+                                 };
                                  break;
                              case OutputOption.Angle:
-
+                                 var angleMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1].MethodResult;
+                                 var angleMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1].MethodResult;
+                                 Vector v1 = angleMethod1.EndPoint - angleMethod1.BeginPoint;
+                                 Vector v2 = angleMethod2.EndPoint - angleMethod2.BeginPoint;
+                                 double angle = Vector.AngleBetween(v1, v2);
+                                 bool judge1 = (angle >= option.ThresholdMin && angle <= option.ThresholdMax) ? true : false;
+                                 visionResult = new VisionResult
+                                 {
+                                     ResultOutput = option.Option,
+                                     Angle = angle,
+                                     Judge = judge1
+                                 };
                                  break;
                              default:
                                  break;

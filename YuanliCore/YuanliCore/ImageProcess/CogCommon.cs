@@ -167,7 +167,7 @@ namespace YuanliCore.ImageProcess
 
             return path;
         }
-       
+
         /// <summary>
         /// 儲存 cognex 檔案
         /// </summary>
@@ -182,6 +182,14 @@ namespace YuanliCore.ImageProcess
         protected abstract void LoadCogRecipe(string directoryPath, int id);
     }
 
+    public class CogResult
+    {
+        public Point EndPoint { get; protected set; }
+        public Point BeginPoint { get; protected set; }
+        public Point CenterPoint { get; protected set; }
+
+    }
+
     public class VisionResult
     {
         public OutputOption ResultOutput { get; set; }
@@ -190,13 +198,14 @@ namespace YuanliCore.ImageProcess
         /// 距離
         /// </summary>
         public double Distance { get; set; }
-
+        public Point EndPoint { get;   set; }
+        public Point BeginPoint { get;   set; }
         /// <summary>
         /// 角度
         /// </summary>
         public double Angle { get; set; }
         public BlobDetectorResult[] BlobResult { get; set; } = null;
-        public CaliperResult  CaliperResult { get; set; } = null;
+        public CaliperResult CaliperResult { get; set; } = null;
         public MatchResult[] MatchResult { get; set; } = null;
         public LineCaliperResult LineResult { get; set; } = null;
 
@@ -222,10 +231,10 @@ namespace YuanliCore.ImageProcess
     }
     public enum MethodName
     {
-     
+
         GapMeansure,
         LineMeansure,
-        CircleMeansure  ,
+        CircleMeansure,
         PatternMatch,
     }
 
@@ -281,17 +290,17 @@ namespace YuanliCore.ImageProcess
         /// 因某些元件無法被正常序列化 所以另外做讀檔功能
         /// </summary>
         /// <param name="Path"></param>
-        public  void Load(string path)
+        public void Load(string path)
         {
-            
+
             MethodParams.Clear();
             CombineOptionOutputs.Clear();
             //想不到好方法做序列化 ， 如果需要修改 就要用JsonConvert 把不能序列化的屬性都改掉  這樣就能正常做load
-            var mRecipe =AbstractRecipe.Load<MeansureRecipe>($"{path}\\Recipe.json");
+            var mRecipe = AbstractRecipe.Load<MeansureRecipe>($"{path}\\Recipe.json");
             CombineOptionOutputs = mRecipe.CombineOptionOutputs; //未來新增不同屬性  這裡都要不斷新增
 
 
-            
+
             LocateParams = CogParameter.Load(path, 0) as PatmaxParams;
             string[] files = Directory.GetFiles(path, "*VsTool_*");
 
@@ -300,7 +309,7 @@ namespace YuanliCore.ImageProcess
 
                 string[] id = fileName.Split(new string[] { "VsTool_", ".tool" }, StringSplitOptions.RemoveEmptyEntries);
                 if (id[0] == "0") continue; // 0 是定位用的樣本 所以排除
-                var param = CogParameter.Load(path, Convert.ToInt32( id[0]));
+                var param = CogParameter.Load(path, Convert.ToInt32(id[0]));
                 MethodParams.Add(param);
 
             }

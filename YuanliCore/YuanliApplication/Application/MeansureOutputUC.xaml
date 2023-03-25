@@ -30,13 +30,13 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Width="65" Header=" " Binding="{Binding Number}" />
-                    <DataGridTextColumn Width="80" Header="Ootput" Binding="{Binding Output}" />
-                    <DataGridTextColumn Width="70" Header="Dist" Binding="{Binding Distance}" />
-                    <DataGridTextColumn Width="70" Header="Angle" Binding="{Binding Angle}" />
-                    <DataGridTextColumn Width="100" Header="X"  Binding="{Binding Center.X}" />
-                    <DataGridTextColumn Width="100" Header="Y"  Binding="{Binding Center.Y}"  />
-                    <DataGridTextColumn Width="75" Header="Judge"  Binding="{Binding Judge}"  Foreground="DarkRed" />
+                    <DataGridTextColumn Width="60" Header=" " Binding="{Binding Number}" />
+                    <DataGridTextColumn Width="90" Header="Ootput" Binding="{Binding Output}" />
+                    <DataGridTextColumn Width="85" Header="Dist" Binding="{Binding Distance}" />
+                    <DataGridTextColumn Width="75" Header="Angle" Binding="{Binding Angle}" />
+                    <DataGridTextColumn Width="90" Header="X"  Binding="{Binding Center.X}" />
+                    <DataGridTextColumn Width="90" Header="Y"  Binding="{Binding Center.Y}"  />
+                    <DataGridTextColumn Width="70" Header="Judge"  Binding="{Binding Judge}"  Foreground="DarkRed" />
                 
             </DataGrid.Columns>
 

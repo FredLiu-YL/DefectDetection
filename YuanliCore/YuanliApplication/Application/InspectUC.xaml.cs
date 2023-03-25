@@ -230,7 +230,10 @@ namespace YuanliApplication.Application
                    if (CB_CmbineSelectedIndexSN2 == -1) CB_CmbineSelectedIndexSN2 = 0;
                    IsCombineSecEnabled = true;
                    break;
-
+               case OutputOption.Angle:
+                   if (CB_CmbineSelectedIndexSN2 == -1) CB_CmbineSelectedIndexSN2 = 0;
+                   IsCombineSecEnabled = true;
+                   break;
                default:
                    break;
            }

@@ -148,7 +148,7 @@
                     <ComboBox   Width="110"  Margin="0,0,5,0"   FontSize="24"    SelectedIndex ="{Binding CombineOptionSelected, Converter={StaticResource CvrOption}}"    >
                         <Label Content="None"/>
                         <Label Content="Distane"/>
-                        <Label Content="Angle"/>
+                        <Label Content="Angle"  Visibility="Hidden"/>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
                                 <i:InvokeCommandAction Command="{Binding ResultSelectionChangedCommand}"/>

@@ -131,7 +131,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
            }));
 
-
+            MethodResult = results.FirstOrDefault();
             //複製貼上錯誤 懶得改 ， 其實只會有一筆資料  ，直接改後段拿第一筆資料
             return results.FirstOrDefault();
         }

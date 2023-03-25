@@ -106,7 +106,7 @@ namespace YuanliCore.ImageProcess.Caliper
             double mY = segment.MidpointY;
             double distance = segment.Length;
 
-
+            MethodResult = new LineCaliperResult(new Point(sX, sY), new Point(eX, eY), new Point(mX, mY), distance);
             return new LineCaliperResult(new Point(sX, sY), new Point(eX, eY), new Point(mX, mY), distance);
         }
 

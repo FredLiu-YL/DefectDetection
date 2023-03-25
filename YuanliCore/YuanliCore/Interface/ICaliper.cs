@@ -27,23 +27,25 @@ namespace YuanliCore.Interface
 
     }
 
-    public class CaliperResult  
+    public class CaliperResult : CogResult
     {
-        public CaliperResult(Point beginPoint , Point centerPoint, Point endPoint)
+        public CaliperResult(Point beginPoint, Point centerPoint, Point endPoint)
         {
             BeginPoint = beginPoint;
             CenterPoint = centerPoint;
             EndPoint = endPoint;
-            Vector v =  EndPoint - BeginPoint;
+            Vector v = EndPoint - BeginPoint;
             Distance = v.Length;
         }
 
-        public Point EndPoint { get; }
-        public Point BeginPoint { get; }
-        public Point CenterPoint { get;  }
+        /// <summary>
+        /// Gap 距離
+        /// </summary>
         public double Distance { get; }
     }
-    public class LineCaliperResult
+
+
+    public class LineCaliperResult: CogResult
     {
         public LineCaliperResult(Point beginPoint, Point endPoint, Point centerPoint ,double line)
         {
@@ -53,9 +55,9 @@ namespace YuanliCore.Interface
             CenterPoint = centerPoint;
         }
 
-        public Point EndPoint { get; }
-        public Point BeginPoint { get; }
-        public Point CenterPoint { get; }
+      /// <summary>
+      /// 線段長度
+      /// </summary>
         public double Distance { get; }
     }
 

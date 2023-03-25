@@ -348,7 +348,8 @@ namespace DefectDetection.ViewModel
                             Number = $"{round}",
                             Distance = item.Distance,
                             //    Angle = item.Angle,
-
+                            BeginPoint= item.BeginPoint,
+                            EndPoint = item.EndPoint,
                             Output = item.ResultOutput,
                             Judge = item.Judge
                         };
