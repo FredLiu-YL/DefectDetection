@@ -75,22 +75,28 @@
                     <materialDesign:PackIcon  Width="30"  Height="30" Kind="FileUpload" />
 
                 </Button>
-                <Button Margin="10,0,10,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
+                <Button Margin="5,0,10,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding LoadRecipeCommand}"
                         ToolTip="LoadRecipe">
                     <materialDesign:PackIcon  Width="30"  Height="30" Kind="FileDownload" />
 
                 </Button>
-                <Button Margin="50,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
+                <Button Margin="20,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding RunCommand}"
                         ToolTip="Run">
                     <materialDesign:PackIcon  Width="50"  Height="50" Kind="ArrowLeftDropCircleOutline" />
 
                 </Button>
-                <Button Margin="50,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
+                <Button Margin="30,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding MultRunCommand}"
-                        ToolTip="Run">
+                        ToolTip="MultRun">
                     <materialDesign:PackIcon  Width="50"  Height="50" Kind="AnimationPlay" />
+
+                </Button>
+                <Button Margin="10,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
+                        Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding MultRunStopCommand}"
+                        ToolTip="MultRun">
+                    <materialDesign:PackIcon  Width="50"  Height="50" Kind="StopCircleOutline" />
 
                 </Button>
                 <TextBlock Text="{Binding FinalResultCollectionSelect}" />

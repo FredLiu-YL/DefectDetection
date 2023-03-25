@@ -45,6 +45,9 @@ namespace DefectDetection.ViewModel
         private bool isLocate, isTriggerProtecte = true;
         private int finalResultCollectionSelect;
         private string version;
+        private bool isMultRun;
+
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -164,6 +167,7 @@ namespace DefectDetection.ViewModel
                    //  CreateFolder("");
                    MainRecipe.Save(path);
 
+                   MessageBox.Show("Save Complate");
                }
            }
 
@@ -190,7 +194,7 @@ namespace DefectDetection.ViewModel
                    meansureRecipe.Load(path);
 
                    MainRecipe = meansureRecipe;
-
+                   MessageBox.Show(" Load Complate");
 
                }
 
@@ -204,7 +208,7 @@ namespace DefectDetection.ViewModel
 
                 ClearShapeAction.Execute(Drawings);
                 Frame<byte[]> frame = MainImage.ToByteFrame();
-
+                if (yuanliVision.IsRunning) throw new Exception("Process is Running");
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
                 if (results_ == null) throw new Exception("Locate Fail");
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
@@ -215,6 +219,7 @@ namespace DefectDetection.ViewModel
 
 
                 FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                MessageBox.Show("Finished");
             }
             catch (Exception ex) {
 
@@ -224,67 +229,81 @@ namespace DefectDetection.ViewModel
 
 
         public ICommand MultRunCommand => new RelayCommand(async () =>
+        {
+            try {
+                if (isMultRun) throw new Exception("Process is Running");
+                using (FolderBrowserDialog dialog = new FolderBrowserDialog()) {
+
+                    dialog.Description = "選擇文件夾";
+                    dialog.ShowNewFolderButton = false;
+
+                    //  dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
+                    //dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    if (dialog.ShowDialog() == DialogResult.OK) {
+                        // 获取所选文件夹的完整路径
+                        string path = dialog.SelectedPath;
+
+                        // 获取所选文件夹的名称
+                        string name = new DirectoryInfo(path).Name;
+                        List<BitmapSource> bmpSources = new List<BitmapSource>();
+                        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".bmp", ".gif" }; // 支持的图片文件扩展名
+
+                        // 获取指定文件夹中的所有文件
+                        string[] files = Directory.GetFiles(path);
+
+                        // 筛选出所有的图片文件
+                        List<string> imageFiles = new List<string>();
+                        foreach (string file in files) {
+                            string extension = Path.GetExtension(file).ToLower();
+                            if (imageExtensions.Contains(extension))
+                                imageFiles.Add(file);
+
+                        }
+
+                        //循環流程開始
+                        FinalResultCollection.Clear();
+                        isMultRun = true;
+                        foreach (var fileName in imageFiles) {
+                            if (!isMultRun) break;
+                            int round = imageFiles.IndexOf(fileName) + 1; //找出是陣列中第幾張圖片
+
+                            var bitmapSource = CreateBmp(fileName);
+
+                            MainImage = new WriteableBitmap(bitmapSource);
+                            Frame<byte[]> frame = bitmapSource.ToByteFrame();
+                            VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
+
+                            if (results_ == null) continue;
+
+                            //得到量測結果後 轉換到FinalResult 以便UI印出結果
+                            List<FinalResult> finalResult = CreateResult(results_, round);
+                            foreach (var item in finalResult) {
+                                FinalResultCollection.Add(item);
+                            }
+
+
+                            await Task.Delay(10);
+                        }
+
+                        isMultRun = false;
+                        MessageBox.Show("Finished");
+
+                    }
+
+                }
+            }
+            catch (Exception ex) {
+
+                isMultRun = false;
+                MessageBox.Show(ex.Message);
+            }
+
+        });
+
+        public ICommand MultRunStopCommand => new RelayCommand(() =>
        {
-           using (var dialog = new FolderBrowserDialog()) {
-
-               dialog.Description = "選擇文件夾";
-               dialog.ShowNewFolderButton = false;
-               // dialog.RootFolder = Environment.SpecialFolder.MyComputer;
-               //  dialog.SelectedPath = "C:\\Users\\fred_liu\\Documents\\Recipe\\123-1";
-               //dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-               if (dialog.ShowDialog() == DialogResult.OK) {
-                   // 获取所选文件夹的完整路径
-                   string path = dialog.SelectedPath;
-
-                   // 获取所选文件夹的名称
-                   string name = new DirectoryInfo(path).Name;
-                   List<BitmapSource> bmpSources = new List<BitmapSource>();
-                   string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".bmp", ".gif" }; // 支持的图片文件扩展名
-
-                   // 获取指定文件夹中的所有文件
-                   string[] files = Directory.GetFiles(path);
-
-                   // 筛选出所有的图片文件
-                   List<string> imageFiles = new List<string>();
-                   foreach (string file in files) {
-                       string extension = Path.GetExtension(file).ToLower();
-                       if (imageExtensions.Contains(extension))
-                           imageFiles.Add(file);
-
-
-                   }
-                   FinalResultCollection.Clear();
-                   foreach (var fileName in imageFiles) {
-
-                       int round = imageFiles.IndexOf(fileName) + 1; //找出是陣列中第幾張圖片
-
-                       var bitmapSource = CreateBmp(fileName);
-                      
-                       MainImage = new WriteableBitmap(bitmapSource);
-                       Frame<byte[]> frame = bitmapSource.ToByteFrame();
-                       VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
-
-                       if (results_ == null) continue;
-                       
-                       //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                       List<FinalResult> finalResult = CreateResult(results_, round);
-                       foreach (var item in finalResult) {
-                           FinalResultCollection.Add(item);
-                       }
-
-
-                       await Task.Delay(10);
-                   }
-
-
-
-
-               }
-
-
-           }
+           isMultRun = false;
        });
-
         private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults, int round)
         {
             List<FinalResult> finalResult = new List<FinalResult>();
@@ -348,7 +367,7 @@ namespace DefectDetection.ViewModel
                             Number = $"{round}",
                             Distance = item.Distance,
                             //    Angle = item.Angle,
-                            BeginPoint= item.BeginPoint,
+                            BeginPoint = item.BeginPoint,
                             EndPoint = item.EndPoint,
                             Output = item.ResultOutput,
                             Judge = item.Judge

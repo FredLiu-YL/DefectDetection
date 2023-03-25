@@ -28,7 +28,7 @@ namespace YuanliCore.ImageProcess
 
 
         }
-
+        public bool IsRunning { get; set; }
         public CogMatcher LocateMatcher = new CogMatcher();
         /// <summary>
         /// 演算法列表
@@ -39,7 +39,9 @@ namespace YuanliCore.ImageProcess
         {
 
             try {
+                if (IsRunning) throw new Exception("Process is Running");
 
+                IsRunning = true;
                 List<VisionResult> visionResultList = new List<VisionResult>();
                 //釋放資源 Cog元件實體化以後  不釋放會無法正常關閉程式
                 foreach (var method in CogMethods) {
@@ -123,8 +125,10 @@ namespace YuanliCore.ImageProcess
 
                 throw ex;
             }
+            finally {
 
-
+                IsRunning = false; ;
+            }
 
 
 
