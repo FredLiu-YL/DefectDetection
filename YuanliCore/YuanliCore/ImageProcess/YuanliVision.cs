@@ -45,13 +45,12 @@ namespace YuanliCore.ImageProcess
 
             ICogImage8PixelMemory m = img.Get8GreyPixelMemory(CogImageDataModeConstants.ReadWrite, 0, 0, img.Width, img.Height);
             var bmps = BitmapSource.Create(img.Width, img.Height, 8, 8, PixelFormats.Gray8, BitmapPalettes.Gray256, m.Scan0, (img.Width * img.Height), m.Stride);
-            var aa = bmps.ToByteFrame();
-            var bb = aa.ToBitmap();
+
             return bmps;
         }
 
 
-        public async Task<VisionResult[]> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters, IEnumerable<CombineOptionOutput> combineOutputs,double pixelSize)
+        public async Task<VisionResult[]> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters, IEnumerable<CombineOptionOutput> combineOutputs, double pixelSize)
         {
 
             try {
@@ -229,7 +228,7 @@ namespace YuanliCore.ImageProcess
             }
             else if (cogMethod is CogGapCaliper) {
                 CogGapCaliper cogGapCaliper = cogMethod as CogGapCaliper;
-                
+
                 visionResults.CaliperResult = cogGapCaliper.CaliperResults;
 
                 double dis = cogGapCaliper.CaliperResults.Distance * pixelSize;// 乘以 比例
@@ -256,8 +255,16 @@ namespace YuanliCore.ImageProcess
         public void ImportGoldenImage(BitmapSource bitmapSource, CogMatcher locateMatcher)
         {
             try {
-                var b = bitmapSource.FormatConvertTo(PixelFormats.Bgr24);
-                Frame<byte[]> frame = b.ToByteFrame();
+                Frame<byte[]> frame;
+
+                if (bitmapSource.Format == PixelFormats.Indexed8 || bitmapSource.Format == PixelFormats.Gray8) {
+                    frame = bitmapSource.ToByteFrame();
+                }
+                else {
+                    var b = bitmapSource.FormatConvertTo(PixelFormats.Bgr24);
+                    frame = b.ToByteFrame();
+                }
+
                 LocateResult cogLocateResult = locateMatcher.FindCogLocate(frame);
                 if (cogLocateResult == null) throw new Exception("Locate Fail");
                 //定位後資訊都在圖片裡 ，  直接拿去後面方法使用就自動帶入affine transform

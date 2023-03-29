@@ -30,10 +30,10 @@ namespace YuanliCore.ImageProcess.Match
         private PatmaxParams patmaxParam = new PatmaxParams(0);
         private bool isDispose = false;
         private bool isFullSelect = true;
-        private bool isCenterSelect  ;
+        private bool isCenterSelect;
         public CogMatchWindow(BitmapSource bitmap)
         {
-           
+
             InitializeComponent();
 
             UpdateImage(bitmap);
@@ -56,20 +56,31 @@ namespace YuanliCore.ImageProcess.Match
         ///  影像 Binding
         /// </summary>
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
-        public PatmaxParams PatmaxParam { get=> patmaxParam; set => SetValue(ref patmaxParam, value); }
-        public bool IsFullSelect { get => isFullSelect; set 
-            { SetValue(ref isFullSelect, value);
+        public PatmaxParams PatmaxParam { get => patmaxParam; set => SetValue(ref patmaxParam, value); }
+        public bool IsFullSelect
+        {
+            get => isFullSelect; set
+            {
+                SetValue(ref isFullSelect, value);
                 SetResultSelect();
-            } }
+            }
+        }
         public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
 
         public void UpdateImage(BitmapSource bitmap)
         {
             if (bitmap == null) throw new Exception("Image is null");
-            var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
-            var frame = b.ToByteFrame();
+            if (bitmap.Format == PixelFormats.Indexed8 || bitmap.Format == PixelFormats.Gray8) {
+                var frameGray = bitmap.ToByteFrame();
+                CogImage = frameGray.GrayFrameToCogImage();
+            }
+            else {
+                var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
+                var frame = b.ToByteFrame();
+                CogImage = frame.ColorFrameToCogImage();
 
-            CogImage = frame.ColorFrameToCogImage();
+            }
+
 
         }
 
@@ -83,10 +94,10 @@ namespace YuanliCore.ImageProcess.Match
 
             return sampleImage;
         }
-        public ICommand ClosingCommand => new RelayCommand( () =>
-        {
-          
-        });
+        public ICommand ClosingCommand => new RelayCommand(() =>
+       {
+
+       });
 
         public ICommand OpenCommand => new RelayCommand(() =>
         {
@@ -100,17 +111,17 @@ namespace YuanliCore.ImageProcess.Match
                 default:
                     break;
             }
-           
+
         });
 
-        private void SetResultSelect( )
+        private void SetResultSelect()
         {
             if (IsFullSelect)
                 PatmaxParam.ResultOutput = ResultSelect.Full;
             else if (IsCenterSelect)
                 PatmaxParam.ResultOutput = ResultSelect.Center;
 
-        
+
         }
 
         protected override void OnClosing(CancelEventArgs e)

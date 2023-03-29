@@ -82,10 +82,19 @@ namespace YuanliCore.ImageProcess.Blob
 
         public void UpdateImage(BitmapSource bitmap)
         {
-            var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
-            var frame = b.ToByteFrame();
-         
-            CogImage = frame.ColorFrameToCogImage();
+            if (bitmap == null) throw new Exception("Image is null");
+            if (bitmap.Format == PixelFormats.Indexed8 || bitmap.Format == PixelFormats.Gray8) {
+                var frameGray = bitmap.ToByteFrame();
+                CogImage = frameGray.GrayFrameToCogImage();
+            }
+            else 
+            {
+                var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
+                var frame = b.ToByteFrame();
+
+                CogImage = frame.ColorFrameToCogImage();
+            }
+   
 
         }
 

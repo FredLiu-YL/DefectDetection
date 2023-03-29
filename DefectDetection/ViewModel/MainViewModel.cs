@@ -134,13 +134,14 @@ namespace DefectDetection.ViewModel
                Nullable<bool> result = dlg.ShowDialog();
                if (result == true) {// 載入圖片
 
-                   //      var aaaa=  yuanliVision.ReadImage(dlg.FileName);
+
                    var bms = CreateBmp(dlg.FileName);
                    MainImage = new WriteableBitmap(bms);
-                   //  var ss= aaaa.ToByteFrame();
 
-                   //    ImageSouce = aaaa;
-                   //MainImage.WritePixels(frame);
+                   //var aaaa=  yuanliVision.ReadImage(dlg.FileName);
+                   //  MainImage = new WriteableBitmap(aaaa);
+                   //  ImageSouce = aaaa;
+
                    IsLocate = false;
                }
                Task.Run(() =>
@@ -314,7 +315,7 @@ namespace DefectDetection.ViewModel
        {
            isMultRun = false;
        });
-        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults,int round)
+        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults, int round)
         {
             List<FinalResult> finalResult = new List<FinalResult>();
             foreach (VisionResult item in visionResults) {
