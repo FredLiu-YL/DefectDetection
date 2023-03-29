@@ -145,6 +145,8 @@ namespace YuanliCore.ImageProcess.Match
             CogTransform2DLinear linear = alignTool.Results[0].GetPose();
             Record = alignTool.CreateLastRunRecord().SubRecords[0];
             return new LocateResult { LocateCogImg = cogImg1, CogTransform = linear };
+
+
         }
 
         private IEnumerable<MatchResult> Find(ICogImage cogImage)

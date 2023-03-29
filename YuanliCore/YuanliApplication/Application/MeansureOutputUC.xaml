@@ -24,24 +24,23 @@
 
         <DataGrid  Grid.Row="1" ItemsSource="{Binding ResultCollection}"  Style="{StaticResource MaterialDesignDataGrid}"   
                    CanUserSortColumns="False" IsReadOnly="True" AutoGenerateColumns="False" SelectionUnit="FullRow"   SelectedIndex="{Binding SelectIndex}"   >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Width="60" Header=" " Binding="{Binding Number}" />
-                    <DataGridTextColumn Width="90" Header="Ootput" Binding="{Binding Output}" />
-                    <DataGridTextColumn Width="85" Header="Dist" Binding="{Binding Distance}" />
-                    <DataGridTextColumn Width="75" Header="Angle" Binding="{Binding Angle}" />
-                    <DataGridTextColumn Width="90" Header="X"  Binding="{Binding Center.X}" />
-                    <DataGridTextColumn Width="90" Header="Y"  Binding="{Binding Center.Y}"  />
-                    <DataGridTextColumn Width="70" Header="Judge"  Binding="{Binding Judge}"  Foreground="DarkRed" />
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="60" Header=" " Binding="{Binding Number}" />
+                <DataGridTextColumn Width="115" Header="Distance(um)" Binding="{Binding Distance}" />
+                <DataGridTextColumn Width="75" Header="Angle" Binding="{Binding Angle}" />
+                <DataGridTextColumn Width="105" Header="Radius(um)" Binding="{Binding Radius}" />
                 
+                <DataGridTextColumn Width="70" Header="Judge"  Binding="{Binding Judge}"  Foreground="DarkRed" />
+
             </DataGrid.Columns>
 
 
-            </DataGrid>
+        </DataGrid>
 
     </Grid>
 </UserControl>

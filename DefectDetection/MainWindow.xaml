@@ -49,7 +49,8 @@
                                              ClearShapeAction="{Binding ClearShapeAction}" IsEnabled="{Binding IsTriggerProtecte}"   />
                     </TabItem>
                     <TabItem  Header="Result"  >
-                        <imageprocess:CogDisplayer Grid.Column="0" Width="0" Record="{Binding  LastRecord}"   />
+                        <!--<imageprocess:CogDisplayer Grid.Column="0" Width="0" Record="{Binding  LastRecord}"  />-->
+                    
                     </TabItem>
                 </TabControl>
             </materialDesign:Card>
@@ -102,7 +103,7 @@
                 <TextBlock Text="{Binding FinalResultCollectionSelect}" />
                 <Image  Margin="50,5,10,5" Source="YuanLi.ico" />
             </StackPanel>
-            <application:InspectUC Grid.Row="1"     Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}" Margin="0,5,0,-5"     />
+            <application:InspectUC Grid.Row="1"   Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}" Margin="0,5,0,-5"     />
 
         </Grid>
 

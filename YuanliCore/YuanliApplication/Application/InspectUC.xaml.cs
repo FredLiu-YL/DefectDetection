@@ -34,7 +34,7 @@ namespace YuanliApplication.Application
         private PatmaxParams matchParam = new PatmaxParams(0);
         private int methodSelectIndex, methodCollectIndex, combineCollectionIndex;
         private OutputOption combineOptionSelected;
-
+        private double pixelSize = 1;
         private YuanliVision yuanliVision = new YuanliVision();
 
         //定位用樣本
@@ -119,9 +119,18 @@ namespace YuanliApplication.Application
         public int CB_CmbineSelectedIndexSN2 { get => cB_CmbineSelectedIndexSN2; set => SetValue(ref cB_CmbineSelectedIndexSN2, value); }
         public double ThresholdMin { get => thresholdMin; set => SetValue(ref thresholdMin, value); }
         public double ThresholdMax { get => thresholdMax; set => SetValue(ref thresholdMax, value); }
+        public double PixelSize
+        {
+            get => pixelSize;
+            set
+            {
+                SetValue(ref pixelSize, value);
+                UpdateRecipe();
+            }
+        }
         public bool IsCombineSecEnabled { get => isCombineSecEnabled; set => SetValue(ref isCombineSecEnabled, value); }
 
-      
+
         /// <summary>
         /// 使用演算法的集合 ， 提供給UI做資料顯示 
         /// </summary>
@@ -149,8 +158,8 @@ namespace YuanliApplication.Application
                switch (methodName) {
                    case MethodName.PatternMatch:
                        CogMatcher matcher = method as CogMatcher;
-                        //  var matcher = MethodList[MethodCollectIndex] as CogMatcher;
-                        matcher.CogEditParameter();
+                       //  var matcher = MethodList[MethodCollectIndex] as CogMatcher;
+                       matcher.CogEditParameter();
                        MethodDispCollection[MethodCollectIndex].ResultName = matcher.RunParams.ResultOutput.ToString();
 
                        break;
@@ -161,12 +170,12 @@ namespace YuanliApplication.Application
 
                        break;
 
-                    //case MethodName.BlobDetector:
-                    //    var blobDetector = MethodList[MethodCollectIndex] as CogBlobDetector;
-                    //    blobDetector.EditParameter(Image);
-                    //    MethodDispCollection[MethodCollectIndex].ResultName = blobDetector.BlobParam.ResultOutput.ToString();
-                    //    break;
-                    case MethodName.LineMeansure:
+                   //case MethodName.BlobDetector:
+                   //    var blobDetector = MethodList[MethodCollectIndex] as CogBlobDetector;
+                   //    blobDetector.EditParameter(Image);
+                   //    MethodDispCollection[MethodCollectIndex].ResultName = blobDetector.BlobParam.ResultOutput.ToString();
+                   //    break;
+                   case MethodName.LineMeansure:
                        CogLineCaliper lineCaliper = method as CogLineCaliper;
                        lineCaliper.CogEditParameter();
                        MethodDispCollection[MethodCollectIndex].ResultName = lineCaliper.RunParams.ResultOutput.ToString();
@@ -195,9 +204,9 @@ namespace YuanliApplication.Application
 
            CombineOptionSelected = selectData.Option;
 
-            //   CombineOptionSelectedIndex = CombineOptionList.ToList().IndexOf(selectData.Option);
+           //   CombineOptionSelectedIndex = CombineOptionList.ToList().IndexOf(selectData.Option);
 
-            switch (selectData.Option) {
+           switch (selectData.Option) {
                case OutputOption.None:
                    CB_CmbineSelectedIndexSN1 = MethodDispCollection.Select(m => m.SN).ToList().IndexOf(selectData.SN1);
                    CB_CmbineSelectedIndexSN2 = -1;
@@ -280,7 +289,7 @@ namespace YuanliApplication.Application
             CombineCollection.RemoveAt(i);
             UpdateRecipe();
         });
-        
+
 
 
         public ICommand AddMethodCommand => new RelayCommand(() =>
@@ -307,13 +316,13 @@ namespace YuanliApplication.Application
 
                    break;
 
-                //case MethodName.BlobDetector:
-                //    MethodDispCollection.Add(new DisplayMethod { SN = $"{MethodList.Count + 1}", Name = MethodName.BlobDetector, ResultName = $"{ResultSelect.Full}" });
-                //    MethodList.Add(new CogBlobDetector { MethodName = $"{MethodName.BlobDetector}" });
-                //    break;
+               //case MethodName.BlobDetector:
+               //    MethodDispCollection.Add(new DisplayMethod { SN = $"{MethodList.Count + 1}", Name = MethodName.BlobDetector, ResultName = $"{ResultSelect.Full}" });
+               //    MethodList.Add(new CogBlobDetector { MethodName = $"{MethodName.BlobDetector}" });
+               //    break;
 
 
-                case MethodName.LineMeansure:
+               case MethodName.LineMeansure:
                    MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.LineMeansure, ResultName = $"{ResultSelect.Full}" });
                    var cogLM = new CogLineCaliper { MethodName = MethodName.LineMeansure };
                    cogLM.RunParams.Id = sn;
@@ -323,17 +332,17 @@ namespace YuanliApplication.Application
 
                case MethodName.CircleMeansure:
                    MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.CircleMeansure, ResultName = $"{ResultSelect.Full}" });
-                    //    MethodCollection.Add(new CogGapCaliper { MethodName = $"{MethodName.CircleMeansure}" });
+                   //    MethodCollection.Add(new CogGapCaliper { MethodName = $"{MethodName.CircleMeansure}" });
 
-                    break;
+                   break;
                default:
                    break;
            }
 
-           AddCombine(Convert.ToString(yuanliVision.CogMethods.Count)); 
+           AddCombine(Convert.ToString(yuanliVision.CogMethods.Count));
            UpdateRecipe();
 
-          
+
        });
         public ICommand DeleteMethodCommand => new RelayCommand(() =>
        {
@@ -368,12 +377,12 @@ namespace YuanliApplication.Application
 
                var frame = Image.ToByteFrame();
 
-                //    YuanliVision yuanliVision = new YuanliVision();
+               //    YuanliVision yuanliVision = new YuanliVision();
 
-                //    var results = await yuanliVision.Run(frame, MethodList, CombineCollection);
+               //    var results = await yuanliVision.Run(frame, MethodList, CombineCollection);
 
 
-            }
+           }
            catch (Exception ex) {
 
                MessageBox.Show(ex.Message);
@@ -405,8 +414,7 @@ namespace YuanliApplication.Application
 
         public ICommand LocateSampleCommand => new RelayCommand(() =>
        {
-           try 
-           {
+           try {
 
                yuanliVision.ImportGoldenImage(Image, matcher);
                IsLocated = true;
@@ -439,30 +447,30 @@ namespace YuanliApplication.Application
 
 
        });
-        public ICommand SAVECommand => new RelayCommand(  () =>
-        {
-            try {
-                foreach (var item in yuanliVision.CogMethods) {
-                    item.RunParams.Save("123-1");
-                }
-                yuanliVision.CogMethods[0].RunParams.Save("123-1");
+        public ICommand SAVECommand => new RelayCommand(() =>
+      {
+          try {
+              foreach (var item in yuanliVision.CogMethods) {
+                  item.RunParams.Save("123-1");
+              }
+              yuanliVision.CogMethods[0].RunParams.Save("123-1");
 
 
-            }
-            catch (Exception ex) {
+          }
+          catch (Exception ex) {
 
-                MessageBox.Show(ex.Message);
-            }
+              MessageBox.Show(ex.Message);
+          }
 
 
-        });
+      });
         private void UpdateRecipe()
         {
 
             Recipe.LocateParams = MatchParam;
             Recipe.MethodParams = yuanliVision.CogMethods.Select(param => param.RunParams).ToList();
             Recipe.CombineOptionOutputs = CombineCollection.ToList();
-
+            Recipe.PixelSize = PixelSize;
 
         }
 
@@ -478,6 +486,8 @@ namespace YuanliApplication.Application
             MethodDispCollection.Clear();
             CombineCollection.Clear();
             MatchParam = Recipe.LocateParams;
+           
+
             if (MatchParam.PatternImage != null)
                 SampleImage = MatchParam.PatternImage.ToBitmapSource();
             CombineCollection = new ObservableCollection<CombineOptionOutput>(Recipe.CombineOptionOutputs);
@@ -504,6 +514,9 @@ namespace YuanliApplication.Application
                 i++;
                 MethodDispCollection.Add(new DisplayMethod { SN = i.ToString(), Name = item.Methodname, ResultName = item.ResultOutput.ToString() });
             }
+
+
+            PixelSize = Recipe.PixelSize; //因為有參數更新  避免其他資料還沒寫入就被刷掉  所以放到最後面執行
         }
 
         private void AddCombine(string sn1)
@@ -511,7 +524,7 @@ namespace YuanliApplication.Application
             if (MethodDispCollection.Count == 0) return;
             //選出要組合的結果 0:直接輸出  1: 計算距離
             string option = $"{CombineOptionSelected}";
-  
+
 
             string sn2 = "";
             if (CombineOptionSelected == OutputOption.None)
@@ -531,7 +544,7 @@ namespace YuanliApplication.Application
                     throw new Exception("This action cannot be selected");
             }
 
-            CombineCollection.Add(new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2 ,ThresholdMax = ThresholdMax ,ThresholdMin= ThresholdMin });
+            CombineCollection.Add(new CombineOptionOutput { Option = CombineOptionSelected, SN1 = sn1, SN2 = sn2, ThresholdMax = ThresholdMax, ThresholdMin = ThresholdMin });
 
         }
 

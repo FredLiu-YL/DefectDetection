@@ -1,4 +1,5 @@
 ﻿using Cognex.VisionPro;
+using Cognex.VisionPro.ImageFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,22 @@ namespace YuanliCore.ImageProcess
         /// </summary>
         public List<CogMethod> CogMethods { get; set; } = new List<CogMethod>();
 
-        public async Task<VisionResult[]> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters, IEnumerable<CombineOptionOutput> combineOutputs)
+        public BitmapSource ReadImage(string fileName)
+        {
+            CogImageFileTool cog;
+            CogImageFile cogImage = new CogImageFile();
+            cogImage.Open(fileName, CogImageFileModeConstants.Read);
+            CogImage8Grey img = (CogImage8Grey)cogImage[0];
+
+            ICogImage8PixelMemory m = img.Get8GreyPixelMemory(CogImageDataModeConstants.ReadWrite, 0, 0, img.Width, img.Height);
+            var bmps = BitmapSource.Create(img.Width, img.Height, 8, 8, PixelFormats.Gray8, BitmapPalettes.Gray256, m.Scan0, (img.Width * img.Height), m.Stride);
+            var aa = bmps.ToByteFrame();
+            var bb = aa.ToBitmap();
+            return bmps;
+        }
+
+
+        public async Task<VisionResult[]> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters, IEnumerable<CombineOptionOutput> combineOutputs,double pixelSize)
         {
 
             try {
@@ -74,7 +90,7 @@ namespace YuanliCore.ImageProcess
                          switch (option.Option) {
                              case OutputOption.None:
                                  CogMethod resultMethod = CogMethods[Convert.ToInt32(option.SN1) - 1];
-                                 visionResult = GetMethodFull(resultMethod, option.ThresholdMin, option.ThresholdMax);
+                                 visionResult = GetMethodFull(resultMethod, pixelSize, option.ThresholdMin, option.ThresholdMax);
                                  break;
                              case OutputOption.Distance:
                                  //  CogMethod distanceMethod1 = CogMethods[Convert.ToInt32(option.SN1) - 1];
@@ -83,7 +99,7 @@ namespace YuanliCore.ImageProcess
                                  var distanceMethod2 = CogMethods[Convert.ToInt32(option.SN2) - 1].MethodResult;
                                  //  visionResult = GetDistance(distanceMethod1, distanceMethod2, option.ThresholdMin, option.ThresholdMax);
                                  Vector disVec = distanceMethod1.CenterPoint - distanceMethod2.CenterPoint;
-                                 double dis = disVec.Length;
+                                 double dis = disVec.Length * pixelSize;
                                  bool judge = (dis >= option.ThresholdMin && dis <= option.ThresholdMax) ? true : false;
 
                                  visionResult = new VisionResult
@@ -151,7 +167,6 @@ namespace YuanliCore.ImageProcess
         private (Point begin, Point end) GetMethodLine(CogMethod cogMethod)
         {
 
-
             if (cogMethod is CogGapCaliper) {
                 CogGapCaliper cogGapCaliper = cogMethod as CogGapCaliper;
                 var gapbegin = cogGapCaliper.CaliperResults.BeginPoint;
@@ -194,12 +209,13 @@ namespace YuanliCore.ImageProcess
             }
 
         }
+
         /// <summary>
         /// 將方法實體化 存到對應結果
         /// </summary>
         /// <param name="cogMethod"></param>
         /// <returns></returns>
-        private VisionResult GetMethodFull(CogMethod cogMethod, double thresholdMin, double thresholdMax)
+        private VisionResult GetMethodFull(CogMethod cogMethod, double pixelSize, double thresholdMin, double thresholdMax)
         {
             VisionResult visionResults = new VisionResult();
             visionResults.ResultOutput = OutputOption.None;
@@ -213,14 +229,20 @@ namespace YuanliCore.ImageProcess
             }
             else if (cogMethod is CogGapCaliper) {
                 CogGapCaliper cogGapCaliper = cogMethod as CogGapCaliper;
+                
                 visionResults.CaliperResult = cogGapCaliper.CaliperResults;
-                if (cogGapCaliper.CaliperResults.Distance >= thresholdMin && cogGapCaliper.CaliperResults.Distance <= thresholdMax)
+
+                double dis = cogGapCaliper.CaliperResults.Distance * pixelSize;// 乘以 比例
+                visionResults.Distance = dis;
+                if (dis >= thresholdMin && dis <= thresholdMax)
                     visionResults.Judge = true;
             }
             else if (cogMethod is CogLineCaliper) {
                 CogLineCaliper cogLineCaliper = cogMethod as CogLineCaliper;
                 visionResults.LineResult = cogLineCaliper.CaliperResults;
-                if (cogLineCaliper.CaliperResults.Distance >= thresholdMin && cogLineCaliper.CaliperResults.Distance <= thresholdMax)
+                double dis = cogLineCaliper.CaliperResults.Distance * pixelSize;// 乘以 比例
+                visionResults.Distance = dis;
+                if (dis >= thresholdMin && dis <= thresholdMax)
                     visionResults.Judge = true;
             }
             return visionResults;

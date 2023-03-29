@@ -46,7 +46,7 @@ namespace DefectDetection.ViewModel
         private int finalResultCollectionSelect;
         private string version;
         private bool isMultRun;
-
+        private BitmapSource imageSouce;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -82,7 +82,7 @@ namespace DefectDetection.ViewModel
         /// </summary>
         public ICommand ClearShapeAction { get; set; }
 
-
+        public BitmapSource ImageSouce { get => imageSouce; set => SetValue(ref imageSouce, value); }
         public MeansureRecipe MainRecipe { get => mainRecipe; set => SetValue(ref mainRecipe, value); }
         public bool IsInspectEnabled { get => isInspectEnabled; set => SetValue(ref isInspectEnabled, value); }
         public bool IsLocate { get => isLocate; set => SetValue(ref isLocate, value); }
@@ -125,27 +125,37 @@ namespace DefectDetection.ViewModel
 
         public ICommand OpenImageCommand => new RelayCommand(() =>
        {
-           IsTriggerProtecte = false;
-           Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+           try {
 
-           dlg.Filter = "BMP files (*.bmp)|*.bmp|JPG files (*.jpg)|*.jpg|PNG files (*.png)|*.png";
-           Nullable<bool> result = dlg.ShowDialog();
-           if (result == true) {// 載入圖片
+               IsTriggerProtecte = false;
+               Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
+               dlg.Filter = "BMP files (*.bmp)|*.bmp|JPG files (*.jpg)|*.jpg|PNG files (*.png)|*.png";
+               Nullable<bool> result = dlg.ShowDialog();
+               if (result == true) {// 載入圖片
 
-               var bms = CreateBmp(dlg.FileName);
-               MainImage = new WriteableBitmap(bms);
-               //MainImage.WritePixels(frame);
-               IsLocate = false;
+                   //      var aaaa=  yuanliVision.ReadImage(dlg.FileName);
+                   var bms = CreateBmp(dlg.FileName);
+                   MainImage = new WriteableBitmap(bms);
+                   //  var ss= aaaa.ToByteFrame();
+
+                   //    ImageSouce = aaaa;
+                   //MainImage.WritePixels(frame);
+                   IsLocate = false;
+               }
+               Task.Run(() =>
+               {
+                   Task.Delay(3000).Wait();
+                   IsTriggerProtecte = true;
+               }); //避掉讀取圖片 會移動到影像 canvas的BUG
+
+               IsInspectEnabled = true;
+
            }
-           Task.Run(() =>
-           {
-               Task.Delay(3000).Wait();
-               IsTriggerProtecte = true;
-           }); //避掉讀取圖片 會移動到影像 canvas的BUG
+           catch (Exception ex) {
 
-           IsInspectEnabled = true;
-
+               MessageBox.Show(ex.Message);
+           }
        });
         public ICommand SaveRecipeCommand => new RelayCommand(() =>
        {
@@ -209,7 +219,7 @@ namespace DefectDetection.ViewModel
                 ClearShapeAction.Execute(Drawings);
                 Frame<byte[]> frame = MainImage.ToByteFrame();
                 if (yuanliVision.IsRunning) throw new Exception("Process is Running");
-                VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
+                VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
                 if (results_ == null) throw new Exception("Locate Fail");
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
                 var finalResult = CreateResult(results_, 1);
@@ -271,7 +281,7 @@ namespace DefectDetection.ViewModel
 
                             MainImage = new WriteableBitmap(bitmapSource);
                             Frame<byte[]> frame = bitmapSource.ToByteFrame();
-                            VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs);
+                            VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
 
                             if (results_ == null) continue;
 
@@ -304,7 +314,7 @@ namespace DefectDetection.ViewModel
        {
            isMultRun = false;
        });
-        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults, int round)
+        private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults,int round)
         {
             List<FinalResult> finalResult = new List<FinalResult>();
             foreach (VisionResult item in visionResults) {
@@ -336,7 +346,7 @@ namespace DefectDetection.ViewModel
                             FinalResult finalCaliper = new FinalResult
                             {
                                 Number = $"{round}",
-                                Distance = item.CaliperResult.Distance,
+                                Distance = item.Distance,
                                 //    Angle = item.Angle,
                                 BeginPoint = item.CaliperResult.BeginPoint,
                                 EndPoint = item.CaliperResult.EndPoint,
@@ -351,7 +361,7 @@ namespace DefectDetection.ViewModel
                             FinalResult finalCaliper = new FinalResult
                             {
                                 Number = $"{round}",
-                                Distance = item.LineResult.Distance,
+                                Distance = item.Distance,
                                 //    Angle = item.Angle,
                                 BeginPoint = item.LineResult.BeginPoint,
                                 EndPoint = item.LineResult.EndPoint,
@@ -440,6 +450,7 @@ namespace DefectDetection.ViewModel
         private BitmapSource CreateBmp(string path)
         {
             BitmapImage bitmapImage = new BitmapImage();
+
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri(path);
             bitmapImage.EndInit();

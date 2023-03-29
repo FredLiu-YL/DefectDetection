@@ -265,6 +265,8 @@ namespace YuanliCore.ImageProcess
         /// </summary>
         public List<CombineOptionOutput> CombineOptionOutputs { get; set; } = new List<CombineOptionOutput>();
 
+        public double PixelSize { get; set; } = 1;
+
         /// <summary>
         /// 因某些元件無法被正常序列化 所以另外做存檔功能
         /// </summary>
@@ -298,7 +300,7 @@ namespace YuanliCore.ImageProcess
             //想不到好方法做序列化 ， 如果需要修改 就要用JsonConvert 把不能序列化的屬性都改掉  這樣就能正常做load
             var mRecipe = AbstractRecipe.Load<MeansureRecipe>($"{path}\\Recipe.json");
             CombineOptionOutputs = mRecipe.CombineOptionOutputs; //未來新增不同屬性  這裡都要不斷新增
-
+            PixelSize = mRecipe.PixelSize; //未來新增不同屬性  這裡都要不斷新增
 
 
             LocateParams = CogParameter.Load(path, 0) as PatmaxParams;

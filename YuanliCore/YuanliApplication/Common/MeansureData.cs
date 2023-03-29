@@ -18,7 +18,8 @@ namespace YuanliApplication.Common
         public OutputOption Output { get; set; }
         public double? Distance { get; set; }
         public double? Angle { get; set; }
-    
+        public double Radius { get; set; }
+
         public Point? Center { get; set; }
         public double? Score { get; set; }
 
