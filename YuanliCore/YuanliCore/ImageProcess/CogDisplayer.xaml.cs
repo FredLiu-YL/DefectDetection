@@ -88,6 +88,8 @@ namespace YuanliCore.ImageProcess
         private void SetImage()
         {
             cogDisplay.Record = Record;
+      
+         
         }
         private void SetSize()
         {

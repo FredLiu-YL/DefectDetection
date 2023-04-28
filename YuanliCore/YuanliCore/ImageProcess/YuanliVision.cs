@@ -1,14 +1,17 @@
 ﻿using Cognex.VisionPro;
+using Cognex.VisionPro.Display;
 using Cognex.VisionPro.ImageFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using YuanliCore.CameraLib;
 using YuanliCore.ImageProcess.Blob;
 using YuanliCore.ImageProcess.Caliper;
@@ -24,12 +27,16 @@ namespace YuanliCore.ImageProcess
         private CogFixtureLocate cogFixtureLocate = new CogFixtureLocate();
 
         private CombineOptionOutput[] combineOptionOutputs;
+
+     
+
         public YuanliVision()
         {
 
 
         }
         public bool IsRunning { get; set; }
+        public event Action<ICogRecord> CreateImage;
         public CogMatcher LocateMatcher = new CogMatcher();
         /// <summary>
         /// 演算法列表
@@ -149,6 +156,93 @@ namespace YuanliCore.ImageProcess
 
 
         }
+        public async Task<DetectionResult> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters)
+        {
+
+            try {
+                if (IsRunning) throw new Exception("Process is Running");
+
+                IsRunning = true;
+                List<VisionResult> visionResultList = new List<VisionResult>();
+                //釋放資源 Cog元件實體化以後  不釋放會無法正常關閉程式
+                foreach (var method in CogMethods) {
+                    method.Dispose();
+                }
+                CogMethods.Clear();
+
+                LocateMatcher.RunParams = locateParams; //創建 定位功能
+                CogMethods = SetMethodParams(cogParameters).ToList(); //創建演算法列表
+
+                int tid1 = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                List<BlobDetectorResult> detectorResults = new List<BlobDetectorResult>();
+                DetectionResult detectionResult = new DetectionResult();
+                await Task.Run(() =>
+                {
+                    LocateResult cogLocateResult = LocateMatcher.FindCogLocate(frame);
+                    if (cogLocateResult == null) return;
+                    Cognex.VisionPro.ICogImage cogImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
+                    int tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                    //將所有演算法跑過一遍 得出結果
+                    foreach (CogMethod item in CogMethods) {
+                        item.CogFixtureImage = cogImg;
+                        item.Run();
+                        CogBlobDetector detector = item as CogBlobDetector;
+                        detectorResults.AddRange(detector.DetectorResults);
+                  
+                        if (detectionResult.CogRecord == null)
+                            detectionResult.CogRecord = detector.Record;
+                        else
+                            detectionResult.CogRecord.SubRecords.Add(detector.Record);
+                    }
+
+
+                    Testc(detectionResult.CogRecord);
+                    CreateImage?.Invoke(detectionResult.CogRecord);
+                });
+
+
+
+                detectionResult.BlobDetectorResults = detectorResults.ToArray();
+
+                return detectionResult;
+            }
+            catch (Exception ex) {
+
+                throw ex;
+            }
+            finally {
+
+                IsRunning = false; ;
+            }
+
+
+
+
+        }
+
+
+
+
+        private void Testc(ICogRecord cogRecord)
+        {
+            int id = Thread.CurrentThread.ManagedThreadId;
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+            {
+                CogRecordsDisplay cogDisplayers = new CogRecordsDisplay();
+                cogDisplayers.Size = new System.Drawing.Size( 2000,2000);
+                cogDisplayers.Subject = cogRecord;
+
+                var bmp = cogDisplayers.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
+
+                bmp.ToBitmapSource().Save("D:\\qaswed.bmp");
+                // CogRecordDisplay cogDisplayer = new CogRecordDisplay();
+                // cogDisplayer.Record = cogRecord;
+            }));
+            
+           
+        }
+
 
         private VisionResult GetDistance(CogMethod cogMethod1, CogMethod cogMethod2, double thresholdMin, double thresholdMax)
         {
@@ -316,6 +410,9 @@ namespace YuanliCore.ImageProcess
                         cogMethods.Add(new CogLineCaliper(item));
                         break;
                     case MethodName.CircleMeansure:
+                        break;
+                    case MethodName.BlobDetector:
+                        cogMethods.Add(new CogBlobDetector(item));
                         break;
                     default:
                         break;

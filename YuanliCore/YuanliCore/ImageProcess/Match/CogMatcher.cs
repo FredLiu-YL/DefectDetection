@@ -115,7 +115,7 @@ namespace YuanliCore.ImageProcess.Match
             if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
                 cogImg1 = image.GrayFrameToCogImage();
             else
-                cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage,0.333, 0.333, 0.333);
             //   ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
 
             //  cogImg = cogImg1;
@@ -131,7 +131,7 @@ namespace YuanliCore.ImageProcess.Match
             if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
                 cogImg1 = image.GrayFrameToCogImage();
             else
-                cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
             var param = (PatmaxParams)RunParams;
@@ -143,6 +143,7 @@ namespace YuanliCore.ImageProcess.Match
 
             if (alignTool.Results.Count == 0) return null;
             CogTransform2DLinear linear = alignTool.Results[0].GetPose();
+
             Record = alignTool.CreateLastRunRecord().SubRecords[0];
             return new LocateResult { LocateCogImg = cogImg1, CogTransform = linear };
 

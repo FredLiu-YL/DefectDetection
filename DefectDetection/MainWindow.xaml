@@ -23,6 +23,8 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid    >
+       
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -33,7 +35,23 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.Resources>
-
+                <Style x:Key="NoTabControlHeaderStyle" TargetType="{x:Type TabControl}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabControl}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Row="1" BorderThickness="1" BorderBrush="Gray">
+                                        <ContentPresenter ContentSource="SelectedContent"/>
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Grid.Resources>
 
             <materialDesign:Card>
@@ -49,13 +67,24 @@
                                              ClearShapeAction="{Binding ClearShapeAction}" IsEnabled="{Binding IsTriggerProtecte}"   />
                     </TabItem>
                     <TabItem  Header="Result"  >
-                        <!--<imageprocess:CogDisplayer Grid.Column="0" Width="0" Record="{Binding  LastRecord}"  />-->
+                        <imageprocess:CogDisplayer    Record="{Binding  LastRecord}"  />
                     
                     </TabItem>
                 </TabControl>
             </materialDesign:Card>
 
-            <application:MeansureOutputUC  Grid.Row="1" ResultCollection="{Binding FinalResultCollection}" SelectIndex="{Binding FinalResultCollectionSelect}"   />
+            <TabControl  Grid.Row="1"    Style="{StaticResource NoTabControlHeaderStyle}"  SelectedIndex="0" >
+                <TabItem   Header=""   >
+                    <application:MeansureOutputUC   ResultCollection="{Binding FinalResultCollection}" SelectIndex="{Binding FinalResultCollectionSelect}"   />
+
+                </TabItem>
+
+                <TabItem    Header=""   >
+
+                </TabItem>
+            </TabControl>
+            
+            
         </Grid>
 
         <Grid  Grid.Column="1">
@@ -84,7 +113,7 @@
                 </Button>
                 <Button Margin="20,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding RunCommand}"
-                        ToolTip="Run">
+                        ToolTip="Run" Click="Button_Click">
                     <materialDesign:PackIcon  Width="50"  Height="50" Kind="ArrowLeftDropCircleOutline" />
 
                 </Button>
@@ -103,7 +132,7 @@
                 <TextBlock Text="{Binding FinalResultCollectionSelect}" />
                 <Image  Margin="50,5,10,5" Source="YuanLi.ico" />
             </StackPanel>
-            <application:InspectUC Grid.Row="1"   Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}" Margin="0,5,0,-5"     />
+            <application:InspectUC Grid.Row="1"   Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}" Margin="-10,0,10,0"     />
 
         </Grid>
 

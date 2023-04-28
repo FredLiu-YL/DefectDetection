@@ -101,7 +101,7 @@ namespace YuanliCore.ImageProcess.Caliper
                 var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
                 var frame = b.ToByteFrame();
 
-                CogImage = frame.ColorFrameToCogImage();
+                CogImage = frame.ColorFrameToCogImage(out ICogImage inputImage);
 
             }
 

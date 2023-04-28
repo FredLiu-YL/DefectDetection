@@ -49,6 +49,8 @@ namespace YuanliApplication.Application
         private static readonly DependencyProperty RecipeProperty = DependencyProperty.Register(nameof(Recipe), typeof(MeansureRecipe), typeof(InspectUC), new FrameworkPropertyMetadata(new MeansureRecipe(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnRecipeChanged)));
         private static readonly DependencyProperty IsLocatedProperty = DependencyProperty.Register(nameof(IsLocated), typeof(bool), typeof(InspectUC), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        private static readonly DependencyProperty IsDetectionProperty = DependencyProperty.Register(nameof(IsDetection), typeof(bool), typeof(InspectUC), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        private static readonly DependencyProperty IsMeansureProperty = DependencyProperty.Register(nameof(IsMeansure), typeof(bool), typeof(InspectUC), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
         private bool isCombineSecEnabled;
@@ -96,6 +98,17 @@ namespace YuanliApplication.Application
         {
             get => (bool)GetValue(IsLocatedProperty);
             set => SetValue(IsLocatedProperty, value);
+        }
+
+        public bool IsDetection// { get => isLocated; set => SetValue(ref isLocated, value); }
+        {
+            get => (bool)GetValue(IsDetectionProperty);
+            set => SetValue(IsDetectionProperty, value);
+        }
+        public bool IsMeansure// { get => isLocated; set => SetValue(ref isLocated, value); }
+        {
+            get => (bool)GetValue(IsMeansureProperty);
+            set => SetValue(IsMeansureProperty, value);
         }
         /// <summary>
         /// 最終使用者需求的結果輸出
@@ -170,11 +183,7 @@ namespace YuanliApplication.Application
 
                        break;
 
-                   //case MethodName.BlobDetector:
-                   //    var blobDetector = MethodList[MethodCollectIndex] as CogBlobDetector;
-                   //    blobDetector.EditParameter(Image);
-                   //    MethodDispCollection[MethodCollectIndex].ResultName = blobDetector.BlobParam.ResultOutput.ToString();
-                   //    break;
+           
                    case MethodName.LineMeansure:
                        CogLineCaliper lineCaliper = method as CogLineCaliper;
                        lineCaliper.CogEditParameter();
@@ -183,6 +192,12 @@ namespace YuanliApplication.Application
                        break;
                    case MethodName.CircleMeansure:
 
+                       break;
+
+                   case MethodName.BlobDetector:
+                       CogBlobDetector blobDetector = method as CogBlobDetector;
+                       blobDetector.CogEditParameter();
+                       MethodDispCollection[MethodCollectIndex].ResultName = blobDetector.RunParams.ResultOutput.ToString();
                        break;
                    default:
                        break;
@@ -316,10 +331,7 @@ namespace YuanliApplication.Application
 
                    break;
 
-               //case MethodName.BlobDetector:
-               //    MethodDispCollection.Add(new DisplayMethod { SN = $"{MethodList.Count + 1}", Name = MethodName.BlobDetector, ResultName = $"{ResultSelect.Full}" });
-               //    MethodList.Add(new CogBlobDetector { MethodName = $"{MethodName.BlobDetector}" });
-               //    break;
+              
 
 
                case MethodName.LineMeansure:
@@ -334,6 +346,12 @@ namespace YuanliApplication.Application
                    MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.CircleMeansure, ResultName = $"{ResultSelect.Full}" });
                    //    MethodCollection.Add(new CogGapCaliper { MethodName = $"{MethodName.CircleMeansure}" });
 
+                   break; 
+               case MethodName.BlobDetector:
+                   MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.BlobDetector, ResultName = $"{ResultSelect.Full}" });
+                    var cogBlob = new CogBlobDetector { MethodName =  MethodName.BlobDetector  };
+                   cogBlob.RunParams.Id = sn;
+                   yuanliVision.CogMethods.Add(cogBlob);
                    break;
                default:
                    break;

@@ -56,7 +56,7 @@ namespace YuanliCore.ImageProcess
             cogPMAlignTool.Pattern = pmAlignPattern;
             cogPMAlignTool.RunParams = pmAlignRunParams;
 
-            ICogImage cogImg1 = frame.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            ICogImage cogImg1 = frame.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
             cogRecordsDisplay.Size = new System.Drawing.Size(cogImg1.Width, cogImg1.Height);

@@ -81,7 +81,7 @@ namespace YuanliCore.ImageProcess.Caliper
         public LineCaliperResult Find(Frame<byte[]> image)
         {
 
-            ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            ICogImage cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
             return Find(cogImg1);

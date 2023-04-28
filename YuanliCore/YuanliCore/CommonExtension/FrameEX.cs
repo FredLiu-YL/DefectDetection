@@ -128,7 +128,7 @@ namespace YuanliCore.CameraLib
             return cogImage;
         }
 
-        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
+        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame,out ICogImage inputImage, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
         {
             try {
 
@@ -146,6 +146,8 @@ namespace YuanliCore.CameraLib
                         tool.RunParams.IntensityFromWeightedRGBBlueWeight = bayerBlueScale;
 
                         tool.Run();
+
+                        inputImage = cogImage;
                         return (CogImage8Grey)tool.OutputImage;
                     }
                 }

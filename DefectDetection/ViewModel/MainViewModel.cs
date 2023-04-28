@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Cognex.VisionPro;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -37,6 +39,7 @@ namespace DefectDetection.ViewModel
     public class MainViewModel : ViewModelBase, INotifyPropertyChanged
     {
         private WriteableBitmap mainImage;
+        private ICogRecord lastRecord;
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private MeansureRecipe mainRecipe = new MeansureRecipe();
         private bool isInspectEnabled = false;
@@ -68,7 +71,7 @@ namespace DefectDetection.ViewModel
         public string Version { get => version; set => SetValue(ref version, value); }
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
-
+        public ICogRecord LastRecord { get => lastRecord; set => SetValue(ref lastRecord, value); }
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>
@@ -219,14 +222,23 @@ namespace DefectDetection.ViewModel
 
                 ClearShapeAction.Execute(Drawings);
                 Frame<byte[]> frame = MainImage.ToByteFrame();
+
+                if (frame == null) throw new Exception("Image does not exist ");
+
+                yuanliVision.CreateImage += SaveResultImage;
+                DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
+                
+                LastRecord =  detectionResults_.CogRecord ;
+                
                 if (yuanliVision.IsRunning) throw new Exception("Process is Running");
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
                 if (results_ == null) throw new Exception("Locate Fail");
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                var finalResult = CreateResult(results_, 1);
+                List<FinalResult> finalResult = CreateResult(results_, 1);
 
                 //畫面畫出結果
                 DrawResult(finalResult);
+
 
 
                 FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
@@ -235,6 +247,9 @@ namespace DefectDetection.ViewModel
             catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
+            }
+            finally {
+                yuanliVision.CreateImage -= SaveResultImage;
             }
         });
 
@@ -315,6 +330,16 @@ namespace DefectDetection.ViewModel
        {
            isMultRun = false;
        });
+
+        private void SaveResultImage(ICogRecord cogRecord)
+        {
+            int id = Thread.CurrentThread.ManagedThreadId;
+
+        //   CogRecordDisplay cogDisplayer = new CogRecordDisplay();
+       //     cogDisplayer.Record = cogRecord;
+               
+        }
+
         private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults, int round)
         {
             List<FinalResult> finalResult = new List<FinalResult>();

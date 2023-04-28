@@ -235,7 +235,9 @@ namespace YuanliCore.ImageProcess
         GapMeansure,
         LineMeansure,
         CircleMeansure,
+        BlobDetector,
         PatternMatch,
+
     }
 
     public enum OutputOption

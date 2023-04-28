@@ -26,7 +26,7 @@ namespace YuanliCore.ImageProcess
 
         public async Task Run(Frame<byte[]> frame)
         {
-            var cogImg = frame.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            var cogImg = frame.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             cogFindLineTool.InputImage = (CogImage8Grey)cogImg;
           //  cogFindLineTool.RunParams.CaliperRunParams;
 

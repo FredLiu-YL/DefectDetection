@@ -25,7 +25,7 @@
     <Grid Grid.Column="0"   DataContext="{Binding ElementName=InspectControl}" Grid.Row="1" Grid.ColumnSpan="3"  Grid.RowSpan="3"  Background="AliceBlue"  >
         <Grid.Resources>
             <yuanliapplication:OptionConver x:Key="CvrOption" />
-           
+
         </Grid.Resources>
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="Unloaded">
@@ -51,7 +51,7 @@
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition />
                     <ColumnDefinition />
-                  
+
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0"  Source="{Binding SampleImage}" />
                 <Grid  Grid.Column="1">
@@ -62,18 +62,30 @@
                     <Button Grid.Row="0"  Content="Edit"  Command="{Binding EditSampleCommand}"  />
                     <Button  Grid.Row="1"   Content="Locate"  Command="{Binding LocateSampleCommand}"   />
                 </Grid>
-               
+
             </Grid>
 
         </GroupBox>
         <GroupBox  Header="Parameters" FontSize="24" Grid.Column="1" Grid.RowSpan="2" >
-            <StackPanel>
-                <Label Content="Pixel Size" />
-                <TextBox Text="{Binding    PixelSize}"  />
-            </StackPanel>
-     
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Label Content="Pixel Size:"   FontSize="16"  />
+                    <TextBox Text="{Binding    PixelSize}"  Width="70" FontSize="16"  />
+                </StackPanel>
+                <StackPanel  Grid.Row="1" Orientation="Horizontal">
+                    <RadioButton  Content="Measure "  FontSize="16"  IsChecked="{Binding    IsMeansure}"     />
+
+                    <RadioButton  Content="Detect "  FontSize="16" IsChecked="{Binding    IsDetection}" />
+                </StackPanel>
+            </Grid>
+
+
         </GroupBox>
-            <GroupBox Header="Algorithm List" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" Margin="5,0,5,5"  FontSize="24"  >
+        <GroupBox Header="Algorithm List" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" Margin="5,0,5,5"  FontSize="24"  >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.3*"/>
@@ -82,8 +94,8 @@
 
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.0*"/>
-                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition Width="1.7*"/>
+                    <ColumnDefinition Width="0.9*"/>
                 </Grid.ColumnDefinitions>
                 <UserControls:MethodDisplayUC  Grid.Row="1" SN="SN"  MethodName="Name" ResultName="Output"  Margin="2,0,2,2"   />
 
@@ -97,8 +109,8 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="{Binding SN}" Width="75"  FontSize="24" BorderThickness="1.5" BorderBrush="Black" />
-                                <Label Content="{Binding Name}" FontSize="24" Width="190" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="1" />
-                                <Label Content="{Binding ResultName}" FontSize="24" Width="140" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="2" />
+                                <Label Content="{Binding Name}" FontSize="24" Width="250" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="1" />
+                                <!--<Label Content="{Binding ResultName}" FontSize="24" Width="140" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="2" />-->
                             </StackPanel>
                             <!--<UserControls:MethodDisplayUC Width="100" Height="50" SN="1"  MethodName="{Binding Name}"  ResultName="{Binding ResultName}"  ></UserControls:MethodDisplayUC>-->
 
@@ -120,6 +132,7 @@
                         <ComboBoxItem Content="Gap" />
                         <ComboBoxItem Content="Line" />
                         <ComboBoxItem Content="Circle" />
+                        <ComboBoxItem Content="BinaryDefect" />
                         <ComboBoxItem Content="模板匹配"  IsEnabled="False" />
 
 
@@ -143,7 +156,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>-->
 
-        <GroupBox Header="Output Type" Grid.Row="3"  Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,5,5"  FontSize="24"  >
+        <GroupBox Header="Output Type" Grid.Row="3"  Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,5,5"  FontSize="24"  IsEnabled="{Binding IsMeansure}"  >
             <Grid>
 
                 <Grid.RowDefinitions>
@@ -160,7 +173,7 @@
                                 <i:InvokeCommandAction Command="{Binding ResultSelectionChangedCommand}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                      
+
                     </ComboBox>
                     <ComboBox  Margin="0,0,5,0" Grid.Column="0" FontSize="24" ItemsSource="{Binding MethodDispCollection}"      SelectedIndex="{Binding CB_CmbineSelectedIndexSN1}"   Width="50" >
                         <ComboBox.ItemTemplate>
@@ -193,14 +206,14 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="120"  Header="Result" Binding="{Binding Option}" />
+                        <DataGridTextColumn Width="100"  Header="Result" Binding="{Binding Option}" />
                         <DataGridTextColumn  Width="70"  Header="SN1"  Binding="{Binding SN1}" />
                         <DataGridTextColumn  Width="70"  Header="SN2"  Binding="{Binding SN2}"  />
                         <DataGridTextColumn  Width="70"   Header="Min"  Binding="{Binding ThresholdMin}"  />
                         <DataGridTextColumn  Width="70"   Header="Max"  Binding="{Binding ThresholdMax}"  />
                     </DataGrid.Columns>
-                    
-                    
+
+
                 </DataGrid>
             </Grid>
 

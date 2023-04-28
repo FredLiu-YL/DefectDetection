@@ -42,7 +42,18 @@ namespace YuanliCore.ImageProcess.Blob
             UpdateImage(bitmap);
            
         }
+        /// <summary>
+        /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
+        /// </summary>
+        /// <param name="cogImage"></param>
+        public CogBlobWindow(ICogImage cogImage)
+        {
 
+            InitializeComponent();
+
+            CogImage = cogImage;
+
+        }
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
         public BlobParams BlobParam { get => blobParam; set => SetValue(ref blobParam, value); }
@@ -92,7 +103,7 @@ namespace YuanliCore.ImageProcess.Blob
                 var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
                 var frame = b.ToByteFrame();
 
-                CogImage = frame.ColorFrameToCogImage();
+                CogImage = frame.ColorFrameToCogImage(out ICogImage inputImage);
             }
    
 

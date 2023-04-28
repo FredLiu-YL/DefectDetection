@@ -21,9 +21,15 @@ namespace YuanliCore.ImageProcess.Blob
         {
 
             blobTool = new CogBlobTool();
-
+            RunParams = new BlobParams();
         }
-        public override CogParameter RunParams { get; set; } = new BlobParams();
+        public CogBlobDetector(CogParameter blobParams)
+        {
+
+            blobTool = new CogBlobTool();
+            RunParams = blobParams;
+        }
+        public override CogParameter RunParams { get; set; }  
         public BlobDetectorResult[] DetectorResults { get; set; }
         public override void Dispose()
         {
@@ -46,24 +52,59 @@ namespace YuanliCore.ImageProcess.Blob
 
             Dispose();
         }
+        public void CogEditParameter()
+        {
+            if (CogFixtureImage == null) throw new Exception("locate is not yet complete");
 
+            cogBlobWindow = new CogBlobWindow(CogFixtureImage);
+            var tempParam = (BlobParams)RunParams;
+            if (tempParam.ROI == null)
+                tempParam.ROI = new CogRectangle();
+            tempParam.ROI.SelectedSpaceName = "@\\Fixture";
+
+            cogBlobWindow.BlobParam = tempParam;
+            //   cogBlobWindow.BlobParam.RunParams.ExpectedLineSegment.SelectedSpaceName = "@\\Fixture";
+
+            cogBlobWindow.ShowDialog();
+            RunParams = cogBlobWindow.BlobParam;
+
+
+            Dispose();
+        }
         public IEnumerable<BlobDetectorResult> Find(Frame<byte[]> image)
         {
-            ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+            ICogImage cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
 
             return Find(cogImg1);
         }
-        private IEnumerable<BlobDetectorResult> Find(ICogImage cogImage)
-        {         
 
-            blobTool.InputImage = cogImage;
-           var param= RunParams as BlobParams;
-            blobTool.RunParams = param.RunParams;
-            blobTool.Region = param.ROI;
-            blobTool.Run();
+        private void Run(ICogImage cogImage)
+        {
+            CogBlobTool blobTool_1 = new CogBlobTool();
+            blobTool_1.InputImage = cogImage;
+            var param = RunParams as BlobParams;
+            blobTool_1.RunParams = param.RunParams;
+            blobTool_1.Region = param.ROI;
+            blobTool_1.Run();
+
+            var lastRun1 = blobTool_1.CreateLastRunRecord().SubRecords[0];
+
+            CogBlobTool blobTool_2 = new CogBlobTool();
+            blobTool_2.InputImage = cogImage;
+            blobTool_2.RunParams = param.RunParams;
+            blobTool_2.Region = param.ROI;
+            blobTool_2.Run();
+
+            var lastRun2 = blobTool_2.CreateLastRunRecord().SubRecords[0];
+
+            CogRecordDisplay cogDisplay = new CogRecordDisplay();
+            cogDisplay.Size = new System.Drawing.Size(cogImage.Width, cogImage.Height);
+            cogDisplay.Record = blobTool_1.CreateLastRunRecord();
+            cogDisplay.Record.SubRecords.Add(blobTool_2.CreateLastRunRecord());
+
 
             List<BlobDetectorResult> results = new List<BlobDetectorResult>();
-            var blobResults = blobTool.Results.GetBlobs();
+            var blobResults = blobTool_1.Results.GetBlobs();
 
             for (int i = 0; i < blobResults.Count; i++) {
                 var pose = blobResults[i].CenterOfMassX;
@@ -73,9 +114,42 @@ namespace YuanliCore.ImageProcess.Blob
                 double area = blobResults[i].Area;
 
 
-                results.Add(new BlobDetectorResult(new Point(x, y), area));
+                results.Add(new BlobDetectorResult(new Point(x, y), area,0));
             }
 
+            
+        }
+
+        private IEnumerable<BlobDetectorResult> Find(ICogImage cogImage)
+        {
+
+            blobTool.InputImage = cogImage;
+            var param = RunParams as BlobParams;
+            blobTool.RunParams = param.RunParams;
+            blobTool.Region = param.ROI;
+            blobTool.Run();
+    
+            List<BlobDetectorResult> results = new List<BlobDetectorResult>();
+            if(blobTool.RunStatus.Result == CogToolResultConstants.Accept) 
+            {
+
+            
+                var blobResults = blobTool.Results.GetBlobs();
+
+                for (int i = 0; i < blobResults.Count; i++) {
+                    var pose = blobResults[i].CenterOfMassX;
+                    double radius = blobResults[i].Perimeter / (2 * 3.14159);
+                    double x = blobResults[i].CenterOfMassX;
+                    double y = blobResults[i].CenterOfMassY;
+                    double area = blobResults[i].Area;
+
+
+                    results.Add(new BlobDetectorResult(new Point(x, y), area, radius));
+                }
+                Record = blobTool.CreateLastRunRecord().SubRecords[0];
+            }
+     
+           
             return results;
         }
         public override void Run()

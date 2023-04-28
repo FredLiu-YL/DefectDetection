@@ -26,7 +26,7 @@ namespace YuanliCore.Interface
 
 
     }
-
+   
     public class CaliperResult : CogResult
     {
         public CaliperResult(Point beginPoint, Point centerPoint, Point endPoint)

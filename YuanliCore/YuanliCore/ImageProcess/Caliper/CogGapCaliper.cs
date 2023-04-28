@@ -86,7 +86,7 @@ namespace YuanliCore.ImageProcess.Caliper
             if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
                 cogImg1 = image.GrayFrameToCogImage();
             else
-                cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
+                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
             return Find(cogImg1);
