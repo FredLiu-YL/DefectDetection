@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -12,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -45,7 +47,7 @@ namespace DefectDetection.ViewModel
         private bool isInspectEnabled = false;
         private ObservableCollection<FinalResult> finalResultCollection = new ObservableCollection<FinalResult>();
         private YuanliVision yuanliVision = new YuanliVision();
-        private bool isLocate, isTriggerProtecte = true;
+        private bool isLocate, isTriggerProtecte = true, isDetectionMode, isMeansureMode = true;
         private int finalResultCollectionSelect;
         private string version;
         private bool isMultRun;
@@ -89,6 +91,26 @@ namespace DefectDetection.ViewModel
         public MeansureRecipe MainRecipe { get => mainRecipe; set => SetValue(ref mainRecipe, value); }
         public bool IsInspectEnabled { get => isInspectEnabled; set => SetValue(ref isInspectEnabled, value); }
         public bool IsLocate { get => isLocate; set => SetValue(ref isLocate, value); }
+        public bool IsMeansureMode
+        {
+            get => isMeansureMode;
+            set
+            {
+                SetValue(ref isMeansureMode, value);
+                MainRecipe.IsDetection = !value;
+                MainRecipe.IsMeansure = value;
+            }
+        }
+        public bool IsDetectionMode
+        {
+            get => isDetectionMode;
+            set
+            {
+                SetValue(ref isDetectionMode, value);
+                MainRecipe.IsDetection = value;
+                MainRecipe.IsMeansure = !value;
+            }
+        }
         /// <summary>
         /// 防連點觸發 保護機制  動作尚未完成=False
         /// </summary>
@@ -129,6 +151,7 @@ namespace DefectDetection.ViewModel
         public ICommand OpenImageCommand => new RelayCommand(() =>
        {
            try {
+
 
                IsTriggerProtecte = false;
                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -207,7 +230,10 @@ namespace DefectDetection.ViewModel
                    MeansureRecipe meansureRecipe = new MeansureRecipe();
                    meansureRecipe.Load(path);
 
-                   MainRecipe = meansureRecipe;
+                   MainRecipe = meansureRecipe;// InspectUC  裡面的SetMethodParams()  會把參數洗掉  所以有新增新tool的話要新增
+
+                   IsDetectionMode = MainRecipe.IsDetection;
+                   IsDetectionMode = MainRecipe.IsMeansure;
                    MessageBox.Show(" Load Complate");
 
                }
@@ -226,21 +252,32 @@ namespace DefectDetection.ViewModel
                 if (frame == null) throw new Exception("Image does not exist ");
 
                 yuanliVision.CreateImage += SaveResultImage;
-                DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
-                
-                LastRecord =  detectionResults_.CogRecord ;
-                
-                if (yuanliVision.IsRunning) throw new Exception("Process is Running");
-                VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
-                if (results_ == null) throw new Exception("Locate Fail");
-                //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                List<FinalResult> finalResult = CreateResult(results_, 1);
+                var finalResult = await SingleRun(frame, IsDetectionMode ,1);
+                /* 
+                  if (IsDetectionMode) {
+                     DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
+                     //vp 的顯示結果
+                     LastRecord = detectionResults_.CogRecord;
+                     //得到量測結果後 轉換到FinalResult 以便UI印出結果
+                     List<FinalResult> finalResult = CreateResult(detectionResults_, 1);
 
-                //畫面畫出結果
-                DrawResult(finalResult);
+                     FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                 }
+                 else {
 
 
+                     if (yuanliVision.IsRunning) throw new Exception("Process is Running");
+                     VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
+                     if (results_ == null) throw new Exception("Locate Fail");
+                     //得到量測結果後 轉換到FinalResult 以便UI印出結果
+                     List<FinalResult> finalResult = CreateResult(results_, 1);
 
+                     //畫面畫出結果
+                     DrawResult(finalResult);
+
+                     FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                 }
+                */
                 FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
                 MessageBox.Show("Finished");
             }
@@ -259,7 +296,7 @@ namespace DefectDetection.ViewModel
             try {
                 if (isMultRun) throw new Exception("Process is Running");
                 using (FolderBrowserDialog dialog = new FolderBrowserDialog()) {
-
+                    yuanliVision.CreateImage += SaveResultImage;
                     dialog.Description = "選擇文件夾";
                     dialog.ShowNewFolderButton = false;
 
@@ -297,12 +334,15 @@ namespace DefectDetection.ViewModel
 
                             MainImage = new WriteableBitmap(bitmapSource);
                             Frame<byte[]> frame = bitmapSource.ToByteFrame();
-                            VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
 
-                            if (results_ == null) continue;
+                            var finalResult = await SingleRun(frame, IsDetectionMode , round);
+                            
+                           // VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
+
+                            if (finalResult == null) continue;
 
                             //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                            List<FinalResult> finalResult = CreateResult(results_, round);
+                       //     List<FinalResult> finalResult = CreateResult(results_, round);
                             foreach (var item in finalResult) {
                                 FinalResultCollection.Add(item);
                             }
@@ -323,6 +363,10 @@ namespace DefectDetection.ViewModel
                 isMultRun = false;
                 MessageBox.Show(ex.Message);
             }
+            finally {
+
+                yuanliVision.CreateImage -= SaveResultImage;
+            }
 
         });
 
@@ -333,11 +377,51 @@ namespace DefectDetection.ViewModel
 
         private void SaveResultImage(ICogRecord cogRecord)
         {
-            int id = Thread.CurrentThread.ManagedThreadId;
+           /* int id = Thread.CurrentThread.ManagedThreadId;
 
-        //   CogRecordDisplay cogDisplayer = new CogRecordDisplay();
-       //     cogDisplayer.Record = cogRecord;
-               
+            CogRecordDisplay cogDisplayer = new CogRecordDisplay();
+            cogDisplayer.Record = cogRecord;*/
+
+        }
+
+        private async Task<List<FinalResult>> SingleRun(Frame<byte[]> frame, bool isDetectionMode, int round)
+        {
+            DateTime dateTime =  DateTime.Now;
+           var folder = dateTime.ToString("MM-dd-HH-mm");
+            string path = $"D:\\ASD\\{folder}\\";
+            if (!Directory.Exists(path)) ; Directory.CreateDirectory(path);
+            List<FinalResult> finalResult = new List<FinalResult>();
+
+            if (isDetectionMode) {
+                DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
+         
+                //vp 的顯示結果
+                LastRecord = detectionResults_.CogRecord;
+            
+                if (detectionResults_.BlobDetectorResults.Length == 0) return null;
+                //得到量測結果後 轉換到FinalResult 以便UI印出結果
+                finalResult = CreateResult(detectionResults_, round);
+                detectionResults_.RecordImage.ToByteFrame().Save($"{path}-{round}");
+            //    FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+            }
+            else {
+
+
+                if (yuanliVision.IsRunning) throw new Exception("Process is Running");
+                VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
+            //    if (results_ == null) throw new Exception("Locate Fail");
+
+                if (results_ == null) return null;
+                //得到量測結果後 轉換到FinalResult 以便UI印出結果
+                finalResult = CreateResult(results_, round);
+              
+                //畫面畫出結果
+                DrawResult(finalResult);
+
+             //   FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+            }
+
+            return finalResult;
         }
 
         private List<FinalResult> CreateResult(IEnumerable<VisionResult> visionResults, int round)
@@ -424,6 +508,28 @@ namespace DefectDetection.ViewModel
             return finalResult;
         }
 
+
+        private List<FinalResult> CreateResult(DetectionResult detectionResults, int round)
+        {
+            List<FinalResult> finalResult = new List<FinalResult>();
+            foreach (var result in detectionResults.BlobDetectorResults) {
+
+
+                var final = new FinalResult
+                {
+                    Number = $"{round}",
+                    Area = result.Area,
+                    Center = result.CenterPoint,
+                    Judge = result.Judge,
+                    Diameter = result.Diameter,
+
+                };
+                finalResult.Add(final);
+            }
+
+
+            return finalResult;
+        }
         private void DrawResult(IEnumerable<FinalResult> finalResult)
         {
             foreach (FinalResult result in finalResult) {
@@ -520,4 +626,27 @@ namespace DefectDetection.ViewModel
         }
 
     }
+
+    public class TableIndexConver : IValueConverter
+    {
+        //当值从绑定源传播给绑定目标时，调用方法Convert
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool)value)
+                return 1;
+            else
+                return 0;
+        }
+
+        //当值从绑定目标传播给绑定源时，调用此方法ConvertBack
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((int)value == 0)
+                return true;
+            else
+                return false;
+        }
+    }
+
+
 }

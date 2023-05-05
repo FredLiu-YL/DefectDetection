@@ -28,19 +28,19 @@ namespace YuanliCore.ImageProcess.Blob
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
         private BlobParams blobParam = new BlobParams();
-        private bool isDispose =false;
+        private bool isDispose = false;
         private bool isFullSelect = true;
-        private bool isCenterSelect;
-        private bool isBeginSelect;
-        private bool isEndSelect;
+        private double judgeMin=10;
+        private double judgeMax=99999999;
+
 
         public CogBlobWindow(BitmapSource bitmap)
         {
-        
+
             InitializeComponent();
-          
+
             UpdateImage(bitmap);
-           
+
         }
         /// <summary>
         /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
@@ -58,11 +58,11 @@ namespace YuanliCore.ImageProcess.Blob
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
         public BlobParams BlobParam { get => blobParam; set => SetValue(ref blobParam, value); }
         public bool IsFullSelect { get => isFullSelect; set { SetValue(ref isFullSelect, value); SetResultSelect(); } }
-        public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
 
-        public bool IsBeginSelect { get => isBeginSelect; set { SetValue(ref isBeginSelect, value); SetResultSelect(); } }
 
-        public bool IsEndSelect { get => isEndSelect; set { SetValue(ref isEndSelect, value); SetResultSelect(); } }
+        public double JudgeMin { get => judgeMin; set { SetValue(ref judgeMin, value); SetResultSelect(); } }
+
+        public double JudgeMax { get => judgeMax; set { SetValue(ref judgeMax, value); SetResultSelect(); } }
 
 
         public ICommand ClosingCommand => new RelayCommand(() =>
@@ -72,22 +72,8 @@ namespace YuanliCore.ImageProcess.Blob
 
         public ICommand OpenCommand => new RelayCommand(() =>
         {
-            switch (BlobParam.ResultOutput) {
-                case ResultSelect.Full:
-                    IsFullSelect = true;
-                    break;
-                case ResultSelect.Center:
-                    IsCenterSelect = true;
-                    break;
-                case ResultSelect.Begin:
-                    IsBeginSelect = true;
-                    break;
-                case ResultSelect.End:
-                    IsEndSelect = true;
-                    break;
-                default:
-                    break;
-            }
+            JudgeMin = BlobParam.JudgeMin;
+      //      JudgeMax = BlobParam.JudgeMax;
 
         });
 
@@ -98,20 +84,19 @@ namespace YuanliCore.ImageProcess.Blob
                 var frameGray = bitmap.ToByteFrame();
                 CogImage = frameGray.GrayFrameToCogImage();
             }
-            else 
-            {
+            else {
                 var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
                 var frame = b.ToByteFrame();
 
                 CogImage = frame.ColorFrameToCogImage(out ICogImage inputImage);
             }
-   
+
 
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-    
+
             e.Cancel = true;
 
             if (isDispose) e.Cancel = false;
@@ -121,22 +106,18 @@ namespace YuanliCore.ImageProcess.Blob
         }
         private void SetResultSelect()
         {
-            if (IsFullSelect)
-                BlobParam.ResultOutput = ResultSelect.Full;
-            else if (IsCenterSelect)
-                BlobParam.ResultOutput = ResultSelect.Center;
-            else if (IsBeginSelect)
-                BlobParam.ResultOutput = ResultSelect.Begin;
-            else if (IsEndSelect)
-                BlobParam.ResultOutput = ResultSelect.End;
+
+            BlobParam.JudgeMin = JudgeMin;
+         //   BlobParam.JudgeMax = JudgeMax;
+
 
 
         }
-        public  void Dispose()
+        public void Dispose()
         {
             isDispose = true;
             Close();
-           
+
 
         }
 

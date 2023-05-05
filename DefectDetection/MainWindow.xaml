@@ -7,7 +7,7 @@
         xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore" 
         xmlns:application="clr-namespace:YuanliApplication.Application;assembly=YuanliApplication" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-        xmlns:imageprocess="clr-namespace:YuanliCore.ImageProcess;assembly=YuanliCore"
+        xmlns:imageprocess="clr-namespace:YuanliCore.ImageProcess;assembly=YuanliCore" xmlns:viewmodel="clr-namespace:DefectDetection.ViewModel"
         x:Name="DefectDetection"
         mc:Ignorable="d"
            DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -35,6 +35,8 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.Resources>
+                <viewmodel:TableIndexConver  x:Key="CvrTableControl" />
+
                 <Style x:Key="NoTabControlHeaderStyle" TargetType="{x:Type TabControl}">
                     <Setter Property="Template">
                         <Setter.Value>
@@ -52,13 +54,14 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
+           
             </Grid.Resources>
 
             <materialDesign:Card>
                 <TabControl  materialDesign:ColorZoneAssist.Mode="SecondaryLight" 
                              materialDesign:ColorZoneAssist.Background="Gray"
                              materialDesign:ColorZoneAssist.Foreground="Black"
-                         
+                             Margin="0,0,5,0" 
                              Style="{StaticResource MaterialDesignFilledTabControl}">
                     <TabItem  Header="Live"  >
 
@@ -66,21 +69,22 @@
                                              MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" 
                                              ClearShapeAction="{Binding ClearShapeAction}" IsEnabled="{Binding IsTriggerProtecte}"   />
                     </TabItem>
-                    <TabItem  Header="Result"  >
+                    <TabItem  >
                         <imageprocess:CogDisplayer    Record="{Binding  LastRecord}"  />
                     
                     </TabItem>
                 </TabControl>
             </materialDesign:Card>
 
-            <TabControl  Grid.Row="1"    Style="{StaticResource NoTabControlHeaderStyle}"  SelectedIndex="0" >
+            <TabControl  Grid.Row="1"  Margin="0,0,5,0"   Style="{StaticResource NoTabControlHeaderStyle}"   SelectedIndex ="{Binding IsDetectionMode, Converter={StaticResource CvrTableControl}}" >
                 <TabItem   Header=""   >
                     <application:MeansureOutputUC   ResultCollection="{Binding FinalResultCollection}" SelectIndex="{Binding FinalResultCollectionSelect}"   />
 
                 </TabItem>
 
                 <TabItem    Header=""   >
-
+                    <application:DetectionOutputUC  ResultCollection="{Binding FinalResultCollection}" SelectIndex="{Binding FinalResultCollectionSelect}"  />
+                    
                 </TabItem>
             </TabControl>
             
@@ -113,7 +117,7 @@
                 </Button>
                 <Button Margin="20,0,0,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
                         Style="{StaticResource MaterialDesignFloatingActionDarkButton}"  Command="{Binding RunCommand}"
-                        ToolTip="Run" Click="Button_Click">
+                        ToolTip="Run" >
                     <materialDesign:PackIcon  Width="50"  Height="50" Kind="ArrowLeftDropCircleOutline" />
 
                 </Button>
@@ -132,7 +136,7 @@
                 <TextBlock Text="{Binding FinalResultCollectionSelect}" />
                 <Image  Margin="50,5,10,5" Source="YuanLi.ico" />
             </StackPanel>
-            <application:InspectUC Grid.Row="1"   Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsEnabled="{Binding IsInspectEnabled}" Margin="-10,0,10,0"     />
+            <application:InspectUC Grid.Row="1"   Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsMeansure="{Binding IsMeansureMode}"    IsDetection="{Binding IsDetectionMode}"  IsEnabled="{Binding IsInspectEnabled}" Margin="0,0,10,0"     />
 
         </Grid>
 

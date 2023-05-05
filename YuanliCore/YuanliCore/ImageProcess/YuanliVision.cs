@@ -28,7 +28,7 @@ namespace YuanliCore.ImageProcess
 
         private CombineOptionOutput[] combineOptionOutputs;
 
-     
+
 
         public YuanliVision()
         {
@@ -188,21 +188,32 @@ namespace YuanliCore.ImageProcess
                         item.CogFixtureImage = cogImg;
                         item.Run();
                         CogBlobDetector detector = item as CogBlobDetector;
+                        var blobparm = detector.RunParams as BlobParams;
+
+                        // var judgeDetect =  detector.DetectorResults.Where(r=>r.Diameter > blobparm.JudgeMin);
+                        foreach (var Detect in detector.DetectorResults) {
+                            if (Detect.Diameter >= blobparm.JudgeMin)
+                                Detect.Judge = false;
+                            else
+                                Detect.Judge = true;
+                        }
+
                         detectorResults.AddRange(detector.DetectorResults);
-                  
-                        if (detectionResult.CogRecord == null)
+
+                        if (detectionResult.CogRecord == null)//如果是第一次演算  新增record
                             detectionResult.CogRecord = detector.Record;
-                        else
-                            detectionResult.CogRecord.SubRecords.Add(detector.Record);
+                        else if (detectionResult.CogRecord != null && detector.Record != null)
+                            detectionResult.CogRecord.SubRecords.Add(detector.Record);  //第二次以後 將record相加
                     }
 
-
-                    Testc(detectionResult.CogRecord);
+                 
+                 
+                    // Testc(detectionResult.CogRecord);
                     CreateImage?.Invoke(detectionResult.CogRecord);
                 });
 
-
-
+                var image = CreateBmp(detectionResult.CogRecord, frame.Width, frame.Height);
+                detectionResult.RecordImage = image;
                 detectionResult.BlobDetectorResults = detectorResults.ToArray();
 
                 return detectionResult;
@@ -217,30 +228,33 @@ namespace YuanliCore.ImageProcess
             }
 
 
-
-
         }
 
 
 
 
-        private void Testc(ICogRecord cogRecord)
+        private BitmapSource CreateBmp(ICogRecord cogRecord, int width, int height)
         {
             int id = Thread.CurrentThread.ManagedThreadId;
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
-            {
+            BitmapSource bmps = null;
+      //      Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+      //      {
+
                 CogRecordsDisplay cogDisplayers = new CogRecordsDisplay();
-                cogDisplayers.Size = new System.Drawing.Size( 2000,2000);
+                cogDisplayers.Size = new System.Drawing.Size(width, height);
                 cogDisplayers.Subject = cogRecord;
 
                 var bmp = cogDisplayers.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
 
-                bmp.ToBitmapSource().Save("D:\\qaswed.bmp");
+                bmps = bmp.ToBitmapSource();
+                // bmp.ToBitmapSource().Save("D:\\qaswed.bmp");
+
                 // CogRecordDisplay cogDisplayer = new CogRecordDisplay();
                 // cogDisplayer.Record = cogRecord;
-            }));
-            
-           
+    //        }));
+
+            return bmps;
+
         }
 
 

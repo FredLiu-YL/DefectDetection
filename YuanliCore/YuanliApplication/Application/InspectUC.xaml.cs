@@ -183,7 +183,7 @@ namespace YuanliApplication.Application
 
                        break;
 
-           
+
                    case MethodName.LineMeansure:
                        CogLineCaliper lineCaliper = method as CogLineCaliper;
                        lineCaliper.CogEditParameter();
@@ -331,7 +331,7 @@ namespace YuanliApplication.Application
 
                    break;
 
-              
+
 
 
                case MethodName.LineMeansure:
@@ -346,10 +346,10 @@ namespace YuanliApplication.Application
                    MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.CircleMeansure, ResultName = $"{ResultSelect.Full}" });
                    //    MethodCollection.Add(new CogGapCaliper { MethodName = $"{MethodName.CircleMeansure}" });
 
-                   break; 
+                   break;
                case MethodName.BlobDetector:
                    MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.BlobDetector, ResultName = $"{ResultSelect.Full}" });
-                    var cogBlob = new CogBlobDetector { MethodName =  MethodName.BlobDetector  };
+                   var cogBlob = new CogBlobDetector { MethodName = MethodName.BlobDetector };
                    cogBlob.RunParams.Id = sn;
                    yuanliVision.CogMethods.Add(cogBlob);
                    break;
@@ -416,7 +416,8 @@ namespace YuanliApplication.Application
                matcher.EditParameter(Image);
 
                MatchParam = (PatmaxParams)matcher.RunParams;
-               SampleImage = MatchParam.PatternImage.ToBitmapSource();
+               if (MatchParam.PatternImage != null)
+                   SampleImage = MatchParam.PatternImage.ToBitmapSource();
 
                UpdateRecipe();
 
@@ -504,7 +505,7 @@ namespace YuanliApplication.Application
             MethodDispCollection.Clear();
             CombineCollection.Clear();
             MatchParam = Recipe.LocateParams;
-           
+
 
             if (MatchParam.PatternImage != null)
                 SampleImage = MatchParam.PatternImage.ToBitmapSource();
@@ -525,6 +526,10 @@ namespace YuanliApplication.Application
                         yuanliVision.CogMethods.Add(new CogLineCaliper(item));
                         break;
                     case MethodName.CircleMeansure:
+                        break;
+                    case MethodName.BlobDetector
+                    :
+                        yuanliVision.CogMethods.Add(new CogBlobDetector(item));
                         break;
                     default:
                         break;

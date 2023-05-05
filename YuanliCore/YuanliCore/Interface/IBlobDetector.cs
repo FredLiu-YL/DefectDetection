@@ -22,8 +22,8 @@ namespace YuanliCore.Interface
     public class DetectionResult : INotifyPropertyChanged
     {
         public BlobDetectorResult[] BlobDetectorResults { get; set; }
-        public  ICogRecord  CogRecord { get; set; }  
-
+        public ICogRecord CogRecord { get; set; }
+        public BitmapSource RecordImage { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -39,21 +39,22 @@ namespace YuanliCore.Interface
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
-     
+
 
     public class BlobDetectorResult
     {
-        public BlobDetectorResult(Point center, double area, double radius)
+        public BlobDetectorResult(Point center, double area, double diameter)
         {
             CenterPoint = center;
             Area = area;
-            Radius = radius;
+            Diameter = diameter;
         }
         public double Area { get; }
 
         public Point CenterPoint { get; set; }
 
-        public double Radius { get; set; }
+        public double Diameter { get; set; }
 
+        public bool Judge { get; set; }
     }
 }

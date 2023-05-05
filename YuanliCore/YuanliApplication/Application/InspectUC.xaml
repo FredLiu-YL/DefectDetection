@@ -77,9 +77,9 @@
                     <TextBox Text="{Binding    PixelSize}"  Width="70" FontSize="16"  />
                 </StackPanel>
                 <StackPanel  Grid.Row="1" Orientation="Horizontal">
-                    <RadioButton  Content="Measure "  FontSize="16"  IsChecked="{Binding    IsMeansure}"     />
+                    <RadioButton  Content="Measure "  FontSize="16"  IsChecked="{Binding IsMeansure}"     />
 
-                    <RadioButton  Content="Detect "  FontSize="16" IsChecked="{Binding    IsDetection}" />
+                    <RadioButton  Content="Detect "  FontSize="16" IsChecked="{Binding IsDetection}" />
                 </StackPanel>
             </Grid>
 

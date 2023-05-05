@@ -250,6 +250,8 @@ namespace YuanliCore.ImageProcess
 
     public class MeansureRecipe : AbstractRecipe, INotifyPropertyChanged
     {
+
+
         /// <summary>
         /// 定位用參數
         /// </summary>
@@ -269,6 +271,8 @@ namespace YuanliCore.ImageProcess
 
         public double PixelSize { get; set; } = 1;
 
+        public bool IsMeansure { get; set; } = true;
+        public bool IsDetection { get; set; } = false;
         /// <summary>
         /// 因某些元件無法被正常序列化 所以另外做存檔功能
         /// </summary>

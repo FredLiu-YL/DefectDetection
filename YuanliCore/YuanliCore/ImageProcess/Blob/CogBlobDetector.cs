@@ -132,19 +132,21 @@ namespace YuanliCore.ImageProcess.Blob
             List<BlobDetectorResult> results = new List<BlobDetectorResult>();
             if(blobTool.RunStatus.Result == CogToolResultConstants.Accept) 
             {
-
-            
+      
                 var blobResults = blobTool.Results.GetBlobs();
 
                 for (int i = 0; i < blobResults.Count; i++) {
                     var pose = blobResults[i].CenterOfMassX;
-                    double radius = blobResults[i].Perimeter / (2 * 3.14159);
+                    var radiusH = blobResults[i].GetMeasure(CogBlobMeasureConstants.BoundingBoxPrincipalAxisHeight); //得到最大矩形 高
+                    var radiusW = blobResults[i].GetMeasure(CogBlobMeasureConstants.BoundingBoxPrincipalAxisWidth);//得到最大矩形 寬
+                    Vector rect = new Vector(radiusW, radiusH);
+                    var diameter = rect.Length; //算出最大矩形對角線 當作Blob直徑
                     double x = blobResults[i].CenterOfMassX;
                     double y = blobResults[i].CenterOfMassY;
                     double area = blobResults[i].Area;
 
 
-                    results.Add(new BlobDetectorResult(new Point(x, y), area, radius));
+                    results.Add(new BlobDetectorResult(new Point(x, y), area, diameter));
                 }
                 Record = blobTool.CreateLastRunRecord().SubRecords[0];
             }

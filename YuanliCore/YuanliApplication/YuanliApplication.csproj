@@ -71,6 +71,9 @@
     <Compile Include="Application\InspectUC.xaml.cs">
       <DependentUpon>InspectUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Application\DetectionOutputUC.xaml.cs">
+      <DependentUpon>DetectionOutputUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Application\MeansureOutputUC.xaml.cs">
       <DependentUpon>MeansureOutputUC.xaml</DependentUpon>
     </Compile>
@@ -94,6 +97,10 @@
     <Page Include="Application\InspectUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Application\DetectionOutputUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Application\MeansureOutputUC.xaml">
       <SubType>Designer</SubType>
