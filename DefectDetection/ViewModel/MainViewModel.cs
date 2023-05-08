@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliApplication.Common;
+using YuanliApplication.Tool;
 using YuanliCore.ImageProcess;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
@@ -252,7 +253,12 @@ namespace DefectDetection.ViewModel
                 if (frame == null) throw new Exception("Image does not exist ");
 
                 yuanliVision.CreateImage += SaveResultImage;
-                var finalResult = await SingleRun(frame, IsDetectionMode ,1);
+
+
+
+                string reportPath = CreateReportFolder("D:\\DetectionReport");
+
+                List<FinalResult> finalResult = await SingleRun(frame, IsDetectionMode, reportPath ,1);
                 /* 
                   if (IsDetectionMode) {
                      DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
@@ -278,7 +284,14 @@ namespace DefectDetection.ViewModel
                      FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
                  }
                 */
-                FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                if(finalResult!=null) 
+                {
+
+                    Report(finalResult.ToArray(), reportPath + "report.xlsx");
+
+                    FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                }
+                
                 MessageBox.Show("Finished");
             }
             catch (Exception ex) {
@@ -322,7 +335,7 @@ namespace DefectDetection.ViewModel
                                 imageFiles.Add(file);
 
                         }
-
+                        string reportPath = CreateReportFolder("D:\\ASD");
                         //循環流程開始
                         FinalResultCollection.Clear();
                         isMultRun = true;
@@ -335,14 +348,14 @@ namespace DefectDetection.ViewModel
                             MainImage = new WriteableBitmap(bitmapSource);
                             Frame<byte[]> frame = bitmapSource.ToByteFrame();
 
-                            var finalResult = await SingleRun(frame, IsDetectionMode , round);
-                            
-                           // VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
+                            var finalResult = await SingleRun(frame, IsDetectionMode, reportPath ,round);
+
+                            // VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
 
                             if (finalResult == null) continue;
 
                             //得到量測結果後 轉換到FinalResult 以便UI印出結果
-                       //     List<FinalResult> finalResult = CreateResult(results_, round);
+                            //     List<FinalResult> finalResult = CreateResult(results_, round);
                             foreach (var item in finalResult) {
                                 FinalResultCollection.Add(item);
                             }
@@ -350,12 +363,12 @@ namespace DefectDetection.ViewModel
 
                             await Task.Delay(10);
                         }
-
+                        Report(FinalResultCollection.ToArray(), reportPath+"report.xlsx");
                         isMultRun = false;
                         MessageBox.Show("Finished");
 
                     }
-
+             
                 }
             }
             catch (Exception ex) {
@@ -377,48 +390,46 @@ namespace DefectDetection.ViewModel
 
         private void SaveResultImage(ICogRecord cogRecord)
         {
-           /* int id = Thread.CurrentThread.ManagedThreadId;
+            /* int id = Thread.CurrentThread.ManagedThreadId;
 
-            CogRecordDisplay cogDisplayer = new CogRecordDisplay();
-            cogDisplayer.Record = cogRecord;*/
+             CogRecordDisplay cogDisplayer = new CogRecordDisplay();
+             cogDisplayer.Record = cogRecord;*/
 
         }
 
-        private async Task<List<FinalResult>> SingleRun(Frame<byte[]> frame, bool isDetectionMode, int round)
+        private async Task<List<FinalResult>> SingleRun(Frame<byte[]> frame, bool isDetectionMode, string reportPath, int round)
         {
-            DateTime dateTime =  DateTime.Now;
-           var folder = dateTime.ToString("MM-dd-HH-mm");
-            string path = $"D:\\ASD\\{folder}\\";
-            if (!Directory.Exists(path)) ; Directory.CreateDirectory(path);
+
+          
             List<FinalResult> finalResult = new List<FinalResult>();
 
             if (isDetectionMode) {
                 DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
-         
+
                 //vp 的顯示結果
                 LastRecord = detectionResults_.CogRecord;
-            
+
                 if (detectionResults_.BlobDetectorResults.Length == 0) return null;
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
                 finalResult = CreateResult(detectionResults_, round);
-                detectionResults_.RecordImage.ToByteFrame().Save($"{path}-{round}");
-            //    FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                detectionResults_.RecordImage.ToByteFrame().Save($"{reportPath}Image-{round}");
+                //    FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
             }
             else {
 
 
                 if (yuanliVision.IsRunning) throw new Exception("Process is Running");
                 VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
-            //    if (results_ == null) throw new Exception("Locate Fail");
+                //    if (results_ == null) throw new Exception("Locate Fail");
 
                 if (results_ == null) return null;
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
                 finalResult = CreateResult(results_, round);
-              
+
                 //畫面畫出結果
                 DrawResult(finalResult);
 
-             //   FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                //   FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
             }
 
             return finalResult;
@@ -530,6 +541,31 @@ namespace DefectDetection.ViewModel
 
             return finalResult;
         }
+        private string CreateReportFolder(string rootPath)
+        {
+            DateTime dateTime = DateTime.Now;
+            var folder = dateTime.ToString("yyyyMMdd-HHmm");
+            string path = $"{rootPath}\\{folder}\\";
+
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+            return path;
+        }
+        private void Report(FinalResult[] finalResults ,string fullFileName)
+        {
+            OutputExcel outputExcel = new OutputExcel();
+            string[] titles = new string[] { "SN","Diameter(um)", "Area", "Judge" };
+            outputExcel.CreateTitle(titles);
+
+            for (int i = 0; i < finalResults.Length; i++) {
+                outputExcel.WriteData(i+1 , finalResults[i].Number, finalResults[i].Diameter.ToString(), finalResults[i].Area.ToString(),finalResults[i].Judge.ToString(),"");
+            }
+
+        
+
+            outputExcel.Save(fullFileName);
+        }
+
         private void DrawResult(IEnumerable<FinalResult> finalResult)
         {
             foreach (FinalResult result in finalResult) {
@@ -600,12 +636,11 @@ namespace DefectDetection.ViewModel
         /// </summary>
         /// <param name="folderName"></param>
         /// <returns></returns>    
-        public string CreateFolder(string folderName)
+        public string CreateRecipeFolder(string folderName)
         {
             string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
             string path = $"{systemPath}\\Recipe\\{folderName}";
-            //    string path = $"{systemPath}\\Recipe\\{folderName}";
+         
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
             return path;
