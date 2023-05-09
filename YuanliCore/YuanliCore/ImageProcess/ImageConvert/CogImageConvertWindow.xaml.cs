@@ -18,36 +18,36 @@ using YuanliCore.Interface;
 using YuanliCore.CameraLib;
 using GalaSoft.MvvmLight.Command;
 
-namespace YuanliCore.ImageProcess.Caliper
+namespace YuanliCore.ImageProcess
 {
     /// <summary>
     /// Window1.xaml 的互動邏輯
     /// </summary>
-    public partial class CogCaliperWindow : Window, INotifyPropertyChanged
+    public partial class CogImageConvertWindow : Window, INotifyPropertyChanged
     {
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
-        private CaliperParams caliperParam = new CaliperParams(0);
-        private bool isDispose =false;
+        private CogImageConvertParams imageConvertParam = new CogImageConvertParams(0);
+        private bool isDispose = false;
         private bool isFullSelect = true;
         private bool isCenterSelect;
-        private bool isBeginSelect;
-        private bool isEndSelect;
 
-        public CogCaliperWindow(BitmapSource bitmap)
+
+
+        public CogImageConvertWindow(BitmapSource bitmap)
         {
             //非WPF程式 執行時會丟失 WPF元件 System.Windows.Interactivity.dll  MaterialDesignColors.dll MaterialDesignThemes.Wpf.dll
             //記得要手動複製到Debug 執行檔位置底下
             InitializeComponent();
-          
+
             UpdateImage(bitmap);
-           
+
         }
         /// <summary>
         /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
         /// </summary>
         /// <param name="cogImage"></param>
-        public CogCaliperWindow(ICogImage cogImage)
+        public CogImageConvertWindow(ICogImage cogImage)
         {
 
             InitializeComponent();
@@ -56,40 +56,20 @@ namespace YuanliCore.ImageProcess.Caliper
 
         }
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
+        /// <summary>
+        ///  影像 Binding
+        /// </summary>
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
-        public CaliperParams CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
-        public bool IsFullSelect   {  get => isFullSelect; set {  SetValue(ref isFullSelect, value);  SetResultSelect(); }  }
+        public CogImageConvertParams ImageConvertParam { get => imageConvertParam; set => SetValue(ref imageConvertParam, value); }
+        public bool IsFullSelect
+        {
+            get => isFullSelect; set
+            {
+                SetValue(ref isFullSelect, value);
+                SetResultSelect();
+            }
+        }
         public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
-
-        public bool IsBeginSelect { get => isBeginSelect; set { SetValue(ref isBeginSelect, value); SetResultSelect(); } }
-
-        public bool IsEndSelect { get => isEndSelect; set { SetValue(ref isEndSelect, value); SetResultSelect(); } }
-
-        public ICommand ClosingCommand => new RelayCommand(() =>
-        {
-
-        });
-
-        public ICommand OpenCommand => new RelayCommand(() =>
-        {
-            switch (CaliperParam.ResultOutput) {
-                case ResultSelect.Full:
-                    IsFullSelect = true;
-                    break;
-                case ResultSelect.Center:
-                    IsCenterSelect = true;
-                    break;
-                case ResultSelect.Begin:
-                    IsBeginSelect = true;
-                    break;
-                case ResultSelect.End:
-                    IsEndSelect = true;
-                    break;
-                default:
-                    break;
-            }   
-           
-        });
 
         public void UpdateImage(BitmapSource bitmap)
         {
@@ -101,40 +81,55 @@ namespace YuanliCore.ImageProcess.Caliper
             else {
                 var b = bitmap.FormatConvertTo(PixelFormats.Bgr24);
                 var frame = b.ToByteFrame();
-
-                CogImage = frame.ColorFrameToCogImage(out ICogImage inputImage);
+                CogImage = frame.ColorFrameToColorCogImage();
 
             }
 
+
         }
+ 
+        public ICommand ClosingCommand => new RelayCommand(() =>
+       {
+
+       });
+
+        public ICommand OpenCommand => new RelayCommand(() =>
+        {
+            switch (ImageConvertParam.ResultOutput) {
+                case ResultSelect.Full:
+                    IsFullSelect = true;
+                    break;
+                case ResultSelect.Center:
+                    IsCenterSelect = true;
+                    break;
+                default:
+                    break;
+            }
+
+        });
+
         private void SetResultSelect()
         {
             if (IsFullSelect)
-                CaliperParam.ResultOutput = ResultSelect.Full;
+                ImageConvertParam.ResultOutput = ResultSelect.Full;
             else if (IsCenterSelect)
-                CaliperParam.ResultOutput = ResultSelect.Center;
-            else if (IsBeginSelect)
-                CaliperParam.ResultOutput = ResultSelect.Begin;
-            else if (IsEndSelect)
-                CaliperParam.ResultOutput = ResultSelect.End;
+                ImageConvertParam.ResultOutput = ResultSelect.Center;
 
 
         }
+
         protected override void OnClosing(CancelEventArgs e)
         {
-    
             e.Cancel = true;
-
             if (isDispose) e.Cancel = false;
             this.Hide();
 
-
         }
-        public  void Dispose()
+        public void Dispose()
         {
             isDispose = true;
             Close();
-           
+
 
         }
 

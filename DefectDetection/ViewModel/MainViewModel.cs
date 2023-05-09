@@ -285,8 +285,7 @@ namespace DefectDetection.ViewModel
                  }
                 */
                 if(finalResult!=null) 
-                {
-
+                {   
                     Report(finalResult.ToArray(), reportPath + "report.xlsx");
 
                     FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);

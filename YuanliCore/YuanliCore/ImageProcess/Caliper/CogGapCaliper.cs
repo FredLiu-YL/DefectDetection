@@ -58,6 +58,14 @@ namespace YuanliCore.ImageProcess.Caliper
 
             Dispose();
         }
+        public void EditParameter(System.Drawing.Bitmap image)
+        {
+            if (image == null) throw new Exception("Image is null");
+            BitmapSource bmp = image.ToBitmapSource();
+            EditParameter(bmp);
+
+
+        }
         public void CogEditParameter()
         {
             if (CogFixtureImage == null) throw new Exception("locate is not yet complete");

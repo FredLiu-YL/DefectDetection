@@ -9,7 +9,6 @@ using YuanliCore.ImageProcess;
 namespace YuanliApplication.Common
 {
 
-
     public class FinalResult
     {
  

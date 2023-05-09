@@ -72,6 +72,14 @@ namespace YuanliCore.ImageProcess.Match
             }
 
         }
+        public void EditParameter(System.Drawing.Bitmap image)
+        {
+            if (image == null) throw new Exception("Image is null");
+            BitmapSource bmp = image.ToBitmapSource();
+            EditParameter(bmp);
+
+
+        }
         /// <summary>
         /// 已經定位過的影像作編輯
         /// </summary>

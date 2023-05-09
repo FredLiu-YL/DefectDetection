@@ -61,4 +61,19 @@ namespace YuanliCore.Interface
         public double Distance { get; }
     }
 
+
+    public class EllipseCaliperResult : CogResult
+    {
+        public EllipseCaliperResult()
+        {
+
+            Vector v = EndPoint - BeginPoint;
+            Distance = v.Length;
+        }
+
+        /// <summary>
+        /// Gap 距離
+        /// </summary>
+        public double Distance { get; }
+    }
 }

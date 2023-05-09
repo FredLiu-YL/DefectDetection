@@ -23,18 +23,18 @@ namespace YuanliCore.ImageProcess.Caliper
     /// <summary>
     /// Window1.xaml 的互動邏輯
     /// </summary>
-    public partial class CogCaliperWindow : Window, INotifyPropertyChanged
+    public partial class CogEllipseCaliperWindow : Window, INotifyPropertyChanged
     {
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
-        private CaliperParams caliperParam = new CaliperParams(0);
+        private FindEllipseParam caliperParam = new FindEllipseParam(0);
         private bool isDispose =false;
         private bool isFullSelect = true;
         private bool isCenterSelect;
         private bool isBeginSelect;
         private bool isEndSelect;
 
-        public CogCaliperWindow(BitmapSource bitmap)
+        public CogEllipseCaliperWindow(BitmapSource bitmap)
         {
             //非WPF程式 執行時會丟失 WPF元件 System.Windows.Interactivity.dll  MaterialDesignColors.dll MaterialDesignThemes.Wpf.dll
             //記得要手動複製到Debug 執行檔位置底下
@@ -47,7 +47,7 @@ namespace YuanliCore.ImageProcess.Caliper
         /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
         /// </summary>
         /// <param name="cogImage"></param>
-        public CogCaliperWindow(ICogImage cogImage)
+        public CogEllipseCaliperWindow(ICogImage cogImage)
         {
 
             InitializeComponent();
@@ -57,7 +57,7 @@ namespace YuanliCore.ImageProcess.Caliper
         }
         //   public Frame<byte[]> Frame { get => frame; set => SetValue(ref frame, value); }
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
-        public CaliperParams CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
+        public FindEllipseParam CaliperParam { get => caliperParam; set => SetValue(ref caliperParam, value); }
         public bool IsFullSelect   {  get => isFullSelect; set {  SetValue(ref isFullSelect, value);  SetResultSelect(); }  }
         public bool IsCenterSelect { get => isCenterSelect; set { SetValue(ref isCenterSelect, value); SetResultSelect(); } }
 
@@ -93,6 +93,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
         public void UpdateImage(BitmapSource bitmap)
         {
+
             if (bitmap == null) throw new Exception("Image is null");
             if (bitmap.Format == PixelFormats.Indexed8 || bitmap.Format == PixelFormats.Gray8) {
                 var frameGray = bitmap.ToByteFrame();
@@ -103,9 +104,7 @@ namespace YuanliCore.ImageProcess.Caliper
                 var frame = b.ToByteFrame();
 
                 CogImage = frame.ColorFrameToCogImage(out ICogImage inputImage);
-
             }
-
         }
         private void SetResultSelect()
         {

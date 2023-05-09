@@ -97,6 +97,11 @@ namespace YuanliCore.CameraLib
 
             return buffer;
         }
+        /// <summary>
+        /// 黑白BitmapSource 轉黑白的CogImage
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <returns></returns>
         public static ICogImage GrayFrameToCogImage(this Frame<byte[]> frame)
         {
             // Create Cognex Root thing.
@@ -127,14 +132,57 @@ namespace YuanliCore.CameraLib
 
             return cogImage;
         }
-
-        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame,out ICogImage inputImage, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
+        /// <summary>
+        /// 彩色BitmapSource 轉彩色的CogImage
+        /// </summary>
+        /// <param name="bitmapSource"></param>
+        /// <returns></returns>
+        public static ICogImage ColorFrameToColorCogImage(this BitmapSource bitmapSource)
         {
             try {
 
-                using (System.Drawing.Bitmap bmp = frame.ToBitmap()) 
-                    {
-                  
+                using (System.Drawing.Bitmap bmp = bitmapSource.ToByteFrame().ToBitmap()) 
+                 {
+                    return new CogImage24PlanarColor(bmp);
+
+                }
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// frame 轉彩色的CogImage
+        /// </summary>
+        /// <param name="bitmapSource"></param>
+        /// <returns></returns>
+        public static ICogImage ColorFrameToColorCogImage(this Frame<byte[]> frame)
+        {
+            try {
+
+                using (System.Drawing.Bitmap bmp = frame.ToBitmap()) {
+                    var cogImg = new CogImage24PlanarColor(bmp);
+                    return cogImg;
+                }
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 彩色Frame 轉黑白的CogImage
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="bayerRedScale"></param>
+        /// <param name="bayerGreenScale"></param>
+        /// <param name="bayerBlueScale"></param>
+        /// <returns></returns>
+        public static ICogImage ColorFrameToCogImage(this Frame<byte[]> frame, out ICogImage inputImage, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
+        {
+            try {
+
+                using (System.Drawing.Bitmap bmp = frame.ToBitmap()) {
+
                     CogImage24PlanarColor cogImage = new CogImage24PlanarColor(bmp);
 
                     using (CogImageConvertTool tool = new CogImageConvertTool()) {
@@ -156,6 +204,14 @@ namespace YuanliCore.CameraLib
                 throw ex;
             }
         }
+        /// <summary>
+        /// 彩色BitmapSource 轉黑白的CogImage
+        /// </summary>
+        /// <param name="bitmapSource"></param>
+        /// <param name="bayerRedScale"></param>
+        /// <param name="bayerGreenScale"></param>
+        /// <param name="bayerBlueScale"></param>
+        /// <returns></returns>
         public static ICogImage ColorFrameToCogImage(this BitmapSource bitmapSource, double bayerRedScale = 0.333, double bayerGreenScale = 0.333, double bayerBlueScale = 0.333)
         {
             try {
@@ -210,7 +266,7 @@ namespace YuanliCore.CameraLib
             System.Drawing.Imaging.BitmapData data = bmp.LockBits(
             new System.Drawing.Rectangle(System.Drawing.Point.Empty, bmp.Size), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
 
-            bitmapSource.CopyPixels(Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride); 
+            bitmapSource.CopyPixels(Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
             bmp.UnlockBits(data);
 
             return bmp;

@@ -23,17 +23,18 @@ namespace YuanliCore.ImageProcess.Match
     /// <summary>
     /// Window1.xaml 的互動邏輯
     /// </summary>
-    public partial class CogMatchWindow : Window, INotifyPropertyChanged
+    public partial class CogSearchMaxWindow : Window, INotifyPropertyChanged
     {
         //  private Frame<byte[]> frame;
         private ICogImage cogImage;
-        private PatmaxParams patmaxParam = new PatmaxParams(0);
+        private SearchMaxParams patmaxParam = new SearchMaxParams(0);
         private bool isDispose = false;
         private bool isFullSelect = true;
         private bool isCenterSelect;
-        public CogMatchWindow(BitmapSource bitmap)
+        public CogSearchMaxWindow(BitmapSource bitmap)
         {
-
+            //非WPF程式 執行時會丟失 WPF元件 System.Windows.Interactivity.dll  MaterialDesignColors.dll MaterialDesignThemes.Wpf.dll
+            //記得要手動複製到Debug 執行檔位置底下
             InitializeComponent();
 
             UpdateImage(bitmap);
@@ -43,7 +44,7 @@ namespace YuanliCore.ImageProcess.Match
         /// 直接傳入cognex的圖像格式  ，為了符合cog 的 變換矩陣流程
         /// </summary>
         /// <param name="cogImage"></param>
-        public CogMatchWindow(ICogImage cogImage)
+        public CogSearchMaxWindow(ICogImage cogImage)
         {
 
             InitializeComponent();
@@ -56,7 +57,7 @@ namespace YuanliCore.ImageProcess.Match
         ///  影像 Binding
         /// </summary>
         public ICogImage CogImage { get => cogImage; set => SetValue(ref cogImage, value); }
-        public PatmaxParams PatmaxParam { get => patmaxParam; set => SetValue(ref patmaxParam, value); }
+        public SearchMaxParams PatmaxParam { get => patmaxParam; set => SetValue(ref patmaxParam, value); }
         public bool IsFullSelect
         {
             get => isFullSelect; set
