@@ -8,6 +8,8 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:sys="clr-namespace:System;assembly=mscorlib" 
              xmlns:yuanliapplication="clr-namespace:YuanliApplication"
+          
+       
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
               x:Name="InspectControl"
@@ -21,6 +23,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+
     </UserControl.Resources>
     <Grid Grid.Column="0"   DataContext="{Binding ElementName=InspectControl}" Grid.Row="1" Grid.ColumnSpan="3"  Grid.RowSpan="3"  Background="AliceBlue"  >
         <Grid.Resources>
@@ -94,8 +97,8 @@
 
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.7*"/>
-                    <ColumnDefinition Width="0.9*"/>
+                    <ColumnDefinition Width="2.8*"/>
+                    <ColumnDefinition Width="0.2*"/>
                 </Grid.ColumnDefinitions>
                 <UserControls:MethodDisplayUC  Grid.Row="1" SN="SN"  MethodName="Name" ResultName="Output"  Margin="2,0,2,2"   />
 
@@ -108,7 +111,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding SN}" Width="75"  FontSize="24" BorderThickness="1.5" BorderBrush="Black" />
+                                <Label Content="{Binding SN}" Width="85"  FontSize="24" BorderThickness="1.5" BorderBrush="Black" />
                                 <Label Content="{Binding Name}" FontSize="24" Width="250" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="1" />
                                 <!--<Label Content="{Binding ResultName}" FontSize="24" Width="140" BorderThickness="1.5" BorderBrush="Black"  Grid.Column="2" />-->
                             </StackPanel>
@@ -122,13 +125,15 @@
 
                 <Grid  Grid.Column="0" Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.4*"/>
+                        <ColumnDefinition Width="2.0*"/>
                         <ColumnDefinition />
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <ComboBox  Margin="0,0,10,0" Grid.Column="0" SelectedIndex="{Binding MethodSelectIndex}"   >
+                    <ComboBox  Margin="0,0,10,0" Grid.Column="0"  ItemsSource="{Binding AgListValues}" SelectedItem="{Binding SelectedAg, Mode=TwoWay}" SelectedIndex="{Binding MethodSelectIndex}"   />
+
+                    <!--<ComboBox  Margin="0,0,10,0" Grid.Column="0" SelectedIndex="{Binding MethodSelectIndex}"   >
                         <ComboBoxItem Content="Gap" />
                         <ComboBoxItem Content="Line" />
                         <ComboBoxItem Content="Circle" />
@@ -136,8 +141,8 @@
                         <ComboBoxItem Content="模板匹配"  IsEnabled="False" />
 
 
-                    </ComboBox>
-                    <Button Content="Add" Margin="0,0,10,0" Grid.Column="1" Command="{Binding AddMethodCommand}"  />
+                    </ComboBox>-->
+                    <Button Content="Add" Margin="0,0,10,0" Grid.Column="1" Command="{Binding AddMethodCommand}"   />
                     <Button Content="Delect" Margin="0,0,10,0" Grid.Column="2" Command="{Binding DeleteMethodCommand}"     />
                     <Button Content="Clear" Margin="0,0,10,0" Grid.Column="3"   Command="{Binding ClearMethodCommand}"    />
                 </Grid>

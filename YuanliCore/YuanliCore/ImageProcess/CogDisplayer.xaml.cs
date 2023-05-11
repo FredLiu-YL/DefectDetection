@@ -34,7 +34,7 @@ namespace YuanliCore.ImageProcess
 
             cogDisplay = new CogRecordDisplay();
             cogDisplay.Size = new System.Drawing.Size(Width, Height);
-
+        
 
             ((System.ComponentModel.ISupportInitialize)(cogDisplay)).BeginInit();
 
@@ -52,7 +52,7 @@ namespace YuanliCore.ImageProcess
 
             ((System.ComponentModel.ISupportInitialize)(cogDisplay)).EndInit();
 
-      
+            cogDisplay.MouseMode = CogDisplayMouseModeConstants.Touch;
         }
 
         public ICogRecord Record

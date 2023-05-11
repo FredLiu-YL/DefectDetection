@@ -39,8 +39,13 @@ namespace YuanliApplication.Tool
             sheet.Cells($"A{colums+1}").Value = data1;
             sheet.Cells($"B{colums+1}").Value = data2;
             sheet.Cells($"C{colums+1}").Value = data3;
-            if (data4 != "")
-                sheet.Cells($"D{colums+1}").Value = data4;
+            if (data4 != "") {
+                sheet.Cells($"D{colums + 1}").Value = data4;
+                if(data4== "False")
+                    sheet.Cells($"D{colums + 1}").Style.Fill.BackgroundColor = XLColor.Red;
+           
+            }
+              
             if (data5 != "")
                 sheet.Cells($"E{colums+1}").Value = data5;
         }

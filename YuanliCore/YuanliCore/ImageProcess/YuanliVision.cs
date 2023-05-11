@@ -23,7 +23,7 @@ namespace YuanliCore.ImageProcess
     public class YuanliVision
     {
         private ICogImage cogLocatedImg;
-
+        private CogTransform2DLinear cogTransform;
         private CogFixtureLocate cogFixtureLocate = new CogFixtureLocate();
 
         private CombineOptionOutput[] combineOptionOutputs;
@@ -156,7 +156,7 @@ namespace YuanliCore.ImageProcess
 
 
         }
-        public async Task<DetectionResult> Run(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters)
+        public async Task<DetectionResult> DetectionRun(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters)
         {
 
             try {
@@ -179,21 +179,27 @@ namespace YuanliCore.ImageProcess
                 await Task.Run(() =>
                 {
                     LocateResult cogLocateResult = LocateMatcher.FindCogLocate(frame);
-                    if (cogLocateResult == null) return;
-                    Cognex.VisionPro.ICogImage cogImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
+                    if (cogLocateResult == null) {
+                        //對位失敗 另外處理  圖片與 結果                      
+                        detectionResult.CogRecord = LocateMatcher.Record;
+                        detectorResults.Add(new BlobDetectorResult(new Point(999,999),9999,9999));
+                        return;
+                    } 
+            //        Cognex.VisionPro.ICogImage cogImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
                     int tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
                     //將所有演算法跑過一遍 得出結果
                     foreach (CogMethod item in CogMethods) {
-                        item.CogFixtureImage = cogImg;
-                        item.Run();
-                        CogBlobDetector detector = item as CogBlobDetector;
-                        var blobparm = detector.RunParams as BlobParams;
+                        CogPatInspect detector = item as CogPatInspect;  //現階段  沒有其他檢測方法  暫時先都轉型成CogPatInspect，方便傳入數值
+                        detector.CogFixtureImage = cogLocateResult.LocateCogImg;
+                        detector.CogTransform = cogLocateResult.CogTransform;
+                        detector.Run();
+                
 
                         // var judgeDetect =  detector.DetectorResults.Where(r=>r.Diameter > blobparm.JudgeMin);
                         foreach (var Detect in detector.DetectorResults) {
-                            if (Detect.Diameter >= blobparm.JudgeMin)
-                                Detect.Judge = false;
+                            if (Detect.Diameter >= detector.RunParams.JudgeMin)
+                                Detect.Judge = false; 
                             else
                                 Detect.Judge = true;
                         }
@@ -377,6 +383,7 @@ namespace YuanliCore.ImageProcess
                 if (cogLocateResult == null) throw new Exception("Locate Fail");
                 //定位後資訊都在圖片裡 ，  直接拿去後面方法使用就自動帶入affine transform
                 cogLocatedImg = cogFixtureLocate.RunFixture(frame, cogLocateResult.CogTransform);
+                cogTransform = cogLocateResult.CogTransform;
             }
             catch (Exception ex) {
 
@@ -393,6 +400,7 @@ namespace YuanliCore.ImageProcess
         {
             try {
                 CogMethods[index].CogFixtureImage = cogLocatedImg;
+                CogMethods[index].CogTransform = cogTransform;
                 return CogMethods[index];
             }
             catch (Exception ex) {
@@ -428,6 +436,11 @@ namespace YuanliCore.ImageProcess
                     case MethodName.BlobDetector:
                         cogMethods.Add(new CogBlobDetector(item));
                         break;
+                    case MethodName.PatternComparison:
+                        cogMethods.Add(new CogPatInspect(item));
+                        break;
+
+                        
                     default:
                         break;
                 }

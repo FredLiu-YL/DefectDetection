@@ -53,6 +53,8 @@ namespace YuanliCore.ImageProcess
         /// </summary>
         public MethodName Methodname { get; set; }
 
+        public double JudgeMin { get; set; } = 10;
+
         /// <summary>
         /// 由指定的檔案路徑資料夾載入 Recipe。 
         /// </summary>
@@ -235,9 +237,10 @@ namespace YuanliCore.ImageProcess
         GapMeansure,
         LineMeansure,
         CircleMeansure,
-        BlobDetector,
+        BlobDetector,      
+        PatternComparison,
         PatternMatch,
-
+  
     }
 
     public enum OutputOption

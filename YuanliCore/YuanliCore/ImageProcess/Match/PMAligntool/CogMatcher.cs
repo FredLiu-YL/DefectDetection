@@ -149,7 +149,10 @@ namespace YuanliCore.ImageProcess.Match
             alignTool.SearchRegion = param.SearchRegion;
             alignTool.Run();
 
-            if (alignTool.Results.Count == 0) return null;
+            if (alignTool.Results.Count == 0) {
+                Record = alignTool.CreateCurrentRecord().SubRecords[0];
+                return null; 
+            }
             CogTransform2DLinear linear = alignTool.Results[0].GetPose();
 
             Record = alignTool.CreateLastRunRecord().SubRecords[0];

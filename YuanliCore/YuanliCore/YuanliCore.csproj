@@ -118,6 +118,14 @@
       <DependentUpon>CogMatchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImageProcess\CogProcess.cs" />
+    <Compile Include="ImageProcess\PatternComparison\CogPatInspectWindow.xaml.cs">
+      <DependentUpon>CogPatInspectWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageProcess\PatternComparison\CogPatInspect.cs" />
+    <Compile Include="ImageProcess\PatternComparison\CogPatInspectParams.cs" />
+    <Compile Include="ImageProcess\PatternComparison\CogPatInspectControl.xaml.cs">
+      <DependentUpon>CogPatInspectControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImageProcess\YuanliVision.cs" />
     <Compile Include="Interface\AbstractRecipe.cs" />
     <Compile Include="Interface\IBlobDetector.cs" />
@@ -354,6 +362,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.LinescanDistortionCorrection.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="Cognex.VisionPro.PatInspect, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.PatInspect.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.PatInspect.Controls, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.PatInspect.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="Cognex.VisionPro.PMAlign, Version=71.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\Cognex.VisionPro.PMAlign.dll</HintPath>
@@ -539,6 +555,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ImageProcess\PatternComparison\CogPatInspectWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ImageProcess\PatternComparison\CogPatInspectControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Logger\LoggerUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -547,6 +571,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ImageProcess\CogPatInspectTool\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\MaterialDesignThemes.4.5.0\build\MaterialDesignThemes.targets" Condition="Exists('..\..\packages\MaterialDesignThemes.4.5.0\build\MaterialDesignThemes.targets')" />

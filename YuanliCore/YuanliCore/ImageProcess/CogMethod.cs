@@ -14,6 +14,7 @@ namespace YuanliCore.ImageProcess
         public CogResult MethodResult { get; set; }
         public ICogRecord Record { get; set; }
         public ICogImage CogFixtureImage { get; set; }
+        public CogTransform2DLinear CogTransform { get; set; }
         public MethodName MethodName { get=> RunParams.Methodname; set { RunParams.Methodname = value; } }
 
         public abstract void Dispose();

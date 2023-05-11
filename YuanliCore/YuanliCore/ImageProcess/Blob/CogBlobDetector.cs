@@ -21,7 +21,12 @@ namespace YuanliCore.ImageProcess.Blob
         {
 
             blobTool = new CogBlobTool();
-            RunParams = new BlobParams();
+            BlobParams blobparams = new BlobParams();
+           /* blobparams.RunParams.SegmentationParams.Mode = CogBlobSegmentationModeConstants.HardFixedThreshold;
+            blobparams.RunParams.SegmentationParams.Polarity = CogBlobSegmentationPolarityConstants.DarkBlobs;
+            blobparams.RunParams.SegmentationParams.HardFixedThreshold = 17;
+            blobparams.RunParams.ConnectivityMinPixels = 13;*/
+            RunParams = blobparams;
         }
         public CogBlobDetector(CogParameter blobParams)
         {
@@ -29,7 +34,7 @@ namespace YuanliCore.ImageProcess.Blob
             blobTool = new CogBlobTool();
             RunParams = blobParams;
         }
-        public override CogParameter RunParams { get; set; }  
+        public override CogParameter RunParams { get; set; }
         public BlobDetectorResult[] DetectorResults { get; set; }
         public override void Dispose()
         {
@@ -114,10 +119,10 @@ namespace YuanliCore.ImageProcess.Blob
                 double area = blobResults[i].Area;
 
 
-                results.Add(new BlobDetectorResult(new Point(x, y), area,0));
+                results.Add(new BlobDetectorResult(new Point(x, y), area, 0));
             }
 
-            
+
         }
 
         private IEnumerable<BlobDetectorResult> Find(ICogImage cogImage)
@@ -128,11 +133,10 @@ namespace YuanliCore.ImageProcess.Blob
             blobTool.RunParams = param.RunParams;
             blobTool.Region = param.ROI;
             blobTool.Run();
-    
+
             List<BlobDetectorResult> results = new List<BlobDetectorResult>();
-            if(blobTool.RunStatus.Result == CogToolResultConstants.Accept) 
-            {
-      
+            if (blobTool.RunStatus.Result == CogToolResultConstants.Accept) {
+
                 var blobResults = blobTool.Results.GetBlobs();
 
                 for (int i = 0; i < blobResults.Count; i++) {
@@ -150,8 +154,8 @@ namespace YuanliCore.ImageProcess.Blob
                 }
                 Record = blobTool.CreateLastRunRecord().SubRecords[0];
             }
-     
-           
+
+
             return results;
         }
         public override void Run()

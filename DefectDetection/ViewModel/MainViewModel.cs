@@ -258,7 +258,7 @@ namespace DefectDetection.ViewModel
 
                 string reportPath = CreateReportFolder("D:\\DetectionReport");
 
-                List<FinalResult> finalResult = await SingleRun(frame, IsDetectionMode, reportPath ,1);
+                List<FinalResult> finalResult = await SingleRun(frame, IsDetectionMode, reportPath, 1);
                 /* 
                   if (IsDetectionMode) {
                      DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
@@ -284,13 +284,12 @@ namespace DefectDetection.ViewModel
                      FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
                  }
                 */
-                if(finalResult!=null) 
-                {   
+                if (finalResult != null) {
                     Report(finalResult.ToArray(), reportPath + "report.xlsx");
 
                     FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
                 }
-                
+
                 MessageBox.Show("Finished");
             }
             catch (Exception ex) {
@@ -334,7 +333,7 @@ namespace DefectDetection.ViewModel
                                 imageFiles.Add(file);
 
                         }
-                        string reportPath = CreateReportFolder("D:\\ASD");
+                        string reportPath = CreateReportFolder("D:\\DetectionReport");
                         //循環流程開始
                         FinalResultCollection.Clear();
                         isMultRun = true;
@@ -346,8 +345,8 @@ namespace DefectDetection.ViewModel
 
                             MainImage = new WriteableBitmap(bitmapSource);
                             Frame<byte[]> frame = bitmapSource.ToByteFrame();
-
-                            var finalResult = await SingleRun(frame, IsDetectionMode, reportPath ,round);
+                            if (round == 9) round = 9;
+                            var finalResult = await SingleRun(frame, IsDetectionMode, reportPath, round);
 
                             // VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
 
@@ -362,12 +361,12 @@ namespace DefectDetection.ViewModel
 
                             await Task.Delay(10);
                         }
-                        Report(FinalResultCollection.ToArray(), reportPath+"report.xlsx");
+                        Report(FinalResultCollection.ToArray(), reportPath + "report.xlsx");
                         isMultRun = false;
                         MessageBox.Show("Finished");
 
                     }
-             
+
                 }
             }
             catch (Exception ex) {
@@ -399,11 +398,11 @@ namespace DefectDetection.ViewModel
         private async Task<List<FinalResult>> SingleRun(Frame<byte[]> frame, bool isDetectionMode, string reportPath, int round)
         {
 
-          
+
             List<FinalResult> finalResult = new List<FinalResult>();
 
             if (isDetectionMode) {
-                DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
+                DetectionResult detectionResults_ = await yuanliVision.DetectionRun(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
 
                 //vp 的顯示結果
                 LastRecord = detectionResults_.CogRecord;
@@ -411,7 +410,9 @@ namespace DefectDetection.ViewModel
                 if (detectionResults_.BlobDetectorResults.Length == 0) return null;
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
                 finalResult = CreateResult(detectionResults_, round);
-                detectionResults_.RecordImage.ToByteFrame().Save($"{reportPath}Image-{round}");
+                var jugeFail = finalResult.Where(r => !r.Judge);
+                if (jugeFail.Count() > 0)
+                    detectionResults_.RecordImage.ToByteFrame().Save($"{reportPath}Image-{round}");
                 //    FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
             }
             else {
@@ -550,17 +551,18 @@ namespace DefectDetection.ViewModel
 
             return path;
         }
-        private void Report(FinalResult[] finalResults ,string fullFileName)
+        private void Report(FinalResult[] finalResults, string fullFileName)
         {
             OutputExcel outputExcel = new OutputExcel();
-            string[] titles = new string[] { "SN","Diameter(um)", "Area", "Judge" };
+            string[] titles = new string[] { "SN", "Diameter(um)", "Area", "Judge" };
             outputExcel.CreateTitle(titles);
 
             for (int i = 0; i < finalResults.Length; i++) {
-                outputExcel.WriteData(i+1 , finalResults[i].Number, finalResults[i].Diameter.ToString(), finalResults[i].Area.ToString(),finalResults[i].Judge.ToString(),"");
+                outputExcel.WriteData(i + 1, finalResults[i].Number, finalResults[i].Diameter.ToString(), finalResults[i].Area.ToString(), finalResults[i].Judge.ToString(), "");
+            
             }
 
-        
+
 
             outputExcel.Save(fullFileName);
         }
@@ -639,7 +641,7 @@ namespace DefectDetection.ViewModel
         {
             string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string path = $"{systemPath}\\Recipe\\{folderName}";
-         
+
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
             return path;

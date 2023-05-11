@@ -36,7 +36,7 @@ namespace YuanliCore.ImageProcess.Blob
         public CogBlob RunParams { get; set; }
 
 
-        public double JudgeMin { get; set; } = 10;
+
       //  public double JudgeMax { get; set; }
 
         public static BlobParams Default(int id = 0)

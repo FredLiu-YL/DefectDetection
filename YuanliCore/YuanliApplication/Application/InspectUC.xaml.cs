@@ -36,7 +36,7 @@ namespace YuanliApplication.Application
         private OutputOption combineOptionSelected;
         private double pixelSize = 1;
         private YuanliVision yuanliVision = new YuanliVision();
-
+        private MethodName algorithmList;
         //定位用樣本
         private CogMatcher matcher = new CogMatcher(); //使用Vision pro 實體
         private ObservableCollection<CombineOptionOutput> combineCollection = new ObservableCollection<CombineOptionOutput>();
@@ -123,6 +123,10 @@ namespace YuanliApplication.Application
         /// </summary>
         public BitmapSource SampleImage { get => sampleImage; set => SetValue(ref sampleImage, value); }
         public int MethodSelectIndex { get => methodSelectIndex; set => SetValue(ref methodSelectIndex, value); }
+
+        public List<string> AgListValues { get; } = Enum.GetNames(typeof(MethodName)).ToList();
+        public string SelectedAg { get; set; }
+
         public int MethodCollectIndex { get => methodCollectIndex; set => SetValue(ref methodCollectIndex, value); }
         public OutputOption CombineOptionSelected { get => combineOptionSelected; set => SetValue(ref combineOptionSelected, value); }
         public int CombineCollectionIndex { get => combineCollectionIndex; set => SetValue(ref combineCollectionIndex, value); }
@@ -158,7 +162,19 @@ namespace YuanliApplication.Application
                item.Dispose();
            }
        });
+        public ICommand LocateSampleCommand => new RelayCommand(() =>
+        {
+            try {
 
+                yuanliVision.ImportGoldenImage(Image, matcher);
+                IsLocated = true;
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+        });
 
         public ICommand MouseDoubleClickCommand => new RelayCommand(() =>
        {
@@ -198,6 +214,12 @@ namespace YuanliApplication.Application
                        CogBlobDetector blobDetector = method as CogBlobDetector;
                        blobDetector.CogEditParameter();
                        MethodDispCollection[MethodCollectIndex].ResultName = blobDetector.RunParams.ResultOutput.ToString();
+                       break;
+
+                   case MethodName.PatternComparison:
+                       CogPatInspect patDetector = method as CogPatInspect;
+                       patDetector.CogEditParameter();
+                       MethodDispCollection[MethodCollectIndex].ResultName = patDetector.RunParams.ResultOutput.ToString();
                        break;
                    default:
                        break;
@@ -310,57 +332,72 @@ namespace YuanliApplication.Application
         public ICommand AddMethodCommand => new RelayCommand(() =>
        {
 
-
-           int sn = yuanliVision.CogMethods.Count + 1;
-
-           //Combobox 要跟 MethodName 列舉的順序對上 比如 LineMeansure 列舉在第二個 ，combobox就放第二個
-           switch ((MethodName)MethodSelectIndex) {
-               case MethodName.PatternMatch:
-
-                   MethodDispCollection.Add(new DisplayMethod { SN = $"{sn}", Name = MethodName.PatternMatch, ResultName = $"{ResultSelect.Full}" });
-                   var cogM = new CogMatcher { MethodName = MethodName.PatternMatch, };
-                   cogM.RunParams.Id = sn;
-                   yuanliVision.CogMethods.Add(cogM);
-
-                   break;
-               case MethodName.GapMeansure:
-                   MethodDispCollection.Add(new DisplayMethod { SN = $"{sn}", Name = MethodName.GapMeansure, ResultName = $"{ResultSelect.Full}" });
-                   var cogGM = new CogGapCaliper { MethodName = MethodName.GapMeansure };
-                   cogGM.RunParams.Id = sn;
-                   yuanliVision.CogMethods.Add(cogGM);
-
-                   break;
+           try {
 
 
+               int sn = yuanliVision.CogMethods.Count + 1;
+              var methodname = (MethodName)MethodSelectIndex;
+               //Combobox 要跟 MethodName 列舉的順序對上 比如 LineMeansure 列舉在第二個 ，combobox就放第二個
+               switch ((MethodName)MethodSelectIndex) {
+                   case MethodName.PatternMatch:
+                       throw new NotImplementedException();
+                       MethodDispCollection.Add(new DisplayMethod { SN = $"{sn}", Name = methodname, ResultName = $"{ResultSelect.Full}" });
+                       var cogM = new CogMatcher { MethodName = MethodName.PatternMatch, };
+                       cogM.RunParams.Id = sn;
+                       yuanliVision.CogMethods.Add(cogM);
+
+                       break;
+                   case MethodName.GapMeansure:
+                       MethodDispCollection.Add(new DisplayMethod { SN = $"{sn}", Name = methodname, ResultName = $"{ResultSelect.Full}" });
+                       var cogGM = new CogGapCaliper { MethodName = MethodName.GapMeansure };
+                       cogGM.RunParams.Id = sn;
+                       yuanliVision.CogMethods.Add(cogGM);
+
+                       break;
 
 
-               case MethodName.LineMeansure:
-                   MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.LineMeansure, ResultName = $"{ResultSelect.Full}" });
-                   var cogLM = new CogLineCaliper { MethodName = MethodName.LineMeansure };
-                   cogLM.RunParams.Id = sn;
-                   yuanliVision.CogMethods.Add(cogLM);
 
-                   break;
 
-               case MethodName.CircleMeansure:
-                   MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.CircleMeansure, ResultName = $"{ResultSelect.Full}" });
-                   //    MethodCollection.Add(new CogGapCaliper { MethodName = $"{MethodName.CircleMeansure}" });
+                   case MethodName.LineMeansure:
+                       MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = methodname, ResultName = $"{ResultSelect.Full}" });
+                       var cogLM = new CogLineCaliper { MethodName = MethodName.LineMeansure };
+                       cogLM.RunParams.Id = sn;
+                       yuanliVision.CogMethods.Add(cogLM);
 
-                   break;
-               case MethodName.BlobDetector:
-                   MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = MethodName.BlobDetector, ResultName = $"{ResultSelect.Full}" });
-                   var cogBlob = new CogBlobDetector { MethodName = MethodName.BlobDetector };
-                   cogBlob.RunParams.Id = sn;
-                   yuanliVision.CogMethods.Add(cogBlob);
-                   break;
-               default:
-                   break;
+                       break;
+
+                   case MethodName.CircleMeansure:
+                       MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = methodname, ResultName = $"{ResultSelect.Full}" });
+                       //    MethodCollection.Add(new CogGapCaliper { MethodName = $"{MethodName.CircleMeansure}" });
+
+                       break;
+                   case MethodName.BlobDetector:
+                       MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = methodname, ResultName = $"{ResultSelect.Full}" });
+                       var cogBlob = new CogBlobDetector { MethodName = MethodName.BlobDetector };
+                       cogBlob.RunParams.Id = sn;
+                       yuanliVision.CogMethods.Add(cogBlob);
+                       break;
+
+
+                   case MethodName.PatternComparison:
+                       MethodDispCollection.Add(new DisplayMethod { SN = $"{yuanliVision.CogMethods.Count + 1}", Name = methodname, ResultName = $"{ResultSelect.Full}" });
+                       var cogPat = new CogPatInspect { MethodName = MethodName.PatternComparison };
+                       cogPat.RunParams.Id = sn;
+                       yuanliVision.CogMethods.Add(cogPat);
+
+                       break;
+                   default:
+                       break;
+               }
+
+               AddCombine(Convert.ToString(yuanliVision.CogMethods.Count));
+               UpdateRecipe();
+
            }
+           catch (Exception ex) {
 
-           AddCombine(Convert.ToString(yuanliVision.CogMethods.Count));
-           UpdateRecipe();
-
-
+               MessageBox.Show(ex.Message);
+           }
        });
         public ICommand DeleteMethodCommand => new RelayCommand(() =>
        {
@@ -431,19 +468,7 @@ namespace YuanliApplication.Application
 
        });
 
-        public ICommand LocateSampleCommand => new RelayCommand(() =>
-       {
-           try {
-
-               yuanliVision.ImportGoldenImage(Image, matcher);
-               IsLocated = true;
-           }
-           catch (Exception ex) {
-
-               MessageBox.Show(ex.Message);
-           }
-
-       });
+       
 
 
 
@@ -527,9 +552,11 @@ namespace YuanliApplication.Application
                         break;
                     case MethodName.CircleMeansure:
                         break;
-                    case MethodName.BlobDetector
-                    :
+                    case MethodName.BlobDetector:
                         yuanliVision.CogMethods.Add(new CogBlobDetector(item));
+                        break;
+                    case MethodName.PatternComparison:
+                        yuanliVision.CogMethods.Add(new CogPatInspect(item));
                         break;
                     default:
                         break;

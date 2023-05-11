@@ -9,7 +9,7 @@
              d:DesignHeight="50" d:DesignWidth="250">
     <Grid DataContext="{Binding ElementName=Method_UC}" Background="AntiqueWhite">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.33*"/>
+            <ColumnDefinition Width="0.25*"/>
             <ColumnDefinition Width="1.1*" />
             <ColumnDefinition Width="0.01*" />
         </Grid.ColumnDefinitions>
