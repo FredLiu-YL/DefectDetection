@@ -69,8 +69,8 @@
                                              MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" 
                                              ClearShapeAction="{Binding ClearShapeAction}" IsEnabled="{Binding IsTriggerProtecte}"   />
                     </TabItem>
-                    <TabItem  >
-                        <imageprocess:CogDisplayer    Record="{Binding  LastRecord}"  />
+                    <TabItem  Header="Result"  >
+                        <imageprocess:CogDisplayer    Record="{Binding  LastRecord}" TextLsit="{Binding  CogTextLsit}"    />
                     
                     </TabItem>
                 </TabControl>

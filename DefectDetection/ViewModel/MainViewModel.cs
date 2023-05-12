@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -53,6 +54,7 @@ namespace DefectDetection.ViewModel
         private string version;
         private bool isMultRun;
         private BitmapSource imageSouce;
+        private List<DisplayLable> cogTextLsit = new List<DisplayLable>();
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -75,6 +77,8 @@ namespace DefectDetection.ViewModel
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
         public ICogRecord LastRecord { get => lastRecord; set => SetValue(ref lastRecord, value); }
+        public List<DisplayLable> CogTextLsit { get => cogTextLsit; set => SetValue(ref cogTextLsit, value); }
+
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>
@@ -286,8 +290,12 @@ namespace DefectDetection.ViewModel
                 */
                 if (finalResult != null) {
                     Report(finalResult.ToArray(), reportPath + "report.xlsx");
-
+                    List<DisplayLable> textLsit = new List<DisplayLable>();
                     FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+                    foreach (var item in finalResult) {
+                        textLsit.Add(new DisplayLable(item.Center.Value, item.Diameter.ToString("0.000")));
+                    }
+                    CogTextLsit = textLsit;
                 }
 
                 MessageBox.Show("Finished");
@@ -404,6 +412,7 @@ namespace DefectDetection.ViewModel
             if (isDetectionMode) {
                 DetectionResult detectionResults_ = await yuanliVision.DetectionRun(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
 
+
                 //vp 的顯示結果
                 LastRecord = detectionResults_.CogRecord;
 
@@ -411,9 +420,23 @@ namespace DefectDetection.ViewModel
                 //得到量測結果後 轉換到FinalResult 以便UI印出結果
                 finalResult = CreateResult(detectionResults_, round);
                 var jugeFail = finalResult.Where(r => !r.Judge);
-                if (jugeFail.Count() > 0)
-                    detectionResults_.RecordImage.ToByteFrame().Save($"{reportPath}Image-{round}");
+
+
+                if (jugeFail.Count() > 0) {
+                    var lables = finalResult.Select(r => new DisplayLable(r.Center.Value, r.Diameter.ToString("0.000")));
+
+                    var image = detectionResults_.CogRecord.CogRecordAddText(lables , frame.Width, frame.Height);
+
+             //       var image = detectionResults_.CogRecord.CreateBmp(frame.Width, frame.Height);
+                    //  detectionResults_.RecordImage.ToByteFrame().Save($"{reportPath}Image-{round}");
+                    image.ToByteFrame().Save($"{reportPath}Image-{round}");
+                }
+
                 //    FinalResultCollection = new ObservableCollection<FinalResult>(finalResult);
+
+
+
+
             }
             else {
 
@@ -559,7 +582,7 @@ namespace DefectDetection.ViewModel
 
             for (int i = 0; i < finalResults.Length; i++) {
                 outputExcel.WriteData(i + 1, finalResults[i].Number, finalResults[i].Diameter.ToString(), finalResults[i].Area.ToString(), finalResults[i].Judge.ToString(), "");
-            
+
             }
 
 
@@ -616,6 +639,9 @@ namespace DefectDetection.ViewModel
 
 
         }
+
+
+
         private BitmapSource CreateBmp(string path)
         {
             BitmapImage bitmapImage = new BitmapImage();

@@ -212,14 +212,14 @@ namespace YuanliCore.ImageProcess
                             detectionResult.CogRecord.SubRecords.Add(detector.Record);  //第二次以後 將record相加
                     }
 
-                 
-                 
-                    // Testc(detectionResult.CogRecord);
-                    CreateImage?.Invoke(detectionResult.CogRecord);
+            
+
+                      // Testc(detectionResult.CogRecord);
+                      CreateImage?.Invoke(detectionResult.CogRecord);
                 });
 
-                var image = CreateBmp(detectionResult.CogRecord, frame.Width, frame.Height);
-                detectionResult.RecordImage = image;
+               // var image = CreateBmp(detectionResult.CogRecord, frame.Width, frame.Height);
+               // detectionResult.RecordImage = image;
                 detectionResult.BlobDetectorResults = detectorResults.ToArray();
 
                 return detectionResult;
@@ -237,7 +237,15 @@ namespace YuanliCore.ImageProcess
         }
 
 
+        private void WriteText(Point pos , string text)
+        {
 
+            CogGraphicLabel label = new CogGraphicLabel();
+            label.SetXYText(pos.X,pos.Y , text);
+            // label.Font = new System.Drawing.Font(());
+            label.SelectedSpaceName = "";
+
+        }
 
         private BitmapSource CreateBmp(ICogRecord cogRecord, int width, int height)
         {
@@ -251,8 +259,8 @@ namespace YuanliCore.ImageProcess
                 cogDisplayers.Subject = cogRecord;
 
                 var bmp = cogDisplayers.Display.CreateContentBitmap(CogDisplayContentBitmapConstants.Display);
-
-                bmps = bmp.ToBitmapSource();
+        //    cogDisplayers.Display.InteractiveGraphics.Add();
+                         bmps = bmp.ToBitmapSource();
                 // bmp.ToBitmapSource().Save("D:\\qaswed.bmp");
 
                 // CogRecordDisplay cogDisplayer = new CogRecordDisplay();

@@ -200,8 +200,8 @@ namespace YuanliCore.ImageProcess
         /// 距離
         /// </summary>
         public double Distance { get; set; }
-        public Point EndPoint { get;   set; }
-        public Point BeginPoint { get;   set; }
+        public Point EndPoint { get; set; }
+        public Point BeginPoint { get; set; }
         /// <summary>
         /// 角度
         /// </summary>
@@ -224,6 +224,21 @@ namespace YuanliCore.ImageProcess
         public double ThresholdMax { get; set; }
     }
 
+
+
+
+    public class DisplayLable
+    {
+        public DisplayLable(Point pos, string text)
+        {
+            Pos = pos;
+            Text = text;
+
+        }
+        public Point Pos { get; set; }
+        public string Text { get; set; }
+    }
+
     public enum ResultSelect
     {
         Full,
@@ -237,10 +252,10 @@ namespace YuanliCore.ImageProcess
         GapMeansure,
         LineMeansure,
         CircleMeansure,
-        BlobDetector,      
+        BlobDetector,
         PatternComparison,
         PatternMatch,
-  
+
     }
 
     public enum OutputOption

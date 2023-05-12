@@ -67,12 +67,12 @@ namespace YuanliCore.ImageProcess.Blob
                 tempParam.ROI = new CogRectangle();
             tempParam.ROI.SelectedSpaceName = "@\\Fixture";
 
+
             cogBlobWindow.BlobParam = tempParam;
             //   cogBlobWindow.BlobParam.RunParams.ExpectedLineSegment.SelectedSpaceName = "@\\Fixture";
 
             cogBlobWindow.ShowDialog();
             RunParams = cogBlobWindow.BlobParam;
-
 
             Dispose();
         }

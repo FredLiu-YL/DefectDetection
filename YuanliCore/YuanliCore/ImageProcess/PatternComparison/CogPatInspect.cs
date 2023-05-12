@@ -28,7 +28,8 @@ namespace YuanliCore.ImageProcess
         public CogPatInspect()
         {
             patInspectTool = new CogPatInspectTool();
-            blobTool = CreateBlobTool();
+            if (blobTool == null)
+                blobTool = CreateBlobTool();
             var param = new CogPatInspectParams(0);
             param.Pattern.SobelOffset = 20;
             param.Pattern.SobelScale = 1.5;
@@ -40,7 +41,8 @@ namespace YuanliCore.ImageProcess
         {
 
             patInspectTool = new CogPatInspectTool();
-            blobTool = CreateBlobTool();
+            if (blobTool == null)
+                blobTool = CreateBlobTool();
             RunParams = matcherParams;
         }
         public override CogParameter RunParams { get; set; }
@@ -136,7 +138,16 @@ namespace YuanliCore.ImageProcess
             blobTool.RunParams.SegmentationParams.HardFixedThreshold = 20;
             blobTool.RunParams.ConnectivityMinPixels = 10;
 
-
+            var operations = new CogBlobMorphologyCollection();
+            operations.Add(CogBlobMorphologyConstants.DilateSquare);
+            operations.Add(CogBlobMorphologyConstants.DilateSquare);
+            operations.Add(CogBlobMorphologyConstants.DilateSquare);
+            operations.Add(CogBlobMorphologyConstants.DilateSquare);
+            operations.Add(CogBlobMorphologyConstants.ErodeSquare);
+            operations.Add(CogBlobMorphologyConstants.ErodeSquare);
+            operations.Add(CogBlobMorphologyConstants.ErodeSquare);
+            operations.Add(CogBlobMorphologyConstants.ErodeSquare);
+            blobTool.RunParams.MorphologyOperations = operations;
 
             return blobTool;
         }

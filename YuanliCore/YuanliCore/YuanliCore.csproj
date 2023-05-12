@@ -88,6 +88,7 @@
     <Compile Include="ImageProcess\CogDisplayer.xaml.cs">
       <DependentUpon>CogDisplayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ImageProcess\CogDisplayText.cs" />
     <Compile Include="ImageProcess\CogFixture.cs" />
     <Compile Include="ImageProcess\CogFixtureLocate.cs" />
     <Compile Include="ImageProcess\CogLineSearch.cs" />
