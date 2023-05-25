@@ -21,10 +21,10 @@ namespace YuanliCore.ImageProcess
         private CogImageConvertTool convertTool;
         private CogImageConvertWindow cogImageConvertWindow;
 
-        public CogImageConverter()
+        public CogImageConverter(int id =50)//ID需要自行設定 不然存檔會重複覆蓋 ， ID預設從 50開始
         {
             convertTool = new CogImageConvertTool();
-
+            RunParams.Id = id;
         }
         public CogImageConverter(CogParameter matcherParams)
         {
@@ -147,10 +147,31 @@ namespace YuanliCore.ImageProcess
 
             return convertTool.OutputImage;
         }
+
+        public override void SetCogToolParameter(ICogTool cogTool)
+        {
+            var tool = cogTool as CogImageConvertTool;
+
+            var param = RunParams as CogImageConvertParams;
+            param.RunParams = tool.RunParams;
+            param.Region = tool.Region;
+     
+        }
+        public override ICogTool GetCogTool()
+        {
+            var param = (CogImageConvertParams)RunParams;
+
+            convertTool.RunParams = param.RunParams;
+            convertTool.Region = param.Region;
+     
+            return convertTool;
+        }
         public override void Run()
         {
             OutputImage = Convert(CogFixtureImage);
         }
+
+        
     }
 
 }

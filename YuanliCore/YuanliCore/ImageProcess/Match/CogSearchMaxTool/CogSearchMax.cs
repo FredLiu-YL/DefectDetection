@@ -20,10 +20,10 @@ namespace YuanliCore.ImageProcess.Match
         private CogSearchMaxTool alignTool;
         private CogSearchMaxWindow cogMatchWindow;
 
-        public CogSearchMax()
+        public CogSearchMax(int id =1) 
         {
             alignTool = new CogSearchMaxTool();
-
+            RunParams.Id = id;
         }
         public CogSearchMax(CogParameter matcherParams)
         {
@@ -31,7 +31,7 @@ namespace YuanliCore.ImageProcess.Match
             alignTool = new CogSearchMaxTool();
             RunParams = matcherParams;
         }
-        public override CogParameter RunParams { get; set; } = new SearchMaxParams(0);
+        public override CogParameter RunParams { get; set; } = new SearchMaxParams(101);
         public MatchResult[] MatchResults { get; internal set; }
 
         public override void Dispose()
@@ -73,14 +73,7 @@ namespace YuanliCore.ImageProcess.Match
             }
 
         }
-        public void EditParameter(System.Drawing.Bitmap image)
-        {
-            if (image == null) throw new Exception("Image is null");
-            BitmapSource bmp = image.ToBitmapSource();
-            EditParameter(bmp);
-
-
-        }
+     
         /// <summary>
         /// 已經定位過的影像作編輯
         /// </summary>
@@ -124,7 +117,7 @@ namespace YuanliCore.ImageProcess.Match
             if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
                 cogImg1 = image.GrayFrameToCogImage();
             else
-                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage,  0.333, 0.333, 0.333);
+                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             //   ICogImage cogImg1 = image.ColorFrameToCogImage(0.333, 0.333, 0.333);
 
             //  cogImg = cogImg1;
@@ -140,7 +133,7 @@ namespace YuanliCore.ImageProcess.Match
             if (image.Format == System.Windows.Media.PixelFormats.Indexed8 || image.Format == System.Windows.Media.PixelFormats.Gray8)
                 cogImg1 = image.GrayFrameToCogImage();
             else
-                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage ,0.333, 0.333, 0.333);
+                cogImg1 = image.ColorFrameToCogImage(out ICogImage inputImage, 0.333, 0.333, 0.333);
             //  cogImg = cogImg1;
             //     cogRecordsDisplay = new CogRecordsDisplay();
             var param = (SearchMaxParams)RunParams;
@@ -186,6 +179,29 @@ namespace YuanliCore.ImageProcess.Match
         {
             MatchResults = Find(CogFixtureImage).ToArray();
         }
+
+
+
+        public override void SetCogToolParameter(ICogTool cogTool)
+        {
+            var tool = cogTool as CogSearchMaxTool;
+
+            var param = RunParams as SearchMaxParams;
+            param.RunParams = tool.RunParams;
+            param.SearchRegion = tool.SearchRegion;
+            param.Pattern = tool.Pattern;
+        }
+
+        public override ICogTool GetCogTool()
+        {
+            var param = (SearchMaxParams)RunParams;
+       
+            alignTool.Pattern = param.Pattern;
+            alignTool.RunParams = param.RunParams;
+            alignTool.SearchRegion = param.SearchRegion;
+
+            return alignTool;
+        }
     }
- 
+
 }

@@ -33,11 +33,12 @@ namespace YuanliCore.ImageProcess
         /// 參數
         public CogPatInspectRunParams RunParams { get; set; }
        
-        [JsonIgnore]
-        /// <summary>
-        /// ROI  Cog用
-        /// </summary>
-        public ICogRegion Region { get; set; }
+        //[JsonIgnore]
+        ///// <summary>
+        ///// ROI  Cog用
+        ///// </summary>
+        //public ICogRegion Region { get; set; }
+
         [JsonIgnore]
         public CogPatInspectPattern Pattern { get; set; }
 

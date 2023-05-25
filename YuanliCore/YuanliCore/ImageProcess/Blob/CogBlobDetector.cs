@@ -158,9 +158,25 @@ namespace YuanliCore.ImageProcess.Blob
 
             return results;
         }
+        public override void SetCogToolParameter(ICogTool cogTool)
+        {
+            var tool = cogTool as CogBlobTool;
+
+            var param = RunParams as BlobParams;
+            param.RunParams = tool.RunParams;
+            param.ROI = tool.Region;
+          
+        }
+        public override ICogTool GetCogTool()
+        {
+           return blobTool;
+        }
+
         public override void Run()
         {
             DetectorResults = Find(CogFixtureImage).ToArray();
         }
+
+
     }
 }

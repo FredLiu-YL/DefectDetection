@@ -79,6 +79,8 @@ namespace DefectDetection.ViewModel
         public ICogRecord LastRecord { get => lastRecord; set => SetValue(ref lastRecord, value); }
         public List<DisplayLable> CogTextLsit { get => cogTextLsit; set => SetValue(ref cogTextLsit, value); }
 
+       
+         
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>

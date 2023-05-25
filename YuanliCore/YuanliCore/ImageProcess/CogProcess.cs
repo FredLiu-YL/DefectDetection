@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cognex.VisionPro;
-using Cognex.VisionPro.ToolGroup;
 using Cognex.VisionPro.ToolBlock;
 using Cognex.VisionPro.PMAlign;
 using Cognex.VisionPro.Caliper;

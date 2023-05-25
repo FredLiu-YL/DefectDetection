@@ -7,17 +7,20 @@ using System.Threading.Tasks;
 
 namespace YuanliCore.Motion.Marzhauser
 {
+    /// <summary>
+    /// Marzhauser 控制卡 Library
+    /// </summary>
     public static class TangoLib
     {
-
+        // Tango_DLL_x64.dll 要丟到執行檔位置下
         #region Marzhauser Function
         // 參考手冊
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_ConnectSimple(Int32 lAnInterfaceType, String pcAComName, Int32 lABaudRate, Int32 bAShowProt);
-       
+
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_Disconnect(int lLSID);
-        
+
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_GetPos(out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
@@ -44,9 +47,9 @@ namespace YuanliCore.Motion.Marzhauser
         public static extern Int32 LS_SetVel(Double pdX, Double pdY, Double pdZ, Double pdA);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_SetAccel( double dX, double dY, double dZ, double dA);
+        public static extern Int32 LS_SetAccel(double dX, double dY, double dZ, double dA);
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
-        public static extern Int32 LS_SetStopAccel(  double dX, double dY, double dZ, double dA);
+        public static extern Int32 LS_SetStopAccel(double dX, double dY, double dZ, double dA);
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LS_GetLimit(int lAxis, out double pdMinRange, out double pdMaxRange);
@@ -104,8 +107,8 @@ namespace YuanliCore.Motion.Marzhauser
         public static extern Int32 LSX_GetEncoder(int lLSID, out Double pdX, out Double pdY, out Double pdZ, out Double pdA);
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LSX_GetStatusAxis(int lLSID, out char pcStatusAxisStr, int lMaxLen);
-       
-        
+
+
 
         [DllImport("Tango_DLL_x64.dll", SetLastError = true)]
         public static extern Int32 LSX_ClearEncoder(int lLSID, int lAxis);

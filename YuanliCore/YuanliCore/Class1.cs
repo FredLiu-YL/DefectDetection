@@ -24,10 +24,8 @@ namespace YuanliCore
             Column = col;
             Data = new double[row, col];
 
-            for (var i = 0; i < row; i++)
-            {
-                for (var j = 0; j < col; j++)
-                {
+            for (var i = 0; i < row; i++) {
+                for (var j = 0; j < col; j++) {
                     Data[i, j] = 0;
                 }
             }
@@ -37,10 +35,8 @@ namespace YuanliCore
         {
             var minus = new Matrix2D(Left.Row, Left.Column);
 
-            for (var i = 0; i < minus.Row; i++)
-            {
-                for (var j = 0; j < minus.Column; j++)
-                {
+            for (var i = 0; i < minus.Row; i++) {
+                for (var j = 0; j < minus.Column; j++) {
                     minus[i, j] = Left[i, j] - Right[i, j];
                 }
             }
@@ -52,11 +48,9 @@ namespace YuanliCore
         {
             var sum = new Matrix2D(Left.Row, Left.Column);
 
-            for (var i = 0; i < sum.Row; i++)
-            {
-                for (var j = 0; j < sum.Column; j++)
-                {
-                    sum[i, j ] = Left[i, j] + Right[i, j];
+            for (var i = 0; i < sum.Row; i++) {
+                for (var j = 0; j < sum.Column; j++) {
+                    sum[i, j] = Left[i, j] + Right[i, j];
                 }
             }
 
@@ -67,10 +61,8 @@ namespace YuanliCore
         {
             var RM = new Matrix2D(M.Row, M.Column);
 
-            for (var i = 0; i < RM.Row; i++)
-            {
-                for (var j = 0; j < RM.Column; j++)
-                {
+            for (var i = 0; i < RM.Row; i++) {
+                for (var j = 0; j < RM.Column; j++) {
                     RM[i, j] = M[i, j] * Scalar;
                 }
             }
@@ -82,10 +74,8 @@ namespace YuanliCore
         {
             var RM = new Matrix2D(M.Row, M.Column);
 
-            for (var i = 0; i < RM.Row; i++)
-            {
-                for (var j = 0; j < RM.Column; j++)
-                {
+            for (var i = 0; i < RM.Row; i++) {
+                for (var j = 0; j < RM.Column; j++) {
                     RM[i, j] = M[i, j] * Scalar;
                 }
             }
@@ -95,20 +85,16 @@ namespace YuanliCore
 
         public static Matrix2D operator *(Matrix2D Left, Matrix2D Right)
         {
-            if (Left.Column != Right.Row)
-            {
+            if (Left.Column != Right.Row) {
                 return null;
             }
 
             var product = new Matrix2D(Left.Row, Right.Column);
 
-            for (var i = 0; i < product.Row; i++)
-            {
-                for (var j = 0; j < product.Column; j++)
-                {
+            for (var i = 0; i < product.Row; i++) {
+                for (var j = 0; j < product.Column; j++) {
                     product[i, j] = 0;
-                    for (int k = 0; k < Left.Column; k++)
-                    {
+                    for (int k = 0; k < Left.Column; k++) {
                         product[i, j] += Left[i, k] * Right[k, j];
                     }
                 }
@@ -120,10 +106,8 @@ namespace YuanliCore
         {
             var RM = new Matrix2D(M.Column, M.Row);
 
-            for (var i = 0; i < RM.Row; i++)
-            {
-                for (var j = 0; j < RM.Column; j++)
-                {
+            for (var i = 0; i < RM.Row; i++) {
+                for (var j = 0; j < RM.Column; j++) {
                     RM[i, j] = M[j, i];
                 }
             }
@@ -135,10 +119,8 @@ namespace YuanliCore
         {
             var RM = new Matrix2D(M.Row - 1, M.Column - 1);
 
-            for (var a = 0; a < RM.Row; a++)
-            {
-                for (var b = 0; b < RM.Column; b++)
-                {
+            for (var a = 0; a < RM.Row; a++) {
+                for (var b = 0; b < RM.Column; b++) {
                     var p = (a >= i) ? (a + 1) : a;
                     var q = (b >= j) ? (b + 1) : b;
 
@@ -151,24 +133,20 @@ namespace YuanliCore
 
         public static double? Determinant(Matrix2D M)
         {
-            if ((M.Row <= 1) || (M.Column <= 1))
-            {
+            if ((M.Row <= 1) || (M.Column <= 1)) {
                 return null;
             }
-            if (M.Row != M.Column)
-            {
+            if (M.Row != M.Column) {
                 return null;
             }
 
             double? result = 0;
 
-            if (M.Row == 2)
-            {
+            if (M.Row == 2) {
                 return ((M[0, 0] * M[1, 1]) - (M[0, 1] * M[1, 0]));
             }
 
-            for (var i = 0; i < M.Column; i++)
-            {
+            for (var i = 0; i < M.Column; i++) {
                 result += M[0, i] * (Math.Pow(-1, (i + 2)) * Determinant(Minor(M, 0, i)));
             }
 
@@ -179,10 +157,8 @@ namespace YuanliCore
         {
             var RM = new Matrix2D(M.Column, M.Row);
 
-            for (var i = 0; i < RM.Row; i++)
-            {
-                for (var j = 0; j < RM.Column; j++)
-                {
+            for (var i = 0; i < RM.Row; i++) {
+                for (var j = 0; j < RM.Column; j++) {
                     RM[i, j] = (double)(Math.Pow(-1, (i + j + 2)) * Determinant(Minor(M, j, i)));
                 }
             }
@@ -195,12 +171,10 @@ namespace YuanliCore
             var RM = new Matrix2D(M.Column, M.Row);
             var detM = Determinant(M);
 
-            if (detM == null)
-            {
+            if (detM == null) {
                 return null;
             }
-            if (detM == 0)
-            {
+            if (detM == 0) {
                 return null;
             }
 

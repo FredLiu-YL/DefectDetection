@@ -1,5 +1,4 @@
 ﻿using Cognex.VisionPro;
-using Cognex.VisionPro.ImageProcessing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

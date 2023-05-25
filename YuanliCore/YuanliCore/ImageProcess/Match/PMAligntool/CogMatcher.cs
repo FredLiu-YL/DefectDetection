@@ -185,6 +185,25 @@ namespace YuanliCore.ImageProcess.Match
 
             return matchings;
         }
+        public override void SetCogToolParameter(ICogTool cogTool)
+        {
+            var tool = cogTool as CogPMAlignTool;
+
+            var param = RunParams as PatmaxParams;
+            param.RunParams = tool.RunParams;
+            param.SearchRegion = tool.SearchRegion;
+            param.Pattern = tool.Pattern;
+        }
+        public override ICogTool GetCogTool()
+        {
+            var param = (PatmaxParams)RunParams;
+    
+            alignTool.Pattern = param.Pattern;
+            alignTool.RunParams = param.RunParams;
+            alignTool.SearchRegion = param.SearchRegion;
+
+            return alignTool;
+        }
         public override void Run()
         {
             MatchResults = Find(CogFixtureImage).ToArray();

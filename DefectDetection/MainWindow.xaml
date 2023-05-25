@@ -73,6 +73,7 @@
                         <imageprocess:CogDisplayer    Record="{Binding  LastRecord}" TextLsit="{Binding  CogTextLsit}"    />
                     
                     </TabItem>
+                   
                 </TabControl>
             </materialDesign:Card>
 

@@ -58,14 +58,7 @@ namespace YuanliCore.ImageProcess.Caliper
 
             Dispose();
         }
-        public void EditParameter(System.Drawing.Bitmap image)
-        {
-            if (image == null) throw new Exception("Image is null");
-            BitmapSource bmp = image.ToBitmapSource();
-            EditParameter(bmp);
-
-
-        }
+      
         public void CogEditParameter()
         {
             if (CogFixtureImage == null) throw new Exception("locate is not yet complete");
@@ -148,11 +141,28 @@ namespace YuanliCore.ImageProcess.Caliper
         //{
         //    CaliperResults = Find(image).ToArray();
         //}
+        public override void SetCogToolParameter(ICogTool cogTool)
+        {
+            var tool = cogTool as CogCaliperTool;
 
+            var param = RunParams as CaliperParams;
+            param.RunParams = tool.RunParams;
+
+            param.Region = tool.Region;
+        }
         public override void Run()
         {
             if (CogFixtureImage == null) throw new Exception("Image does not exist");
             CaliperResults = Find(CogFixtureImage);
+        }
+
+        public override ICogTool GetCogTool()
+        {
+         
+            var param = (CaliperParams)RunParams;
+            caliperTool.RunParams = param.RunParams;
+            caliperTool.Region = param.Region;
+            return caliperTool;
         }
     }
 

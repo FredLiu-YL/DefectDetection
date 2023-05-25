@@ -114,11 +114,25 @@ namespace YuanliCore.ImageProcess.Caliper
         //{
         //    CaliperResults = Find(image).ToArray();
         //}
+        public override void SetCogToolParameter(ICogTool cogTool)
+        {
+            var tool = cogTool as CogFindLineTool;
 
+            var param = RunParams as FindLineParam;
+            param.RunParams = tool.RunParams;
+     
+        }
         public override void Run()
         {
             if (CogFixtureImage == null) throw new Exception("Image does not exist");
             CaliperResults = Find(CogFixtureImage);
+        }
+
+        public override ICogTool GetCogTool()
+        {
+            var param = (FindLineParam)RunParams;
+            linecaliperTool.RunParams = param.RunParams;
+            return linecaliperTool;
         }
     }
 
