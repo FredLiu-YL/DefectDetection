@@ -11,7 +11,7 @@
         x:Name="DefectDetection"
         mc:Ignorable="d"
            DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="{Binding Version}" Height="850" Width="1200">
+        Title="{Binding Version}" Height="750" Width="1200">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -23,13 +23,12 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid    >
-       
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
+         
         </Grid.ColumnDefinitions>
-        <Grid>
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1.7*"/>
                 <RowDefinition />
@@ -94,8 +93,9 @@
 
         <Grid  Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.10*" />
-                <RowDefinition />
+                <RowDefinition Height="0.30*" />
+                <RowDefinition Height="2.5*"/>
+                <RowDefinition Height="0.15*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
                 <Button   Margin="10,0,10,0" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" 
@@ -139,7 +139,20 @@
             </StackPanel>
             <application:InspectUC Grid.Row="1"   Image="{Binding MainImage}"  Recipe="{Binding MainRecipe}"  IsLocated="{Binding IsLocate}" IsMeansure="{Binding IsMeansureMode}"    IsDetection="{Binding IsDetectionMode}"  IsEnabled="{Binding IsInspectEnabled}" Margin="0,0,10,0"     />
 
+            <StackPanel Grid.Row="2" Orientation="Horizontal" >
+                <TextBlock Text="Threshold"  FontSize="20" Width="150" />
+                <TextBox  Margin="10,2,2,2" Grid.Column="1" Text="{Binding ContrastThreshold}"   FontSize="18" Width="70" BorderBrush="Black"  BorderThickness="1" />
+                <TextBlock Margin="10,2,2,2" Text="AreaThreshold"  FontSize="20" Width="150" />
+                <TextBox  Margin="10,2,2,2" Grid.Column="1" Text="{Binding AreaThreshold}"  FontSize="18" Width="70" BorderBrush="Black"  BorderThickness="1" />
+            </StackPanel>
+         
+            
         </Grid>
 
+        
+        
     </Grid>
+    
+    
+    
 </Window>

@@ -49,12 +49,14 @@ namespace DefectDetection.ViewModel
         private bool isInspectEnabled = false;
         private ObservableCollection<FinalResult> finalResultCollection = new ObservableCollection<FinalResult>();
         private YuanliVision yuanliVision = new YuanliVision();
-        private bool isLocate, isTriggerProtecte = true, isDetectionMode, isMeansureMode = true;
+        private bool isLocate, isTriggerProtecte = true, isDetectionMode=true, isMeansureMode = false;
         private int finalResultCollectionSelect;
         private string version;
         private bool isMultRun;
         private BitmapSource imageSouce;
         private List<DisplayLable> cogTextLsit = new List<DisplayLable>();
+        private double contrastThreshold =7, areaThreshold=5;
+
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -98,6 +100,9 @@ namespace DefectDetection.ViewModel
         public MeansureRecipe MainRecipe { get => mainRecipe; set => SetValue(ref mainRecipe, value); }
         public bool IsInspectEnabled { get => isInspectEnabled; set => SetValue(ref isInspectEnabled, value); }
         public bool IsLocate { get => isLocate; set => SetValue(ref isLocate, value); }
+        public double ContrastThreshold { get => contrastThreshold; set => SetValue(ref contrastThreshold, value); }
+        public double AreaThreshold { get => areaThreshold; set => SetValue(ref areaThreshold, value); }
+
         public bool IsMeansureMode
         {
             get => isMeansureMode;
@@ -264,7 +269,7 @@ namespace DefectDetection.ViewModel
 
                 string reportPath = CreateReportFolder("D:\\DetectionReport");
 
-                List<FinalResult> finalResult = await SingleRun(frame, IsDetectionMode, reportPath, 1);
+                List<FinalResult> finalResult = await SingleRun(frame, IsDetectionMode, ContrastThreshold, AreaThreshold , reportPath, 1);
                 /* 
                   if (IsDetectionMode) {
                      DetectionResult detectionResults_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
@@ -356,7 +361,7 @@ namespace DefectDetection.ViewModel
                             MainImage = new WriteableBitmap(bitmapSource);
                             Frame<byte[]> frame = bitmapSource.ToByteFrame();
                             if (round == 9) round = 9;
-                            var finalResult = await SingleRun(frame, IsDetectionMode, reportPath, round);
+                            var finalResult = await SingleRun(frame, IsDetectionMode, ContrastThreshold, AreaThreshold , reportPath, round);
 
                             // VisionResult[] results_ = await yuanliVision.Run(frame, MainRecipe.LocateParams, MainRecipe.MethodParams, MainRecipe.CombineOptionOutputs, MainRecipe.PixelSize);
 
@@ -405,14 +410,14 @@ namespace DefectDetection.ViewModel
 
         }
 
-        private async Task<List<FinalResult>> SingleRun(Frame<byte[]> frame, bool isDetectionMode, string reportPath, int round)
+        private async Task<List<FinalResult>> SingleRun(Frame<byte[]> frame, bool isDetectionMode, double cthreshold, double areathreshold,string reportPath, int round)
         {
 
 
             List<FinalResult> finalResult = new List<FinalResult>();
 
             if (isDetectionMode) {
-                DetectionResult detectionResults_ = await yuanliVision.DetectionRun(frame, MainRecipe.LocateParams, MainRecipe.MethodParams);
+                DetectionResult detectionResults_ = await yuanliVision.DetectionRun(frame, MainRecipe.LocateParams, cthreshold, areathreshold, MainRecipe.MethodParams);
 
 
                 //vp 的顯示結果

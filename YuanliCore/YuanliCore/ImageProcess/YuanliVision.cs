@@ -156,7 +156,7 @@ namespace YuanliCore.ImageProcess
 
 
         }
-        public async Task<DetectionResult> DetectionRun(Frame<byte[]> frame, PatmaxParams locateParams, IEnumerable<CogParameter> cogParameters)
+        public async Task<DetectionResult> DetectionRun(Frame<byte[]> frame, PatmaxParams locateParams,double cthreshold, double areathreshold, IEnumerable<CogParameter> cogParameters)
         {
 
             try {
@@ -193,6 +193,8 @@ namespace YuanliCore.ImageProcess
                         CogPatInspect detector = item as CogPatInspect;  //現階段  沒有其他檢測方法  暫時先都轉型成CogPatInspect，方便傳入數值
                         detector.CogFixtureImage = cogLocateResult.LocateCogImg;
                         detector.CogTransform = cogLocateResult.CogTransform;
+                        detector.ContrastThreshold = cthreshold;
+                        detector.AreaThreshold = areathreshold;
                         detector.Run();
                 
 
@@ -217,11 +219,15 @@ namespace YuanliCore.ImageProcess
                       // Testc(detectionResult.CogRecord);
                       CreateImage?.Invoke(detectionResult.CogRecord);
                 });
-
+                  
                // var image = CreateBmp(detectionResult.CogRecord, frame.Width, frame.Height);
                // detectionResult.RecordImage = image;
                 detectionResult.BlobDetectorResults = detectorResults.ToArray();
 
+                foreach (var item in CogMethods)
+                {
+                    item.Dispose();
+                }
                 return detectionResult;
             }
             catch (Exception ex) {

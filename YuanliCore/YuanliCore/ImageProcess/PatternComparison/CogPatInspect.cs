@@ -44,17 +44,24 @@ namespace YuanliCore.ImageProcess
         }
         public override CogParameter RunParams { get; set; }
         public BlobDetectorResult[] DetectorResults { get; internal set; }
+        public double ContrastThreshold { get; set; }
+        public double AreaThreshold { get; set; }
 
         public override void Dispose()
         {
             if (CogPatInspectWindow != null)
                 CogPatInspectWindow.Dispose();
+            if (patInspectTool != null)
+                patInspectTool.Dispose();
+            if (blobTool != null)
+                blobTool.Dispose();
 
         }
 
         public override void EditParameter(BitmapSource image)
         {
-            try {
+            try
+            {
 
                 if (image == null) throw new Exception("Image is null");
 
@@ -72,22 +79,25 @@ namespace YuanliCore.ImageProcess
                 Dispose();
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 throw ex;
             }
-            finally {
+            finally
+            {
 
             }
 
         }
-    
+
         /// <summary>
         /// 已經定位過的影像作編輯
         /// </summary>
         public void CogEditParameter()
         {
-            try {
+            try
+            {
 
                 if (CogFixtureImage == null) throw new Exception("locate is not yet complete");
 
@@ -110,11 +120,13 @@ namespace YuanliCore.ImageProcess
                 Dispose();
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 throw ex;
             }
-            finally {
+            finally
+            {
 
             }
 
@@ -152,7 +164,8 @@ namespace YuanliCore.ImageProcess
             List<BlobDetectorResult> results = new List<BlobDetectorResult>();
             var blobResults = blobTool.Results.GetBlobs();
 
-            for (int i = 0; i < blobResults.Count; i++) {
+            for (int i = 0; i < blobResults.Count; i++)
+            {
                 var pose = blobResults[i].CenterOfMassX;
 
                 double x = blobResults[i].CenterOfMassX;
@@ -197,7 +210,8 @@ namespace YuanliCore.ImageProcess
             patInspectTool.Pose = CogTransform;
             patInspectTool.RunParams = param.RunParams;
             patInspectTool.Pattern = param.Pattern;
-            if (!patInspectTool.Pattern.Trained) {
+            if (!patInspectTool.Pattern.Trained)
+            {
                 patInspectTool.Pattern.Train();
                 patInspectTool.Pattern.EndStatisticalTraining();
             }
@@ -212,7 +226,8 @@ namespace YuanliCore.ImageProcess
 
             var differenceImage = patInspectTool.Result.GetDifferenceImage(CogPatInspectDifferenceImageConstants.Absolute);
             differenceImage.ToBitmap().Save("D:\\11122.bmp");
-            var result = FindBlob(differenceImage);
+
+            var result = FindBlob(differenceImage, (int)ContrastThreshold, (int)AreaThreshold);
             return result;
         }
         public override void SetCogToolParameter(ICogTool cogTool)
@@ -221,13 +236,13 @@ namespace YuanliCore.ImageProcess
 
             var param = RunParams as CogPatInspectParams;
             param.RunParams = tool.RunParams;
-         
+
             param.Pattern = tool.Pattern;
         }
         public override ICogTool GetCogTool()
         {
             var param = (CogPatInspectParams)RunParams;
-    
+
             patInspectTool.Pose = CogTransform;
             patInspectTool.RunParams = param.RunParams;
             patInspectTool.Pattern = param.Pattern;
